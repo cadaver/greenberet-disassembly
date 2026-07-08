@@ -195,7 +195,7 @@ CDM_BulletActive
         CMP #$DE
         BCC CDM_Next
         CPY #$03
-        BEQ CDM_GrenadeCheck
+        BEQ CDM_GrenadeAreaDestroy
         LDA bulletCoarseX,X
         SEC
         SBC #$0C
@@ -208,7 +208,7 @@ CDM_BulletActive
         JSR DestroyMine
         JMP CDM_Next
 
-CDM_GrenadeCheck 
+CDM_GrenadeAreaDestroy 
         LDA bulletXSpeed,X
         BNE CDM_Next
         LDA bulletCoarseX,X
@@ -216,25 +216,48 @@ CDM_GrenadeCheck
         LSR
         SEC 
         SBC #$06
-        BCS CDM_GCNoUnderFlow
+        BCS CDM_GADNoUnderFlow
         LDA #$00
-CDM_GCNoUnderFlow
+CDM_GADNoUnderFlow
         TAY
         CLC
         ADC #$0C
         STA temp2
-CDM_GrenadeMineLoop
+CDM_GADLoop
         LDA screen+$398,Y
         JSR CheckDestroyMine
-        BEQ CDM_GrenadeDoDestroy
+
+    .if GRENADE_HANG_FIX = 0
+
+        ;Original code, will hang if mine is partially on screen
+
+        BEQ CDM_GADDoDestroy
         INY
         CPY temp2
-        BCC CDM_GrenadeMineLoop
+        BCC CDM_GADLoop
         JMP CDM_Next
 
-CDM_GrenadeDoDestroy
+CDM_GADDoDestroy
         JSR DestroyMine
-        JMP CDM_GrenadeMineLoop
+        JMP CDM_GADLoop
+
+    .else
+
+        ; Fixed code, will jump over one char after destroying the mine, but mines are never placed tightly next to each other
+
+        BNE CDM_GADDestroySkip
+        JSR DestroyMine
+        BCS CDM_Next
+CDM_GADDestroySkip
+        INY
+        CPY temp2
+        BCC CDM_GADLoop
+        JMP CDM_Next
+        NOP ;Padding to keep code size the same
+
+
+    .endif
+
 
 DestroyMine
         STY tempStoreY2

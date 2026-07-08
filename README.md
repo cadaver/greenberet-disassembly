@@ -54,7 +54,14 @@ The rough memory layout is:
 The source code is divided in files according to purpose, while keeping the memory order. greenberet.asm is the main source file that includes the others. The executable load address is
 $03BD to initialize the high score counter with the traditionally seen value 0003560. The scores use BCD mode internally and are only 6 digits (3 bytes), the last digit is always 0.
 
-The code will be commented and explained more as an ongoing process, and two bugs are to be found and understood:
+The code will be commented and explained more as an ongoing process.
+
+## Bugs
+
+The original game has two bugs:
 
 - If a grenade explodes a mine that is only half-visible on the screen, the game will lock up.
 - After playing for a long time, the game starts to exhibit bugged behavior, such as explosions staying in place, or enemies running backwards.
+
+There is a define in src/defines.s to enable a fix for the first bug. If GRENADE_HANG_FIX is set to nonzero, the code size stays the same, but the flow of the grenade's
+"radius destroy" routine becomes different so that it no longer loops infinitely when encountering a half-visible mine.

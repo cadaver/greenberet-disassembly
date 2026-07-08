@@ -1,3 +1,10 @@
+        ; Game behavior / bugfixes
+
+        ; If nonzero, a grenade exploding a partially visible mine will no longer lock up the game in an endless loop,
+        ; but the game binary will also no longer be byte-identical
+
+GRENADE_HANG_FIX = 0
+
         ; Zeropage variables
 
 irqCounter = $02
