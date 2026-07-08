@@ -7027,17 +7027,14 @@ CGS_UseBlack
         RTS
 
 rowPtrInitData 
-        .BYTE $3F,$41,$67,$41,$8F,$41,$B7,$41
-        .BYTE $DF,$41,$07,$42,$2F,$42,$57,$42
-        .BYTE $7F,$42,$A7,$42,$CF,$42,$F7,$42
-        .BYTE $1F,$43,$47,$43,$6F,$43,$97,$43
-        .BYTE $3F,$D9,$67,$D9,$8F,$D9,$B7,$D9
-        .BYTE $DF,$D9,$07,$DA,$2F,$DA,$57,$DA
-        .BYTE $7F,$DA,$A7,$DA,$CF,$DA,$F7,$DA
-        .BYTE $1F,$DB,$47,$DB,$6F,$DB,$97,$DB
+        .BYTE $3F,$41,$67,$41,$8F,$41,$B7,$41,$DF,$41,$07,$42,$2F,$42,$57,$42
+        .BYTE $7F,$42,$A7,$42,$CF,$42,$F7,$42,$1F,$43,$47,$43,$6F,$43,$97,$43
+        .BYTE $3F,$D9,$67,$D9,$8F,$D9,$B7,$D9,$DF,$D9,$07,$DA,$2F,$DA,$57,$DA
+        .BYTE $7F,$DA,$A7,$DA,$CF,$DA,$F7,$DA,$1F,$DB,$47,$DB,$6F,$DB,$97,$DB
 
 sprAndBitTbl
 		.BYTE $FE,$FD,$FB,$F7,$EF,$DF,$BF,$7F
+
 sprOrBitTbl
 		.BYTE $01,$02,$04,$08,$10,$20,$40,$80
 
@@ -7045,15 +7042,14 @@ irqJumpTblHi   =*+$01
 irqJumpTblLo
 		.WORD SpriteDisplayIrq,IrqUpdateGame,ScrollSplitIrq
 
-        .BYTE $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
-        .BYTE $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
-        .BYTE $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
-        .BYTE $AA,$AA
+        .BYTE $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
+        .BYTE $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
 
 textScreenTblHi   =*+$01
 textScreenTblLo 
-		.WORD aCA00,aCAA0,aCAB7,aFD90,a4CCA
+		.WORD titleTexts,rescueCaptivesText,wellDoneText,victoryText
 
+        .BYTE $CA,$4C
 a3DFE   .BYTE $00
 a3DFF   .BYTE $40
 

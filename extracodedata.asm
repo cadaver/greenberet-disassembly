@@ -388,7 +388,9 @@ aC800   .BYTE $3C,$42,$99,$A1,$A1,$99,$42,$3C,$0C,$0C,$2C,$26,$5E,$46,$EE,$00
         .BYTE $00,$00,$18,$00,$00,$18,$00,$00,$18,$08,$10,$00,$00,$00,$00,$00
         .BYTE $00,$00,$00,$00,$00,$18,$18,$00,$24,$24,$00,$00,$00,$00,$00,$00
         .BYTE $00,$00,$00,$00,$00,$18,$08,$10,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
-aCA00   .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$55,$55,$55,$55,$55,$55,$55,$55
+
+titleTexts
+        .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$55,$55,$55,$55,$55,$55,$55,$55
         .BYTE $E4,$E7,$E7,$E4,$E7,$E7,$E4,$E7,$00,$00,$C0,$40,$B0,$90,$2C,$24
         .BYTE $0B,$F9,$02,$3E,$C0,$0F,$F0,$00,$0F,$F2,$88,$22,$22,$84,$22,$22
         .BYTE $F0,$03,$FC,$8A,$22,$88,$22,$88,$00,$00,$0F,$F0,$03,$3C,$C0,$0F
@@ -398,9 +400,13 @@ aCA00   .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$55,$55,$55,$55,$55,$55,$55,$55
         .BYTE $A2,$22,$88,$22,$A2,$68,$58,$56,$2D,$8D,$2D,$8D,$2D,$8D,$2D,$4D
         .BYTE $D5,$D5,$D5,$D5,$D5,$D5,$D5,$D5,$55,$55,$55,$55,$55,$15,$45,$51
         .BYTE $00,$02,$0B,$2F,$BF,$FF,$FF,$FF,$AA,$BF,$BF,$BF,$BF,$BF,$BF,$BF
-aCAA0   .BYTE $FF,$FC,$F1,$C5,$15,$55,$55,$55,$AA,$BF,$BF,$BF,$BB,$AF,$BF,$BF
+
+rescueCaptivesText
+        .BYTE $FF,$FC,$F1,$C5,$15,$55,$55,$55,$AA,$BF,$BF,$BF,$BB,$AF,$BF,$BF
         .BYTE $AA,$EF,$EF,$EF,$EF,$EF,$EF
-aCAB7   .BYTE $EF,$AA,$FC,$FC,$FC,$EC,$BC,$FC,$FC,$80,$BF,$BF,$BE,$BB,$BF,$BF
+
+wellDoneText
+        .BYTE $EF,$AA,$FC,$FC,$FC,$EC,$BC,$FC,$FC,$80,$BF,$BF,$BE,$BB,$BF,$BF
         .BYTE $00,$00,$EF,$EF,$EC,$EF,$EC,$EF,$00,$00,$FC,$30,$0C,$0C,$C0,$FC
         .BYTE $00,$00,$FF,$FF,$00,$00,$00,$00,$00,$55,$11,$55,$11,$55,$55,$55
         .BYTE $55,$FF,$FF,$D6,$FF,$F3,$FF,$FF,$00,$FE,$FE,$D6,$FE,$5E,$FE,$FE
