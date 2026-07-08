@@ -1,52 +1,53 @@
         ; Variable & zeropage variable defines
 
-		.INCLUDE defines.asm
+		.INCLUDE src/defines.asm
 
-        ; Main game code and data at $03BF-$3FFF    
+        ; Main game code and data at $03BF-$3FFF
 
-        .INCLUDE screendata.asm
-        .INCLUDE mainloop.asm
-        .INCLUDE fighterjet.asm
-        .INCLUDE weaponpickup.asm
-        .INCLUDE enemyscoring.asm
-        .INCLUDE playerenemycollision.asm       
-        .INCLUDE stageendfights.asm
-        .INCLUDE stagecompleterestart.asm
-        .INCLUDE weaponbulletupdate.asm
-        .INCLUDE truckanimation.asm
-        .INCLUDE spawnenemies.asm
-        .INCLUDE playerenemyupdate.asm
-        .INCLUDE enemyspecificcode.asm
-        .INCLUDE scrollandframesync.asm
-        .INCLUDE titleoutroscreens.asm
-        .INCLUDE irqgameupdate.asm
-        .INCLUDE drawstageandmines.asm
-        .INCLUDE playroutinecalls.asm
+        .INCLUDE data/screendata.asm
+        .INCLUDE src/mainloop.asm
+        .INCLUDE src/fighterjet.asm
+        .INCLUDE src/weaponpickup.asm
+        .INCLUDE src/enemyscoring.asm
+        .INCLUDE src/playerenemycollision.asm
+        .INCLUDE src/stageendfights.asm
+        .INCLUDE src/stagecompleterestart.asm
+        .INCLUDE src/weaponbulletupdate.asm
+        .INCLUDE src/truckanimation.asm
+        .INCLUDE src/spawnenemies.asm
+        .INCLUDE src/playerenemyupdate.asm
+        .INCLUDE src/enemyspecificcode.asm
+        .INCLUDE src/scrollandframesync.asm
+        .INCLUDE src/titleoutroscreens.asm
+        .INCLUDE src/irqgameupdate.asm
+        .INCLUDE src/drawstageandmines.asm
+        .INCLUDE src/playroutinecalls.asm
 
         ; Game entry point and video bank data at $4000-$7FFF
 
-		.INCLUDE videobank.asm
+        .INCLUDE src/entrypoint.asm
+        .INCLUDE data/videobankdata.asm
 
         ; Stage data from $8000 onwards
 
-		.INCLUDE stagedata.asm
+        .INCLUDE data/stagedata.asm
 
         ; Additional code and data from $C257 onwards
 
-        .INCLUDE statusdisplay.asm
-        .INCLUDE spritemultiplexer.asm
-        .INCLUDE textprinting.asm
-        .INCLUDE dogandtextdata.asm
-        .INCLUDE irqhandlerspritesort.asm
-        .INCLUDE screenprinting.asm
-        .INCLUDE underiodata.asm
+        .INCLUDE src/statusdisplay.asm
+        .INCLUDE src/spritemultiplexer.asm
+        .INCLUDE src/textprinting.asm
+        .INCLUDE data/dogandtextdata.asm
+        .INCLUDE src/irqhandlerspritesort.asm
+        .INCLUDE src/screenprinting.asm
+        .INCLUDE data/underiodata.asm
 
-        ; Playroutine and music/sound effect data at $E000		
+        ; Playroutine and music/sound effect data at $E000
 
-		.INCLUDE playroutine.asm
-        .INCLUDE musicdata.asm
+        .INCLUDE src/playroutine.asm
+        .INCLUDE data/musicdata.asm
 
         ; Final extra code and data at the end of memory
 
-		.INCLUDE enemybulletcollision.asm
-        .INCLUDE swapgraphics.asm
+        .INCLUDE src/enemybulletcollision.asm
+        .INCLUDE src/swapgraphics.asm
