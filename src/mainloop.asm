@@ -1,7 +1,7 @@
         * = $6e0
 
 MainLoop
-		JSR UpdateMusicWaitFrame
+        JSR UpdateMusicWaitFrame
         LDA scrollSpeed
         STA lastScrollSpeed
         LDA scrollX
@@ -20,7 +20,7 @@ MainLoop
         JMP UpdateStageEndFight
 
 Main_NoStageEndFight 
-		LDX parachuteKillFlag
+        LDX parachuteKillFlag
         BEQ Main_NoParachuteKill
         JSR CleanupParachute
         LDA #$00
@@ -29,7 +29,7 @@ Main_NoStageEndFight
         STA enemyTimerActive,X
         STA enemyTimer,X
 Main_NoParachuteKill 
-		JSR TrySpawnStaticEnemy
+        JSR TrySpawnStaticEnemy
         JSR CheckParachuteEnemy
         JSR TrySpawnEnemy
         JSR SetCoarseXCoords
@@ -58,7 +58,7 @@ Main_NoParachuteKill
         JMP MainLoop
 
 IrqUpdatePlayer 
-		JSR ReadControls
+        JSR ReadControls
         LDA $DC01
         AND #$01
         BEQ IUP_SkipMove
@@ -69,18 +69,18 @@ IrqUpdatePlayer
         JSR IUP_CheckKnifeHeld
         JSR $0100
 IUP_SkipMove 
-		JSR FindFirstSprite
+        JSR FindFirstSprite
         JSR UpdateSoundChannel1
         JSR UpdateSoundChannel2
         JMP UpdateSoundChannel3
 
 IUP_CheckKnifeHeld
-		LDA playerAnimState
+        LDA playerAnimState
         AND #$10
         BNE IUP_HasDelayedKnife
         RTS
 
 IUP_HasDelayedKnife
-		LDA playerAnimState
+        LDA playerAnimState
         JMP CheckKnifeCollisions
 

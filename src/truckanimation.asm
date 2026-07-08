@@ -1,5 +1,5 @@
 TruckAnimation
-		LDA stageEndReached
+        LDA stageEndReached
         BEQ TA_Init
         RTS
 
@@ -17,7 +17,7 @@ TA_Init LDA truckInitFlag
         LDY #$08
         LDX #$02
 TA_SpriteLoop 
-		LDA truckColorTbl,Y
+        LDA truckColorTbl,Y
         STA enemyUpperColor,X
         LDA truckFrameTbl,Y
         STA enemyUpperFrame,X
@@ -36,7 +36,7 @@ TA_SpriteLoop
         BPL TA_SpriteLoop
         LDX #$02
 TA_SpriteCoordLoop 
-		LDA platformYTbl
+        LDA platformYTbl
         SEC
         SBC #$19
         STA enemyUpperY,X
@@ -56,18 +56,18 @@ TA_SpriteCoordLoop
         DEX
         BPL TA_SpriteCoordLoop
 TA_TruckCreated 
-		LDA stageEndReached
+        LDA stageEndReached
         BEQ TA_MoveTruck
         RTS
 
 truckFrameTbl 
-		.BYTE $70,$76,$CC,$75,$77,$7A,$73,$78,$7B
+        .BYTE $70,$76,$CC,$75,$77,$7A,$73,$78,$7B
 
 truckColorTbl
-		.BYTE $0B,$0B,$09,$0B,$09,$09,$0B,$09,$09
+        .BYTE $0B,$0B,$09,$0B,$09,$09,$0B,$09,$09
 
 TA_MoveTruck 
-		JSR TA_AnimateTruck
+        JSR TA_AnimateTruck
         LDA enemyUpperX
         CLC
         ADC firstStageEndCounter
@@ -80,7 +80,7 @@ TA_MoveTruck
         STA enemyUpperXMSB+3
         STA enemyLowerXMSB
 TA_NoMSB 
-		LDA enemyCoarseX
+        LDA enemyCoarseX
         CMP #$0A
         BCC TA_Done
         LDA enemyUpperX+1
@@ -95,7 +95,7 @@ TA_NoMSB
         STA enemyUpperXMSB+4
         STA enemyLowerXMSB+1
 TA_NoMSB2 
-		LDA dogCoarseX
+        LDA dogCoarseX
         CMP #$0A
         BCC TA_Done
         LDA enemyUpperX+2
@@ -110,7 +110,7 @@ TA_NoMSB2
         STA enemyUpperXMSB+5
         STA enemyLowerXMSB+2
 TA_NoMSB3 
-		LDA truckCoarseX
+        LDA truckCoarseX
         CMP #$32
         BCC TA_Done
         CMP #$5A
@@ -126,30 +126,30 @@ TA_NoMSB3
         LDA #$00
         LDY #$08
 TA_RemoveTruckLoop 
-		STA enemyUpperY,Y
+        STA enemyUpperY,Y
         DEY
         BPL TA_RemoveTruckLoop
 TA_Done RTS
 
 TA_UseSpeed4 
-		LDA #$04
+        LDA #$04
         STA firstStageEndCounter
         RTS 
 
 TA_UseSpeed3 
-		LDA #$03
+        LDA #$03
         STA firstStageEndCounter
         RTS
 
 TA_UseSpeed2 
-		LDA #$02
+        LDA #$02
         STA firstStageEndCounter
         RTS
 
 UpdateEnemyTimers 
-		LDX #$05
+        LDX #$05
 UET_Loop
-		LDA enemyTimerActive,X
+        LDA enemyTimerActive,X
         BEQ UET_Next
         LDA enemyTimer,X
         BEQ UET_Next
@@ -170,12 +170,12 @@ UET_Loop
         LDA #$03
         STA enemyLastControls,X
 UET_Next 
-		DEX
+        DEX
         BPL UET_Loop
         RTS
 
 TA_AnimateTruck 
-		DEC truckAnimTimer
+        DEC truckAnimTimer
         BNE TA_AnimateSkip
         LDA #$07
         SEC
@@ -192,10 +192,10 @@ TA_AnimateTruck
         ADC #$01
         STA enemyLowerFrame+2
 TA_AnimateSkip 
-		RTS
+        RTS
 
 TA_AnimationWrap
-		LDA #$6F
+        LDA #$6F
         STA enemyLowerFrame
         LDA #$72
         STA enemyLowerFrame+2

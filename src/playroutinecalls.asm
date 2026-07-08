@@ -1,13 +1,13 @@
 PlaySong LDX #$05
 PS_SongPointerLoop 
-		LDA songPointerTbl,Y
+        LDA songPointerTbl,Y
         STA chn1Lo,X
         DEY
         DEX
         BPL PS_SongPointerLoop
         LDX #$02
 PS_ChannelLoop
-		LDY fED32,X
+        LDY fED32,X
         LDA #$00
         STA chn1Trans,X
         STA fEC15,Y
@@ -26,7 +26,7 @@ PS_ChannelLoop
         RTS
 
 CheckSongEnd 
-		LDA chn1MusicFlag
+        LDA chn1MusicFlag
         ORA chn2MusicFlag
         ORA chn3MusicFlag
         ORA aECD3
@@ -35,7 +35,7 @@ CheckSongEnd
         RTS
 
 ResetSong 
-		LDX #$00
+        LDX #$00
         STX chn1MusicFlag
         STX chn2MusicFlag
         STX chn3MusicFlag
@@ -49,7 +49,7 @@ ResetSong
         RTS
 
 ResetSID 
-		JSR ResetSong
+        JSR ResetSong
         LDX #$14
 RS_Loop LDA #$08
         STA $D400,X
@@ -60,14 +60,14 @@ RS_Loop LDA #$08
         RTS
 
 songPointerTbl   
-		.BYTE $84,$F0,$BA,$F0,$E8,$F0,$5B,$F4,$DE,$F0,$AE,$F1,$A7,$F3,$A5,$F3
+        .BYTE $84,$F0,$BA,$F0,$E8,$F0,$5B,$F4,$DE,$F0,$AE,$F1,$A7,$F3,$A5,$F3
         .BYTE $00,$F4,$A3,$F4,$E5,$F4,$40,$F5,$9B,$F5,$AA,$F5,$BA,$F5,$FD,$F2
         .BYTE $3B,$F3,$6C,$F3,$9A,$F2,$CF,$F2,$E6,$F2,$9F,$F1,$DE,$F0,$DE,$F0
         .BYTE $38,$F7,$DA,$F8,$A8,$FB,$E6,$F5,$E4,$F5,$42,$F6,$65,$F4,$DE,$F0
         .BYTE $7D,$F2,$3D,$F1,$DE,$F0,$48,$F1,$73,$F1,$DE,$F0,$DE,$F0
 
 PlayFlameSound 
-		LDA #$6B
+        LDA #$6B
         LDY #$EE
         LDX #$01
         JSR PlaySound
@@ -77,7 +77,7 @@ PlayFlameSound
         JMP PlaySound
 
 PlayDogBarkSound 
-		LDY dogSoundIndex
+        LDY dogSoundIndex
         LDX dogBarkSoundTbl,Y
         STX dogSoundIndex
         LDA #$4C
@@ -85,15 +85,15 @@ PlayDogBarkSound
         JMP PlaySound
 
 dogSoundIndex 
-		.BYTE $01
+        .BYTE $01
 
 FadeMotorSound
-		LDA #$00
+        LDA #$00
         STA chn1MusicFlag
         RTS
 
 PlayFighterJetSound 
-		LDA #$25
+        LDA #$25
         LDY #$EF
         LDX #$01
         JSR PlaySound
@@ -102,13 +102,13 @@ PlayFighterJetSound
         JMP PlaySoundChannel1
 
 PlayEnemyKillSound 
-		LDA #$44
+        LDA #$44
         LDY #$EF
         LDX #$01
         JMP PlaySound
 
 PlayEnemyFireSound 
-		LDA #$82
+        LDA #$82
         LDY #$EF
         LDX #$01
         JSR PlaySound
@@ -117,7 +117,7 @@ PlayEnemyFireSound
         JMP PlaySoundChannel1
 
 PlayExplosionSound 
-		LDA #$A9
+        LDA #$A9
         LDY #$EE
         JSR PlaySoundChannel1
         LDA #$C8
@@ -143,7 +143,7 @@ PlayCollectSound
         JMP PlaySound
 
 PlayBazookaSound 
-		LDA #$FE
+        LDA #$FE
         LDY #$EF
         JSR PlaySoundChannel1
         LDA #$1D

@@ -1,5 +1,5 @@
-InitPlayer 
-		LDA #$03
+InitPlayer
+        LDA #$03
         STA playerAnimState
         STA playerRunAnimTimer
         LDA #$08
@@ -19,14 +19,14 @@ InitPlayer
         JMP MP_NoClimbDown
 
 videoRegsInitTbl 
-		.BYTE $00,$00,$0C,$0E,$00,$0A,$00
+        .BYTE $00,$00,$0C,$0E,$00,$0A,$00
 
 IrqUpdateGame
-		JSR IrqUpdatePlayer
+        JSR IrqUpdatePlayer
         INC frameSyncFlag
         LDX #$05
 IUG_TimersLoop
-		INC gameTimer,X
+        INC gameTimer,X
         DEX
         BPL IUG_TimersLoop
         INC idleTimerLSB
@@ -48,7 +48,7 @@ IUG_IdleAtMax LDY stage
         BCS IUG_NoIdleOverFlow
         STA spawnTblIndexMod
 IUG_NoIdleOverFlow
-		LDA #$10
+        LDA #$10
         STA $D016
 textD018Value   =*+$01
         LDA #$12
@@ -61,16 +61,16 @@ textVideoBank   =*+$01
         RTS
 
 stageSpawnModMaxTbl 
-		.BYTE $04,$07,$0A,$0F
+        .BYTE $04,$07,$0A,$0F
 stageSpawnModWaitTbl 
-		.BYTE $80,$AA,$D2,$FA
+        .BYTE $80,$AA,$D2,$FA
 spawnTblDelay 
-		.BYTE $00
+        .BYTE $00
 difficultyMod 
-		.BYTE $00
+        .BYTE $00
 
 ScrollSplitIrq 
-		LDA $D016
+        LDA $D016
         AND #$10
         ORA scrollX
         STA $D016
@@ -91,7 +91,7 @@ ScrollSplitIrq
         RTS
 
 DisplayStageNumber 
-		LDA stage
+        LDA stage
         SED
         CLC
         ADC #$01

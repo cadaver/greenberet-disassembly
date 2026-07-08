@@ -1,5 +1,5 @@
-UpdateStageEndFight 
-		LDA stage
+UpdateStageEndFight
+        LDA stage
         ASL
         TAY
         LDA stageEndJumpTblHi,Y
@@ -10,10 +10,10 @@ UpdateStageEndFight
 
 stageEndJumpTblHi   =*+$01
 stageEndJumpTblLo 
-		.WORD Stage1EndFight-1,Stage2EndFight-1,Stage3EndFight-1,Stage4EndFight-1
+        .WORD Stage1EndFight-1,Stage2EndFight-1,Stage3EndFight-1,Stage4EndFight-1
 
 Stage4EndFight 
-		JSR Stage4NextEnemy
+        JSR Stage4NextEnemy
         JSR TrySpawnEnemy
         JSR StageEndFightCalls
         JSR RunEnemyBulletCode
@@ -25,11 +25,11 @@ Stage4EndFight
         JMP CompleteStage
 
 Stage4NotDone 
-		JSR SortSprites
+        JSR SortSprites
         JMP MainLoop
 
 Stage4NextEnemy 
-		LDA endFightResetFlag
+        LDA endFightResetFlag
         BNE S4NE_NoReset
         JSR CheckEnemiesOnScreen
         BPL S4NE_Done
@@ -37,7 +37,7 @@ Stage4NextEnemy
         STA platformEnemyCount
         INC endFightResetFlag
 S4NE_NoReset 
-		LDA endFightEnemiesLeft
+        LDA endFightEnemiesLeft
         BMI S4NE_Done
         LDA platformEnemyCount
         CMP #$03
@@ -57,13 +57,13 @@ S4NE_NoReset
         STA enemySpawnDirTbl
         DEC endFightEnemiesLeft
 S4NE_Done 
-		RTS
+        RTS
 
 finaleSpawnTypeTbl 
-		.BYTE $03,$06,$05,$08
+        .BYTE $03,$06,$05,$08
 
 Stage2EndFight
-		JSR InitDogFight
+        JSR InitDogFight
         JSR UpdateDogHandler
         JSR StageEndFightCalls
         JSR UpdateDogs
@@ -75,7 +75,7 @@ Stage2EndFight
         BNE S2EF_NotDone
         LDX #$02
 S2EF_DogLoop 
-		LDA dogActive,X
+        LDA dogActive,X
         BNE S2EF_NotDone
         DEX 
         BPL S2EF_DogLoop
@@ -84,11 +84,11 @@ S2EF_DogLoop
         JMP CompleteStage
 
 S2EF_NotDone 
-		JSR SortSprites
+        JSR SortSprites
         JMP MainLoop
 
 UpdateDogHandler 
-		LDX #$00
+        LDX #$00
         LDA stageEndReached
         BEQ UDH_Done
         LDA enemyActive
@@ -116,7 +116,7 @@ UpdateDogHandler
         LDA #$1E
         STA dogHandlerDelayTimer
 UDH_IsActive 
-		DEC dogHandlerDelayTimer
+        DEC dogHandlerDelayTimer
         BNE UDH_Done
         LDA nextDogHandlerDir
         CMP #$04
@@ -127,11 +127,11 @@ UDH_IsActive
         JMP UDH_CommandDogsAnim
 
 UDH_OnLeft 
-		LDA playerCoarseX
+        LDA playerCoarseX
         CMP enemyCoarseX
         BCS UDH_Done
 UDH_CommandDogsAnim 
-		LDA #$3C
+        LDA #$3C
         STA dogHandlerDelayTimer
         LDA #$01
         STA enemyTimerActive
@@ -145,30 +145,30 @@ UDH_CommandDogsAnim
         LDA dogHandlerFrameTbl,Y
         STA enemyUpperFrame
 UDH_Done 
-		RTS
+        RTS
 
 dogHandlerFrameTbl 
-		.BYTE $C8,$C7
+        .BYTE $C8,$C7
 
 CheckEnemiesOnScreen 
-		LDX #$05
+        LDX #$05
 CEOS_EnemyLoop 
-		LDA enemyActive,X
+        LDA enemyActive,X
         BNE CEOS_Found
         DEX
         BPL CEOS_EnemyLoop
         LDX #$02
 CEOS_BulletLoop 
-		LDA bulletActive+3,X
+        LDA bulletActive+3,X
         BNE CEOS_Found
         DEX
         BPL CEOS_BulletLoop
 CEOS_Found
-		CPX #$00
+        CPX #$00
         RTS
 
 InitDogFight 
-		LDA stageEndReached
+        LDA stageEndReached
         BNE IDF_Done
         JSR CheckEnemiesOnScreen
         BPL IDF_Done
@@ -180,23 +180,23 @@ InitDogFight
         LDA #$07
         JSR SwapGraphicsData
 IDF_Done 
-		RTS
+        RTS
 
 UpdateDogs 
-		LDA platformEnemyCount
+        LDA platformEnemyCount
         CMP #$04
         BCS UD_NoSpawnNew
         JSR SpawnNewDogs
 UD_NoSpawnNew 
-		JSR MoveDogs
+        JSR MoveDogs
         JSR CheckKilledDogs
         JSR AnimateDogs
         RTS 
 
 CheckKilledDogs 
-		LDX #$02
+        LDX #$02
 CKD_Loop 
-		LDA dogDead,X
+        LDA dogDead,X
         BNE CKD_CheckRemove
         LDA dogHit,X
         BEQ CKD_Next
@@ -213,17 +213,17 @@ CKD_Loop
         LDA #$CF
         .BYTE $2C
 CKD_SetFrame
-		LDA #$D0
+        LDA #$D0
         JSR DJ_SetFrameAndInit
 CKD_CheckRemove 
-		JSR RemoveDeadDog
+        JSR RemoveDeadDog
 CKD_Next 
-		DEX
+        DEX
         BPL CKD_Loop
         RTS
 
 RemoveDeadDog 
-		DEC enemyAuxTimer,X
+        DEC enemyAuxTimer,X
         BNE RDD_HasDelay
         LDA #$00
         STA dogJumping,X
@@ -236,10 +236,10 @@ RemoveDeadDog
         DEC platformEnemyCount
         STA dogY,X
 RDD_HasDelay
-		RTS
+        RTS
 
 AnimateDogs 
-		LDX #$02
+        LDX #$02
 AD_Loop LDA dogActive,X
         BEQ AD_Next
         LDA dogDead,X
@@ -248,8 +248,8 @@ AD_Next DEX
         BPL AD_Loop
         RTS
 
-AD_IsActiveAndAlive 	
-		LDA dogJumping,X
+AD_IsActiveAndAlive     
+        LDA dogJumping,X
         BNE AD_Next
         LDA endFightResetFlag,X
         CMP #$03
@@ -258,7 +258,7 @@ AD_IsActiveAndAlive
         JMP AD_Next
 
 AD_DoAnimate 
-		LDA #$00
+        LDA #$00
         STA endFightResetFlag,X
         LDA dogDir,X
         CMP #$08
@@ -270,22 +270,22 @@ AD_DoAnimate
         BCC AD_RightDone
         LDA #$C9
 AD_RightDone 
-		STA dogFrame,X
+        STA dogFrame,X
         JMP AD_Next
 
 AD_AnimateLeft 
-		LDA dogFrame,X
+        LDA dogFrame,X
         CLC
         ADC #$01
         CMP #$CF
         BCC AD_LeftDone
         LDA #$CC
 AD_LeftDone 
-		STA dogFrame,X
+        STA dogFrame,X
         JMP AD_Next
 
 MoveDogs
-		LDX #$02
+        LDX #$02
 MD_Loop LDA dogActive,X
         BNE MD_IsActive
 MD_Next DEX
@@ -293,7 +293,7 @@ MD_Next DEX
         RTS 
 
 MD_IsActive 
-		LDA dogDir,X
+        LDA dogDir,X
         CMP #$04
         BEQ MD_MoveLeft
         LDA dogX,X
@@ -308,11 +308,11 @@ MD_IsActive
         CMP #$50
         BCS MD_RemoveOffScreen
 MD_RightNoMSB
-		JSR DogJump
+        JSR DogJump
         JMP MD_Next
 
 MD_MoveLeft 
-		LDA dogX,X
+        LDA dogX,X
         SEC
         SBC #$04
         STA dogX,X
@@ -324,14 +324,14 @@ MD_MoveLeft
         CMP #$12
         BCC MD_RemoveOffScreen
 MD_LeftHasMSB 
-		LDA dogJumping,X
+        LDA dogJumping,X
         BEQ MD_NextJump
         JSR DJ_AlreadyJumping
 MD_NextJump 
-		JMP MD_Next
+        JMP MD_Next
 
 MD_RemoveOffScreen 
-		LDA #$00
+        LDA #$00
         STA dogActive,X
         STA dogJumping,X
         STA dogDead,X
@@ -344,32 +344,32 @@ MD_RemoveOffScreen
         JMP MD_Next
 
 SpawnNewDogs 
-		LDA endFightEnemiesLeft
+        LDA endFightEnemiesLeft
         BPL SND_HasDogsLeft
         RTS 
 
 SND_HasDogsLeft 
-		LDA dogSpawnTimer
+        LDA dogSpawnTimer
         BEQ SpawnNewDog
         DEC dogSpawnTimer
         RTS
 
 SpawnNewDog 
-		LDY endFightEnemiesLeft
+        LDY endFightEnemiesLeft
         LDA dogSpawnDirTbl,Y
         STA staticEnemyType
         LDA dogSpawnColorTbl,Y
         STA staticInitFlags
         LDX #$02
 SND_FindFreeLoop 
-		LDA dogActive,X
+        LDA dogActive,X
         BEQ SND_FoundFree
         DEX
         BPL SND_FindFreeLoop
         RTS
 
 SND_FoundFree 
-		DEY
+        DEY
         STY endFightEnemiesLeft
         LDA dogSpawnDelayTbl,Y
         STA dogSpawnTimer
@@ -391,14 +391,14 @@ SND_FoundFree
         LDA #$CD
         STA dogFrame,X
 SND_Common 
-		LDA #$01
+        LDA #$01
         STA enemyAuxTimer,X
         STA dogCoarseX,X
         JSR PlayDogBarkSound
         RTS
 
 SND_SpawnOnLeft 
-		LDA #$00
+        LDA #$00
         STA dogXMSB,X
         LDA #$10
         STA dogX,X
@@ -417,7 +417,7 @@ DogJump LDA dogJumping,X
         BNE DJ_Done
         LDA #$CA
 DJ_SetFrameAndInit 
-		STA dogFrame,X
+        STA dogFrame,X
         INC dogJumping,X
         LDY #$11
         LDA dogY,X
@@ -427,7 +427,7 @@ DJ_SetFrameAndInit
         TYA 
         STA dogJumpArcIndex,X
 DJ_AlreadyJumping 
-		LDY dogJumpArcIndex,X
+        LDY dogJumpArcIndex,X
         LDA dogBaseY,X
         CLC 
         ADC jumpArcTbl,Y
@@ -442,7 +442,7 @@ DJ_AlreadyJumping
         LDA #$00
         STA dogJumping,X
 DJ_FallDone 
-		RTS
+        RTS
 
 DJ_Fall DEY
         TYA 
@@ -454,7 +454,7 @@ DJ_Fall DEY
         RTS
 
 CheckDogJumpDistance 
-		LDA dogCoarseX,X
+        LDA dogCoarseX,X
         CMP playerCoarseX
         BCS DJ_Done
         CLC
@@ -467,20 +467,20 @@ CheckDogJumpDistance
 CDJD_Fail SEC
         RTS
 
-dogSpawnDelayTbl 	
-		.BYTE $14,$14,$19,$14,$14,$19,$14,$14,$19,$14,$14,$19,$14,$14,$19,$14
+dogSpawnDelayTbl     
+        .BYTE $14,$14,$19,$14,$14,$19,$14,$14,$19,$14,$14,$19,$14,$14,$19,$14
         .BYTE $14,$19
 
 dogSpawnDirTbl 
-		.BYTE $04,$04,$04,$08,$08,$08,$04,$04,$04,$08,$08,$08,$04,$04,$04,$08
+        .BYTE $04,$04,$04,$08,$08,$08,$04,$04,$04,$08,$08,$08,$04,$04,$04,$08
         .BYTE $08,$08
 
 dogSpawnColorTbl 
-		.BYTE $09,$09,$09,$08,$08,$08,$09,$09,$09,$08,$08,$08,$09,$09,$09,$08
+        .BYTE $09,$09,$09,$08,$08,$08,$09,$09,$09,$08,$08,$08,$09,$09,$09,$08
         .BYTE $08,$08
 
 StageEndFightCalls 
-		JSR SetCoarseXCoords
+        JSR SetCoarseXCoords
         JSR PlayerWorldCollision
         JSR CheckEnemiesRunAway
         JSR CheckEnemyToPlayer
@@ -490,12 +490,12 @@ StageEndFightCalls
         JMP UpdateExtraWeapon
 
 AnimateEnemiesOnly 
-		JSR AnimateEnemies
+        JSR AnimateEnemies
         JSR EnemyWorldCollision
         JMP UpdateEnemies
 
 Stage3EndFightCalls 
-		JSR SetCoarseXCoords
+        JSR SetCoarseXCoords
         JSR PlayerWorldCollision
         JSR CheckEnemiesRunAway
         JSR CheckEnemyToPlayer
@@ -507,7 +507,7 @@ a1020   =*+$02
         JMP UpdateExtraWeapon
 
 Stage3EndFight 
-		JSR SpawnGyrocopters
+        JSR SpawnGyrocopters
         LDA stageEndReached
         BEQ S3EF_WaitForStart
         JSR UpdateGyroSprites
@@ -516,17 +516,17 @@ Stage3EndFight
         JSR UpdateGyroFlight
         JSR Stage3EndFightCalls
 S3EF_FinishCommon 
-		JSR RunEnemyBulletCode
+        JSR RunEnemyBulletCode
         JSR SortSprites
         JMP MainLoop
 
 S3EF_WaitForStart 
-		JSR StageEndFightCalls
+        JSR StageEndFightCalls
         JSR AnimateEnemiesOnly
         JMP S3EF_FinishCommon
 
 CheckDestroyGyros
-		LDX #$05
+        LDX #$05
 CDH_Loop LDA enemyHit,X
         BNE CDH_DoDestroy
 CDH_Next DEX 
@@ -534,22 +534,22 @@ CDH_Next DEX
         RTS
 
 CDH_DoDestroy 
-		STX temp
+        STX temp
         JSR DestroyGyrocopter
         LDX temp
         JMP CDH_Next
 
 UpdateGyroGrenades
-		LDX #$02
+        LDX #$02
 UHG_Loop JSR CheckBulletExploded
         DEX
         BPL UHG_Loop
         RTS 
 
 UpdateGyroFlight
-		LDY #$01
+        LDY #$01
 UHF_Loop 
-		LDA gyroYPathDir,Y
+        LDA gyroYPathDir,Y
         BNE UHF_YPathActive
         LDA gyrosAliveFlag
         BEQ UHF_DescendLow
@@ -557,7 +557,7 @@ UHF_Loop
         CMP #$58
         BCS UHF_SetActive
 UHF_DescendLow 
-		LDA gyroY,Y
+        LDA gyroY,Y
         CMP #$90
         BCS UHF_SetActiveLow
         LDA gyroY,Y
@@ -566,13 +566,13 @@ UHF_DescendLow
         ADC #$02
         STA gyroY,Y
 UHF_Next 
-		JSR UHF_HorizMoveLogic
+        JSR UHF_HorizMoveLogic
         DEY
         BPL UHF_Loop
         RTS 
 
 UHF_SetActive 
-		LDA #$01
+        LDA #$01
         STA gyroYPathDir,Y
         LDA #$58
         STA gyroBaseY,Y
@@ -581,7 +581,7 @@ UHF_SetActive
         JMP UHF_Next
 
 UHF_SetActiveLow 
-		LDA #$01
+        LDA #$01
         STA gyroYPathDir,Y
         STA gyrosAliveFlag
         LDA #$90
@@ -591,7 +591,7 @@ UHF_SetActiveLow
         JMP UHF_Next
 
 UHF_YPathActive 
-		LDX gyroYPathIndex,Y
+        LDX gyroYPathIndex,Y
         LDA gyroYPathTbl,X
         BMI UHF_GyroYPathEnd
         CLC 
@@ -605,21 +605,21 @@ UHF_YPathActive
         JMP UHF_Next
 
 UHF_GyroYPathEnd
-		STA gyroYPathDir,Y
+        STA gyroYPathDir,Y
 UHF_GyroYPathReverse
-		DEX
+        DEX
         BMI UHF_GyroYPathWrap
         TXA
         STA gyroYPathIndex,Y
         JMP UHF_Next
 
 UHF_GyroYPathWrap
-		LDA #$01
+        LDA #$01
         STA gyroYPathDir,Y
         JMP UHF_Next
 
 UHF_HorizMoveLogic 
-		LDA gyroBaseY,Y
+        LDA gyroBaseY,Y
         CMP #$58
         BEQ UHF_HighGyroHorizMove
         LDA gyroCoarseX,Y
@@ -631,14 +631,14 @@ UHF_HorizMoveLogic
         CMP playerCoarseX
         BCS UHF_CheckHorizTurn
 UHF_GyroXMove
-		LDA gyroXSpeed,Y
+        LDA gyroXSpeed,Y
         CLC
         ADC gyroCoarseX,Y
         STA gyroCoarseX,Y
         RTS
 
 UHF_CheckHorizTurn 
-		LDA gyroCoarseX,Y
+        LDA gyroCoarseX,Y
         CMP playerCoarseX
         BCC UHF_CheckTurnRight
         LDA gyroXSpeed,Y
@@ -647,10 +647,10 @@ UHF_CheckHorizTurn
         STA gyroXSpeed,Y
         JSR SetGyroMidFrame
 UHF_NoHorizTurn 
-		JMP UHF_GyroXMove
+        JMP UHF_GyroXMove
 
 UHF_CheckTurnRight
-		LDA gyroXSpeed,Y
+        LDA gyroXSpeed,Y
         BPL UHF_NoHorizTurn
         LDA #$01
         STA gyroXSpeed,Y
@@ -658,7 +658,7 @@ UHF_CheckTurnRight
         JMP UHF_GyroXMove
 
 UHF_HighGyroHorizMove
-		LDA gyroCoarseX,Y
+        LDA gyroCoarseX,Y
         CMP #$14
         BCC UHF_HighGyroLeftEdge
         CMP #$8C
@@ -666,7 +666,7 @@ UHF_HighGyroHorizMove
         JMP UHF_GyroXMove
 
 UHF_HighGyroLeftEdge 
-		LDA gyroXSpeed,Y
+        LDA gyroXSpeed,Y
         BPL UHF_NoHorizTurn
         LDA #$01
         STA gyroXSpeed,Y
@@ -674,7 +674,7 @@ UHF_HighGyroLeftEdge
         JMP UHF_GyroXMove
 
 UHF_HighGyroRightEdge
-		LDA gyroXSpeed,Y
+        LDA gyroXSpeed,Y
         BMI UHF_NoHorizTurn
         LDA #$FF
         STA gyroXSpeed,Y
@@ -682,16 +682,16 @@ UHF_HighGyroRightEdge
         JMP UHF_GyroXMove
 
 gyroYPathTbl 
-		.BYTE $00,$00,$01,$02,$03,$04,$06,$08,$0A,$0C,$0E,$10,$12,$14,$16,$18
+        .BYTE $00,$00,$01,$02,$03,$04,$06,$08,$0A,$0C,$0E,$10,$12,$14,$16,$18
         .BYTE $1A,$1C,$1E,$20,$22,$23,$24,$25,$26,$27,$28,$28,$FF
 
 SetGyroMidFrame 
-		LDA gyroEnemyIndexTbl,Y
+        LDA gyroEnemyIndexTbl,Y
         TAX
         STY temp2
         LDY #$00
 SHMF_Loop 
-		LDA gyroUpperMidFrameTbl,Y
+        LDA gyroUpperMidFrameTbl,Y
         STA enemyUpperFrame,X
         LDA gyroLowerMidFrameTbl,Y
         STA enemyLowerFrame,X
@@ -705,19 +705,19 @@ SHMF_Loop
         RTS
 
 ThrowGyroGrenade 
-		INX
+        INX
         LDA gyroXSpeed,Y
         BPL THG_HasDir
         LDA #$04
         .BYTE $2C
 THG_HasDir 
-		LDA #$08
+        LDA #$08
         STA enemyHorizMove,X
         LDA #$08
         STA enemyType,X
         LDA gyroY,Y
 THG_GyroNotActive 
-		BEQ THG_Done
+        BEQ THG_Done
         STX temp
         STY temp2
         JSR DEF_DoFire
@@ -727,26 +727,26 @@ THG_GyroNotActive
         STA enemyType,X
         DEX
 THG_Done 
-		RTS
+        RTS
 
 AH_MovingRight 
-		LDA #$00
+        LDA #$00
         BEQ AH_GetFrame
 AH_Done RTS 
 
 DestroyGyrocopter 
-		CPX #$03
+        CPX #$03
         BCC DH_NoIndexClamp
         LDX #$03
         .BYTE $2C
 DH_NoIndexClamp 
-		LDX #$00
+        LDX #$00
         TXA
         CLC 
         ADC #$03
         STA tempStore
 DH_PieceLoop
-		LDA #$00
+        LDA #$00
         STA enemyActive,X
         STA enemyHit,X
         STA enemyDying,X
@@ -771,7 +771,7 @@ DH_PieceLoop
         RTS
 
 AnimateGyrocopters
-		LDY #$00
+        LDY #$00
         LDX #$00
         LDA #$03
         STA gyroSprEndCmp
@@ -786,7 +786,7 @@ AH_Loop LDA gyroAnimDelay,Y
         JMP AH_MoveToNext
 
 AH_NoDelay 
-		LDA gyroAnimFrame,Y
+        LDA gyroAnimFrame,Y
         CLC 
         ADC #$01
         AND #$03
@@ -797,11 +797,11 @@ AH_NoDelay
         LDA #$18
         CLC
 AH_GetFrame
-		LDY temp2
+        LDY temp2
         ADC gyroFrameBaseTbl,Y
         TAY
 AH_SpriteLoop
-		LDA gyroUpperFrameTbl,Y
+        LDA gyroUpperFrameTbl,Y
         STA enemyUpperFrame,X
         LDA gyroLowerFrameTbl,Y
         STA enemyLowerFrame,X
@@ -813,7 +813,7 @@ gyroSprEndCmp   =*+$01
         CPX #$06
         BEQ AH_Done2
 AH_MoveToNext
-		LDA #$06
+        LDA #$06
         STA gyroSprEndCmp
         LDY #$01
         JMP AH_Loop
@@ -821,31 +821,31 @@ AH_MoveToNext
 AH_Done2 RTS
 
 gyroEnemyIndexTbl 
-		.BYTE $00,$03
+        .BYTE $00,$03
 
 gyroAnimDelay
-		.BYTE $00,$00
+        .BYTE $00,$00
 
 gyroFrameBaseTbl
-		.BYTE $00,$06,$0C,$12
+        .BYTE $00,$06,$0C,$12
 
 gyroUpperFrameTbl
-		.BYTE $C5,$C6,$C7
+        .BYTE $C5,$C6,$C7
 
 gyroLowerFrameTbl
-		.BYTE $C8,$C9,$CA,$CB,$C6,$CD,$D0,$C9,$CA,$CC,$CF,$CE,$D1,$C9,$CA,$CC
+        .BYTE $C8,$C9,$CA,$CB,$C6,$CD,$D0,$C9,$CA,$CC,$CF,$CE,$D1,$C9,$CA,$CC
         .BYTE $CF,$CE,$D1,$C9,$CA,$D4,$D3,$C5,$D7,$D6,$D5,$D9,$D3,$D8,$D7,$D6
         .BYTE $DC,$DA,$DB,$CC,$D7,$D6,$DD,$DA,$DB,$CC,$D7,$D6,$DC
 
 gyroUpperMidFrameTbl 
-		.BYTE $CC,$DF,$CC
+        .BYTE $CC,$DF,$CC
 
 gyroLowerMidFrameTbl 
-		.BYTE $CC,$DE,$CC
+        .BYTE $CC,$DE,$CC
 
 MultiplyGyroXCoords LDX #$0B
 MHXC_Loop 
-		LDA enemyUpperX,X
+        LDA enemyUpperX,X
         ASL
         STA enemyUpperX,X
         LDA #$00
@@ -856,12 +856,12 @@ MHXC_Loop
         RTS
 
 UpdateGyroSprites 
-		LDY numAliveGyros
+        LDY numAliveGyros
         BEQ UHS_NoGyrosActive
         LDY #$02
         DEY
 UHS_Loop
-		LDA gyroY,Y
+        LDA gyroY,Y
         BEQ UHS_Next
         STY tempStore
         TYA
@@ -876,13 +876,13 @@ UHS_Loop
         BCC UHS_NoGrenade
         JSR ThrowGyroGrenade
 UHS_NoGrenade 
-		PLA
+        PLA
         STA tempStore
         LDA gyroCoarseX,Y
         SEC
         SBC #$0C
 UHS_SpriteLoop 
-		STA enemyUpperX,X
+        STA enemyUpperX,X
         STA enemyLowerX,X
         CLC
         ADC #$0C
@@ -894,7 +894,7 @@ UHS_SpriteLoop
         SBC #$03
         TAX
 UHS_SpriteYLoop 
-		LDA enemyUpperX,X
+        LDA enemyUpperX,X
         CMP #$AC
         BCS UHS_ClipRight
         LDA gyroY,Y
@@ -905,21 +905,21 @@ UHS_SpriteYLoop
         JMP UHS_YDone
 
 UHS_ClipRight 
-		LDA #$00
+        LDA #$00
         STA enemyUpperY,X
         STA enemyLowerY,X
 UHS_YDone 
-		INX
+        INX
         CPX tempStore
         BNE UHS_SpriteYLoop
 UHS_Next
-		DEY
+        DEY
         BPL UHS_Loop
 UHS_NoGyrosActive
-		RTS
+        RTS
 
 SpawnGyrocopters 
-		LDA endFightEnemiesLeft
+        LDA endFightEnemiesLeft
         BEQ SH_NoMoreGyros
         CMP #$03
         BNE SH_InitDone
@@ -928,7 +928,7 @@ SpawnGyrocopters
         LDA #$00
         LDX #$05
 SH_InitLoop 
-		STA enemyDying,X
+        STA enemyDying,X
         STA enemyHit,X
         DEX
         BPL SH_InitLoop
@@ -937,16 +937,16 @@ SH_InitLoop
         JSR PlaySong
         INC stageEndReached
 SH_InitDone 
-		LDA numAliveGyros
+        LDA numAliveGyros
         BEQ SH_FindFreeEnemy
         CMP #$02
         BEQ SH_Wait
         DEC gyroSpawnTimer
         BNE SH_Wait
 SH_FindFreeEnemy 
-		LDX #$00
+        LDX #$00
 SH_FindFreeLoop 
-		LDA enemyActive,X
+        LDA enemyActive,X
         BEQ SH_FreeFound
         INX
         CPX #$06
@@ -954,14 +954,14 @@ SH_FindFreeLoop
         RTS
 
 SH_FreeFound 
-		TXA
+        TXA
         LSR
         TAY
         JSR SpawnGyrocopter
 SH_Wait RTS
 
 SH_NoMoreGyros 
-		LDA numAliveGyros
+        LDA numAliveGyros
         BNE SH_Wait
         JMP CompleteStage
 
@@ -1005,12 +1005,12 @@ S1EF_WaitBegin
         JMP Main_NoStageEndFight
 
 Stage1EndFight 
-		LDA stageEndReached
+        LDA stageEndReached
         BNE S1EF_Started
         JSR CheckEnemiesOnScreen
         BPL S1EF_WaitBegin
 S1EF_Started 
-		JSR TruckAnimation
+        JSR TruckAnimation
         JSR StageEndFightCalls
         LDA stageEndReached
         BEQ S1EF_NotFinished
@@ -1025,11 +1025,11 @@ S1EF_Started
         JMP CompleteStage
 
 S1EF_NotFinished 
-		JSR SortSprites
+        JSR SortSprites
         JMP MainLoop
 
 CheckStartEndFight 
-		LDA playerRightLimit
+        LDA playerRightLimit
         CMP #$E0
         BNE CSEF_Fail
         JSR CheckSongEnd

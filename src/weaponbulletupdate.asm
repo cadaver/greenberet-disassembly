@@ -1,5 +1,5 @@
 FlashBullets 
-		LDA gameTimer
+        LDA gameTimer
         AND #$04
         LSR
         LSR
@@ -12,10 +12,10 @@ FB_Loop STA bulletColor,X
         RTS
 
 colorFlashTbl 
-		.BYTE $07,$02
+        .BYTE $07,$02
 
 UpdateBullets 
-		JSR CheckRemoveBullets
+        JSR CheckRemoveBullets
         JSR CheckGrenadeHitEnemy
         JSR CheckDestroyMines
         JSR CheckFireExtraWeapon
@@ -28,15 +28,15 @@ UpdateBullets
         LDA #$00
         STA activeExtraWeapon
 UB_ShotsNotExhausted 
-		JSR FormatWeaponShots
+        JSR FormatWeaponShots
 UB_NoFireExtraWeapon 
-		JSR ScrollBullets
+        JSR ScrollBullets
         LDX #$05
 UB_XMoveLoop 
-		LDA bulletActive,X
+        LDA bulletActive,X
         BNE UB_DoXMove
 UB_XMoveNext
-		DEX
+        DEX
         BPL UB_XMoveLoop
         LDA collectedExtraWeapon
         CMP #$04
@@ -53,11 +53,11 @@ UB_XMoveNext
         LDA #$06
         STA bulletXSpeed+2
 UB_NoFlameThrower 
-		JSR FlashBullets
+        JSR FlashBullets
         RTS 
 
 UB_DoXMove 
-		LDA bulletXDir,X
+        LDA bulletXDir,X
         CMP #$08
         BNE UB_XMoveLeft
         LDA bulletX,X
@@ -68,10 +68,10 @@ UB_DoXMove
         LDA #$01
         STA bulletXMSB,X
 UB_NoMSBSet 
-		JMP UB_XMoveNext
+        JMP UB_XMoveNext
 
 UB_XMoveLeft 
-		LDA bulletX,X
+        LDA bulletX,X
         SEC
         SBC bulletXSpeed,X
         STA bulletX,X
@@ -79,26 +79,26 @@ UB_XMoveLeft
         LDA #$00
         STA bulletXMSB,X
 UB_NoMSBClear 
-		JMP UB_XMoveNext
+        JMP UB_XMoveNext
 
 CheckGrenadeHitEnemy 
-		LDY #$02
+        LDY #$02
 CGHE_Loop 
-		LDA bulletActive,Y
+        LDA bulletActive,Y
         BEQ CGHE_Next
         LDA collectedExtraWeapon
         CMP #$03
         BNE CGHE_IsBazooka
 CGHE_Next 
-		DEY
+        DEY
         BPL CGHE_Loop
         RTS 
 
 CGHE_IsBazooka 
-		LDX #$05
+        LDX #$05
         STY temp2
 CGHE_EnemyLoop 
-		LDA enemyActive,X
+        LDA enemyActive,X
         BNE CGHE_EnemyActive
         LDA stage
         CMP #$01
@@ -108,7 +108,7 @@ CGHE_EnemyLoop
         LDA dogActive-1,X ;Use standard enemy indexing, dog update code offsets by one
         BEQ CGHE_NextEnemy
 CGHE_EnemyActive 
-		LDA enemyType,X
+        LDA enemyType,X
         CMP #$09
         BNE CHGE_EnemyOK
         LDA numAliveGyros
@@ -116,20 +116,20 @@ CGHE_EnemyActive
         CPX paraEnemyIndices
         BEQ CHGE_EnemyOK
 CGHE_NextEnemy 
-		LDY temp2
+        LDY temp2
         DEX
         BPL CGHE_EnemyLoop
         JMP CGHE_Next
 
 CHGE_CheckGyroHit
-		CPX #$01
+        CPX #$01
         BEQ CHGE_EnemyOK
         CPX #$04
         BEQ CHGE_EnemyOK
         JMP CGHE_NextEnemy
 
 CHGE_EnemyOK 
-		LDA bulletY,Y
+        LDA bulletY,Y
         SEC
         SBC #$13
         STA playerHitCheckY
@@ -171,10 +171,10 @@ CHGE_EnemyOK
         JMP CGHE_SkipEnemyHit
 
 CGHE_IsHumanEnemy 
-		LDA #$80
+        LDA #$80
         STA enemyHit,X
 CGHE_SkipEnemyHit 
-		STX temp
+        STX temp
         STY tempStoreY2
         LDA enemyType,X
         CMP #$09
@@ -184,7 +184,7 @@ CGHE_SkipEnemyHit
         JSR CleanupParachute
         JSR PlayEnemyKillSound
 CGHE_NoParachuteHit 
-		LDX temp
+        LDX temp
         LDY tempStoreY2
         LDA numAliveGyros
         BEQ CGHE_Done
@@ -195,10 +195,10 @@ CGHE_NoParachuteHit
         JSR DestroyGyrocopter
         LDX temp
 CGHE_Done 
-		JMP CGHE_NextEnemy
+        JMP CGHE_NextEnemy
 
 CheckFireExtraWeapon 
-		LDA collectedExtraWeapon
+        LDA collectedExtraWeapon
         BEQ CFEW_NoFire
         LDX playerClimbingCopy
         BNE CFEW_IsClimbing
@@ -212,14 +212,14 @@ CheckFireExtraWeapon
         STA extraWeaponFireFlag
         CMP #$00
 CFEW_NoFire 
-		RTS
+        RTS
 
 CFEW_IsClimbing 
-		LDA #$00
+        LDA #$00
         RTS
 
 UpdateExtraWeapon 
-		LDY collectedExtraWeapon
+        LDY collectedExtraWeapon
         BEQ UEW_NoWeapon
         DEY
         TYA
@@ -235,16 +235,16 @@ UEW_Jump JMP UEW_Jump
 
 extraWeaponJumpTblHi   =*+$01
 extraWeaponJumpTblLo 
-		.WORD UpdateUnusedWeapon, UpdateBazooka, UpdateGrenade, UpdateFlameThrower
+        .WORD UpdateUnusedWeapon, UpdateBazooka, UpdateGrenade, UpdateFlameThrower
 
 UEW_NoWeapon 
-		RTS
+        RTS
 
 UpdateUnusedWeapon 
-		RTS
+        RTS
 
 UpdateGrenade 
-		LDX #$02
+        LDX #$02
 UG_Loop LDA bulletActive,X
         BNE UG_GrenadeActive
         DEX
@@ -252,7 +252,7 @@ UG_Loop LDA bulletActive,X
         RTS
 
 UG_GrenadeActive 
-		LDA bulletYDir,X
+        LDA bulletYDir,X
         BNE UG_YMove
         JSR UG_CheckLanding
         DEX
@@ -260,7 +260,7 @@ UG_GrenadeActive
         RTS
 
 UG_YMove
-		LDY bulletJumpArcIndex,X
+        LDY bulletJumpArcIndex,X
         LDA bulletYBase,X
         CLC
         ADC jumpArcTbl,Y
@@ -274,27 +274,27 @@ UG_YMove
         CPY #$13
         BCC UG_StoreNewSpeed
 UG_YMoveAtBottom 
-		LDA #$00
+        LDA #$00
         STA bulletYDir,X
         DEX
         BPL UG_Loop
         RTS 
 
 UG_YMoveDecSpeed 
-		DEY
+        DEY
         BPL UG_StoreNewSpeed
         LDA #$80
         STA bulletYDir,X
         INY
 UG_StoreNewSpeed 
-		TYA
+        TYA
         STA bulletJumpArcIndex,X
         DEX
         BPL UG_Loop
         RTS
 
 UG_CheckLanding 
-		JSR CheckCharAtBullet
+        JSR CheckCharAtBullet
         LDA bulletLastChar,X
         CMP #$C8
         BCC UG_NoCharLanding
@@ -305,12 +305,12 @@ UG_CheckLanding
         AND #$0C
         BEQ UG_NoCharLanding
 UG_Explode 
-		JSR ExplodeGrenade
+        JSR ExplodeGrenade
         JSR CheckBulletExploded
         RTS
 
 UG_NoCharLanding 
-		LDA bulletY,X
+        LDA bulletY,X
         CLC 
         ADC #$04
         CMP #$E2
@@ -319,7 +319,7 @@ UG_NoCharLanding
         RTS
 
 CheckCharAtBullet 
-		LDA bulletY,X
+        LDA bulletY,X
         SEC
         SBC #$26
         LDY #$00
@@ -349,12 +349,12 @@ CheckCharAtBullet
         RTS
 
 ExplodeGrenade 
-		LDA bulletExploded,X
+        LDA bulletExploded,X
         BEQ EG_NotExplodedYet
         RTS
 
 EG_NotExplodedYet 
-		LDA #$00
+        LDA #$00
         STA bulletXSpeed,X
         LDA #$01
         STA bulletExploded,X
@@ -370,15 +370,15 @@ EG_NotExplodedYet
         BCS EG_IsEnemyGrenade
         JSR CheckGrenadeAreaKill
 EG_IsEnemyGrenade 
-		RTS
+        RTS
 
 CheckBulletExploded 
-		LDA bulletExploded,X
+        LDA bulletExploded,X
         BNE UpdateExplosion
         RTS 
 
 UpdateExplosion 
-		DEC bulletTimer,X
+        DEC bulletTimer,X
         BNE UE_NoNewFrame
         LDA #$05
         STA bulletTimer,X
@@ -387,20 +387,20 @@ UpdateExplosion
         BCS UE_Remove
         INC bulletFrame,X
 UE_NoNewFrame 
-		RTS
+        RTS
 
 UE_Remove 
-		LDA #$00
+        LDA #$00
         STA bulletActive,X
         STA bulletY,X
         STA bulletExploded,X
 UpdateBazooka 
-		RTS
+        RTS
 
 CheckGrenadeAreaKill 
-		LDY #$05
+        LDY #$05
 CGAK_Loop 
-		LDA enemyActive,Y
+        LDA enemyActive,Y
         BEQ CGAK_Next
         JSR CGAK_EnemyBoundCheck
         BCC CGAK_Next
@@ -414,15 +414,15 @@ CGAK_Loop
         CPY paraEnemyIndices
         BNE CGAK_Next
 CGAK_NotParachute
-		LDA #$80
+        LDA #$80
         STA enemyHit,Y
 CGAK_Next 
-		DEY
+        DEY
         BPL CGAK_Loop
         RTS
 
 CGAK_EnemyBoundCheck 
-		LDA enemyCoarseX,Y
+        LDA enemyCoarseX,Y
         CLC 
         ADC #$28
         CMP bulletCoarseX,X
@@ -432,7 +432,7 @@ CGAK_EnemyBoundCheck
         BCS CGAK_NoXUnderFlow
         LDA #$08
 CGAK_NoXUnderFlow
-		CMP bulletCoarseX,X
+        CMP bulletCoarseX,X
         BCS CGAK_BoundsFail
         LDA enemyUpperY,Y
         CLC 
@@ -440,7 +440,7 @@ CGAK_NoXUnderFlow
         BCC CGAK_NoYOverFlow
         LDA #$FF
 CGAK_NoYOverFlow 
-		CMP bulletY,X
+        CMP bulletY,X
         BCC CGAK_BoundsFail
         SEC 
         SBC #$46
@@ -450,25 +450,25 @@ CGAK_NoYOverFlow
         RTS
 
 CGAK_BoundsFail 
-		CLC
+        CLC
         RTS
 
 UpdateFlameThrower 
-		LDA flameDetachedTimer
+        LDA flameDetachedTimer
         BEQ UFT_NotDetached
         RTS
 
 UFT_NotDetached 
-		LDX #$02
+        LDX #$02
 UFT_FlameLoop 
-		LDA bulletActive,X
+        LDA bulletActive,X
         BNE UFT_FlamePieceActive
         DEX
         BPL UFT_FlameLoop
         RTS
 
 UFT_FlamePieceActive 
-		LDA playerControls
+        LDA playerControls
         AND #$02
         BEQ UFT_PlayerStanding
         LDA spriteY
@@ -477,11 +477,11 @@ UFT_FlamePieceActive
         JMP UFT_StoreY
 
 UFT_PlayerStanding 
-		LDA spriteY
+        LDA spriteY
         CLC 
         ADC #$0A
 UFT_StoreY
-		STA bulletY,X
+        STA bulletY,X
         DEX 
         BPL UFT_FlameLoop
         LDA bulletCoarseX
@@ -489,18 +489,18 @@ UFT_StoreY
         SBC bulletCoarseX+2
         BMI UFT_NegXDistance
 UFT_XDistanceCheck 
-		CMP #$14
+        CMP #$14
         BCS UFT_FlameWasDetached
         RTS
 
 UFT_NegXDistance 
-		EOR #$FF
+        EOR #$FF
         CLC 
         ADC #$01
         JMP UFT_XDistanceCheck
 
 UFT_FlameWasDetached 
-		LDA #$08
+        LDA #$08
         STA bulletXSpeed+2
         LDA #$07
         STA bulletXSpeed+1
@@ -510,7 +510,7 @@ UFT_FlameWasDetached
         RTS
 
 CheckRemoveBullets 
-		LDX #$05
+        LDX #$05
 CRB_Loop LDA bulletActive,X
         BEQ CRB_Next
         LDA bulletCoarseX,X
@@ -523,7 +523,7 @@ CRB_Next DEX
         RTS
 
 CRB_Remove 
-		LDA #$00
+        LDA #$00
         STA bulletActive,X
         STA bulletY,X
         STA bulletYDir,X
@@ -533,7 +533,7 @@ CRB_Remove
         JMP CRB_Next
 
 CRB_RemoveFlame 
-		CPX #$03
+        CPX #$03
         BCS CRB_Next
         LDA #$08
         STA bulletXSpeed+2
@@ -542,9 +542,9 @@ CRB_RemoveFlame
         JMP CRB_Next
 
 FindFreeBullet 
-		LDX #$02
+        LDX #$02
 FFB_Loop 
-		LDA bulletActive,X
+        LDA bulletActive,X
         BEQ FFB_Found
         DEX
         BPL FFB_Loop
@@ -552,11 +552,11 @@ FFB_Loop
         RTS 
 
 FFB_Found 
-		CLC
+        CLC
         RTS
 
 FireExtraWeapon 
-		LDY collectedExtraWeapon
+        LDY collectedExtraWeapon
         DEY 
         CPY #$03
         BNE FEW_OKTOFire
@@ -565,14 +565,14 @@ FireExtraWeapon
         RTS
 
 FEW_OKTOFire 
-		LDA playerFacingDir
+        LDA playerFacingDir
         PHA 
         AND #$04
         BEQ FEW_FireRight
         LDA #$E0
         CLC
 FEW_FireRight 
-		ADC #$10
+        ADC #$10
         STA bulletOffset
         PLA 
         STA bulletXDir,X
@@ -597,10 +597,10 @@ FEW_FireRight
         JMP FEW_InitCommon
 
 FEW_UseLeftFrame 
-		LDA extraWpnLeftFrameTbl,Y
+        LDA extraWpnLeftFrameTbl,Y
         STA bulletFrame,X
 FEW_InitCommon 
-		LDA extraWpnSpeedTbl,Y
+        LDA extraWpnSpeedTbl,Y
         STA bulletXSpeed,X
         LDA #$01
         STA bulletActive,X
@@ -611,7 +611,7 @@ FEW_InitCommon
         RTS
 
 FEW_InitGrenade 
-		LDY #$12
+        LDY #$12
         TYA 
         STA bulletJumpArcIndex,X
         LDA bulletY,X
@@ -623,9 +623,9 @@ FEW_InitGrenade
         RTS 
 
 FEW_InitFlame 
-		DEX
+        DEX
 FEW_FlamePieceLoop
-		LDA playerFacingDir
+        LDA playerFacingDir
         STA bulletXDir,X
         LDA extraWpnColorTbl,Y
         STA bulletColor,X
@@ -663,18 +663,18 @@ FEW_InitFlameCommon
         JMP PlayFlameSound
 
 RunEnemyBulletCode 
-		LDX #$05
+        LDX #$05
 REBC_Loop 
-		LDA bulletActive,X
+        LDA bulletActive,X
         BNE REBC_BulletActive
 REBC_Next 
-		DEX
+        DEX
         CPX #$02
         BNE REBC_Loop
         RTS 
 
 REBC_BulletActive
-		LDA bulletType,X
+        LDA bulletType,X
         ASL
         TAY
         LDA bulletCodeJumpTblLo,Y
@@ -684,16 +684,16 @@ REBC_BulletActive
 bulletCodeJumpLo   =*+$01
 bulletCodeJumpHi   =*+$02
 CEBTP_Jump
-		JSR CEBTP_Jump
+        JSR CEBTP_Jump
         JMP REBC_Next
 
 bulletCodeJumpTblHi   =*+$01
 bulletCodeJumpTblLo
-		.WORD BulletCodeType4,BulletCodeType1,BulletCodeType2,BulletCodeType3,BulletCodeType4
+        .WORD BulletCodeType4,BulletCodeType1,BulletCodeType2,BulletCodeType3,BulletCodeType4
         .WORD BulletCodeType6,BulletCodeType6,BulletCodeType7
 
 BulletCodeType7
-		CPX fighterJetIndex
+        CPX fighterJetIndex
         BEQ BulletCodeType4
         LDA bulletY,X
         BEQ BulletCodeType4
@@ -717,7 +717,7 @@ BCT6_CheckY
         RTS
 
 BC_Remove 
-		LDA #$01
+        LDA #$01
         STA bulletY,X
         LDA #$00
         STA bulletActive,X
@@ -728,13 +728,13 @@ BulletCodeType1 RTS
 BulletCodeType3 RTS
 
 BulletCodeType2 
-		LDA bulletYDir,X
+        LDA bulletYDir,X
         BNE EnemyGrenadeArc
         JSR UG_CheckLanding
         RTS
 
 EnemyGrenadeArc 
-		LDY bulletJumpArcIndex,X
+        LDY bulletJumpArcIndex,X
         LDA bulletYBase,X
         CLC
         ADC jumpArcTbl,Y
@@ -749,24 +749,24 @@ EnemyGrenadeArc
         RTS
 
 EGA_DecSpeed 
-		DEY
+        DEY
         BPL EGA_StoreNewSpeed
         LDA #$80
         STA bulletYDir,X
         INY
 EGA_StoreNewSpeed 
-		TYA
+        TYA
         STA bulletJumpArcIndex,X
         RTS 
 
 extraWpnColorTbl 
-		.BYTE $07,$0F,$05,$07,$05,$07
+        .BYTE $07,$0F,$05,$07,$05,$07
 
 extraWpnSpeedTbl
-	 	.BYTE $03,$04,$03,$00,$00,$00,$01
+         .BYTE $03,$04,$03,$00,$00,$00,$01
 
 extraWpnRightFrTbl
-		.BYTE $8E,$66,$67,$69,$67,$67,$8E
+        .BYTE $8E,$66,$67,$69,$67,$67,$8E
 
 extraWpnLeftFrameTbl
-		.BYTE $8E,$65,$67,$98,$67,$67,$8E
+        .BYTE $8E,$65,$67,$98,$67,$67,$8E

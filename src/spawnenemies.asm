@@ -1,7 +1,7 @@
-SetEnemyToSpawn 
-		LDX #$04
-SETS_Loop 	
-		LDA spawnEnemyFlag,X
+SetEnemyToSpawn
+        LDX #$04
+SETS_Loop     
+        LDA spawnEnemyFlag,X
         BNE SETS_Next
         DEC spawnEnemyTimer,X
         BNE SETS_Next
@@ -18,39 +18,39 @@ SETS_Loop
         RTS 
 
 SETS_Next 
-		DEX
+        DEX
         BPL SETS_Loop
         RTS 
 
 FindNextSpawnType 
-		LDX #$05
+        LDX #$05
 FNST_Loop 
-		LDA spawnEnemyFlag,X
+        LDA spawnEnemyFlag,X
         BEQ FNST_NoSpawn
         STX nextSpawnTblIndex
         SEC 
         RTS 
 
 FNST_NoSpawn 
-		DEX
+        DEX
         BPL FNST_Loop
         CLC
         RTS
 
 spawnEnemyTimerTbl 
-		.BYTE $C8,$E6,$B4,$BE,$FA,$AA,$A0,$B4,$A0,$96,$A0,$8C,$A0,$A0,$A0,$AA
+        .BYTE $C8,$E6,$B4,$BE,$FA,$AA,$A0,$B4,$A0,$96,$A0,$8C,$A0,$A0,$A0,$AA
         .BYTE $8C,$96,$91,$87
 
 enemySpawnTypeTbl
-		.BYTE $00,$00,$03,$02,$03,$03,$00,$05,$02,$03,$05,$03,$02,$03,$05,$02
+        .BYTE $00,$00,$03,$02,$03,$03,$00,$05,$02,$03,$05,$03,$02,$03,$05,$02
         .BYTE $08,$02,$08,$03
 
 enemySpawnDirTbl 
-		.BYTE $04,$04,$08,$04,$04,$04,$08,$04,$04,$08,$04,$04,$08,$08,$04,$08
+        .BYTE $04,$04,$08,$04,$04,$04,$08,$04,$04,$08,$04,$04,$08,$08,$04,$08
         .BYTE $04,$08,$04,$08
 
 TrySpawnStaticEnemy 
-		JSR FindNextStaticEnemy
+        JSR FindNextStaticEnemy
         LDA numEnemies
         CMP #$06
         BCS TSSE_Fail
@@ -59,12 +59,12 @@ TrySpawnStaticEnemy
         JSR FindFreeEnemySlot
         JSR TSSE_CheckCounts
 TSSE_Fail 
-		RTS
+        RTS
 
         .BYTE $02
 
 TSSE_CheckCounts 
-		LDY staticEnemyPlatform
+        LDY staticEnemyPlatform
         LDA platformEnemyCount,Y
         CMP #$03
         BCS TSSE_Fail
@@ -83,15 +83,15 @@ TSSE_CheckCounts
         JMP TSSE_DoSpawn
 
 TSSE_DoSpawn 
-		JMP SpawnStaticEnemy
+        JMP SpawnStaticEnemy
 
 TSSE_CheckGround 
-		PLP
+        PLP
         BCS SpawnStaticEnemy
         JMP TSSE_AbortSpawn
 
 SpawnStaticEnemy 
-		LDA platformEnemyCount,Y
+        LDA platformEnemyCount,Y
         CLC
         ADC #$01
         STA platformEnemyCount,Y
@@ -148,14 +148,14 @@ SpawnStaticEnemy
         RTS 
 
 TSSE_AbortSpawn 
-		DEC staticSpawnFlag
+        DEC staticSpawnFlag
         RTS
 
 FindNextStaticEnemy 
-		LDY stage
+        LDY stage
         LDX staticEnemyStartTbl,Y
 FNSE_Loop 
-		LDA staticEnemySpawnFlag,X
+        LDA staticEnemySpawnFlag,X
         BNE FNSE_Next
         LDA stagePosMSB
         CMP staticEnemyPosMSBTbl,X
@@ -187,83 +187,83 @@ FNSE_Loop
         RTS
 
 FNSE_Next
-		INX
+        INX
         TXA
         CMP staticEnemyEndTbl,Y
         BCC FNSE_Loop
         RTS
 
 staticEnemyPosLSBTbl 
-		.BYTE $38,$84,$AC,$0C,$64,$D8,$E0,$00,$08,$28,$30,$50,$73,$A0,$CB,$D3
+        .BYTE $38,$84,$AC,$0C,$64,$D8,$E0,$00,$08,$28,$30,$50,$73,$A0,$CB,$D3
         .BYTE $D9,$03,$32,$58,$60,$F6,$F7,$27,$38,$40,$50,$68,$98,$A0,$A1,$B0
         .BYTE $CE,$E0,$EA,$0F,$2A,$8C,$A0,$D7,$E2,$EA,$F8,$92,$A0,$AA,$AB,$DA
         .BYTE $EA,$F2,$22,$32,$3C,$3D,$49,$51,$93,$AA,$CC,$F2
 
 staticEnemyPosMSBTbl 
-		.BYTE $00,$00,$00,$01,$01,$01,$01,$02,$02,$02,$02,$02,$02,$02,$02,$02
+        .BYTE $00,$00,$00,$01,$01,$01,$01,$02,$02,$02,$02,$02,$02,$02,$02,$02
         .BYTE $02,$03,$03,$03,$03,$03,$03,$04,$04,$04,$04,$04,$04,$04,$04,$04
         .BYTE $04,$04,$04,$05,$05,$05,$05,$05,$05,$05,$05,$06,$06,$06,$06,$06
         .BYTE $06,$06,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07
 
 staticEnemyTypeTbl 
-		.BYTE $01,$01,$04,$01,$01,$01,$06,$07,$06,$06,$07,$01,$06,$09,$06,$01
+        .BYTE $01,$01,$04,$01,$01,$01,$06,$07,$06,$06,$07,$01,$06,$09,$06,$01
         .BYTE $09,$06,$04,$07,$06,$04,$01,$04,$01,$07,$04,$07,$04,$01,$07,$04
         .BYTE $01,$04,$04,$06,$06,$09,$09,$06,$07,$06,$01,$06,$07,$01,$07,$07
         .BYTE $07,$01,$06,$07,$01,$06,$04,$04,$01,$06,$09,$09
 
 staticEnemyWpnType
-		.BYTE $04,$04,$00,$04,$04,$02,$00,$00,$00,$00,$00,$02,$00,$00,$00,$02
+        .BYTE $04,$04,$00,$04,$04,$02,$00,$00,$00,$00,$00,$02,$00,$00,$00,$02
         .BYTE $00,$00,$00,$00,$00,$00,$03,$00,$03,$00,$00,$00,$00,$03,$00,$00
         .BYTE $02,$00,$00,$00,$00,$00,$00,$00,$00,$00,$02,$00,$00,$03,$00,$00
         .BYTE $00,$03,$00,$00,$02,$00,$00,$00,$02,$00,$00,$00
 
 staticEnemyPlatformTbl
-		.BYTE $01,$02,$00,$01,$00,$01,$00,$00,$00,$02,$00,$02,$02,$00,$02,$02
+        .BYTE $01,$02,$00,$01,$00,$01,$00,$00,$00,$02,$00,$02,$02,$00,$02,$02
         .BYTE $00,$00,$00,$00,$01,$00,$01,$00,$01,$00,$00,$00,$00,$01,$00,$00
         .BYTE $01,$00,$00,$02,$02,$00,$00,$01,$01,$00,$01,$02,$00,$02,$00,$00
         .BYTE $00,$02,$02,$00,$02,$02,$00,$00,$01,$00,$00,$00
 
 staticPerTypeUpperOffsetY 
-		.BYTE $00,$15,$00,$00,$00,$00,$15,$15,$00,$33
+        .BYTE $00,$15,$00,$00,$00,$00,$15,$15,$00,$33
 
 staticPerTypeLowerOffsetY 
-		.BYTE $15,$15,$15,$15,$15,$15,$15,$15,$15,$33
+        .BYTE $15,$15,$15,$15,$15,$15,$15,$15,$15,$33
 
 staticPerTypeUpperOffsetX 
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00
+        .BYTE $00,$00,$00,$00,$00,$00,$00,$00
         .BYTE $00,$18
 
 staticPerTypeLowerOffsetX 
-		.BYTE $00,$18,$00,$00,$00,$00,$18,$18
+        .BYTE $00,$18,$00,$00,$00,$00,$18,$18
         .BYTE $00,$18
 
 staticEnemyStartTbl 
-		.BYTE $00,$05,$15,$2B
+        .BYTE $00,$05,$15,$2B
 
 staticEnemyEndTbl 
-		.BYTE $05,$15,$2B,$3C
+        .BYTE $05,$15,$2B,$3C
 
 staticEnemyType 
-		.BYTE $00
+        .BYTE $00
 staticEnemyTimer
-		.BYTE $00
+        .BYTE $00
 staticEnemyPlatform 
-		.BYTE $00
+        .BYTE $00
 staticInitFlags 
-		.BYTE $00
+        .BYTE $00
 staticUpperYOffset 
-		.BYTE $00
+        .BYTE $00
 staticLowerYOffset 
-		.BYTE $00
+        .BYTE $00
 staticUpperXOffset
-		.BYTE $00
+        .BYTE $00
 staticLowerXOffset 
-		.BYTE $00
+        .BYTE $00
 staticEnemyIndex 
-		.BYTE $00
+        .BYTE $00
 
 TrySpawnEnemy
-		JSR FindNextSpawnType
+        JSR FindNextSpawnType
         BCC TSE_Fail
         JSR CheckTooManyEnemies
         BCS TSE_Fail
@@ -271,26 +271,26 @@ TrySpawnEnemy
         BCS TSE_Fail
         JSR CheckSpawnNewEnemyPY
 TSE_Fail 
-		RTS
+        RTS
 
 CheckSpawnNewEnemyPY 
-		LDY playerPlatformHeight
+        LDY playerPlatformHeight
         LDA #$03
         STA spawnRetryCount
 CheckSpawnNewEnemyY 
-		LDA platformEnemyCount,Y
+        LDA platformEnemyCount,Y
         CMP #$03
         BCC CSNE_CountOK
 CSNE_FailSpawn 
-		JMP TSE_NextPlatform
+        JMP TSE_NextPlatform
 
 CSNE_CountOK 
-		LDA stageEndReached
+        LDA stageEndReached
         BNE CSNE_NoStageEnd
         JSR CheckCharAtSpawn
         BCC CSNE_FailSpawn
 CSNE_NoStageEnd 
-		LDA platformEnemyCount,Y
+        LDA platformEnemyCount,Y
         CLC
         ADC #$01
         STA platformEnemyCount,Y
@@ -302,21 +302,21 @@ CSNE_NoStageEnd
         JMP CSNE_SetEnemyPos
 
 CSNE_UsePlatformY 
-		LDA platformYTbl,Y
+        LDA platformYTbl,Y
 CSNE_SetEnemyPos 
-		STA enemyUpperY,X
+        STA enemyUpperY,X
         CLC
         ADC #$15
         STA enemyLowerY,X
         LDY nextSpawnTblIndex
         LDA enemySpawnDirTbl,Y
 CSNE_SetEnemyXPos 
-		LDY #$00
+        LDY #$00
         CMP #$04
         BEQ CSNE_SpawnRight
         INY
 CSNE_SpawnRight 
-		LDA enemySpawnXMSBTbl,Y
+        LDA enemySpawnXMSBTbl,Y
         STA enemyUpperXMSB,X
         STA enemyLowerXMSB,X
         LDA enemySpawnXTbl,Y
@@ -330,7 +330,7 @@ CSNE_SpawnRight
         SEC
         SBC #$08
 CSNE_NoSpawnXAdjust 
-		CLC
+        CLC
         ADC scrollX
         STA enemyUpperX,X
         STA enemyLowerX,X
@@ -363,22 +363,22 @@ CSNE_NoSpawnXAdjust
         RTS
 
 TSE_NextPlatform 
-		TYA
+        TYA
         SEC
         SBC #$01
         BCS TSE_NoPlatformWrap
         LDA #$02
 TSE_NoPlatformWrap 
-		TAY
+        TAY
         DEC spawnRetryCount
         BEQ TSE_RetriesExhausted
         JMP CheckSpawnNewEnemyY
 
 TSE_RetriesExhausted 
-		RTS
+        RTS
 
 CheckCharAtSpawn 
-		SEC
+        SEC
         CPY #$00
         BEQ CCAS_NoChar
         STY tempStore
@@ -391,7 +391,7 @@ CheckCharAtSpawn
         INY
         INY
 CCAS_Left 
-		LDA spawnScreenPosTblLo,Y
+        LDA spawnScreenPosTblLo,Y
         STA screenPtrLo
         LDA spawnScreenPosTblHi,Y
         STA screenPtrHi
@@ -411,47 +411,47 @@ CCAS_Left
         AND #$0C
         CMP #$0C
 CCAS_NoChar 
-		RTS
+        RTS
 
 enemySpawnXMSBTbl 
-		.BYTE $01,$00
+        .BYTE $01,$00
 
 enemySpawnXTbl
-		.BYTE $44,$12
+        .BYTE $44,$12
 
 spawnScreenPosTblLo 
-		.BYTE $F6,$06,$D0,$E0
+        .BYTE $F6,$06,$D0,$E0
 
 spawnScreenPosTblHi
-		.BYTE $42,$42,$42,$41
+        .BYTE $42,$42,$42,$41
 
 perTypeUpperColor
-		.BYTE $09,$01,$06,$06,$0D,$0D,$09,$09,$0B,$0D
+        .BYTE $09,$01,$06,$06,$0D,$0D,$09,$09,$0B,$0D
 
 perTypeLowerColor
-		.BYTE $09,$01,$06,$06,$0D,$0D,$09,$09,$06,$0D
+        .BYTE $09,$01,$06,$06,$0D,$0D,$09,$09,$06,$0D
 
 perTypeInitFlags
-		.BYTE $80,$00,$80,$A0,$00,$C0,$00,$00,$40,$C0
+        .BYTE $80,$00,$80,$A0,$00,$C0,$00,$00,$40,$C0
 
 perTypeTimerInit
-		.BYTE $00,$3C,$00,$00,$00,$00,$1E,$00,$00,$00
+        .BYTE $00,$3C,$00,$00,$00,$00,$1E,$00,$00,$00
 
 perTypeUpperInitFrame
-		.BYTE $00,$38,$01,$00,$14,$00,$B7,$5F,$04,$B5
+        .BYTE $00,$38,$01,$00,$14,$00,$B7,$5F,$04,$B5
 
 perTypeLowerInitFrame
-		.BYTE $00,$39,$01,$00,$6E,$00,$B6,$60,$04,$B6
+        .BYTE $00,$39,$01,$00,$6E,$00,$B6,$60,$04,$B6
 
 CheckTooManyEnemies
-		LDA numEnemies
+        LDA numEnemies
         CMP #$05
         RTS
 
 FindFreeEnemySlot
-		LDX #$05
+        LDX #$05
 FFES_Loop
-		LDA enemyUpperY,X
+        LDA enemyUpperY,X
         BEQ FFES_Found
         DEX
         BPL FFES_Loop
@@ -459,5 +459,5 @@ FFES_Loop
         RTS
 
 FFES_Found
-		CLC
+        CLC
         RTS

@@ -1,5 +1,5 @@
-CheckScroll 
-		LDY stage
+CheckScroll
+        LDY stage
         LDA stagePosMSB
         CMP stageEndMSBTbl,Y
         BNE CS_NoStageEnd
@@ -13,7 +13,7 @@ CS_NoStageEnd LDA playerRunSpeed
         BCC CS_ScrollOnePixel
         JSR CS_ScrollOnePixel
 CS_ScrollOnePixel 
-		LDY scrollX
+        LDY scrollX
         INC scrollSpeed
         DEY
         BPL CS_NoScrollWrap
@@ -23,27 +23,27 @@ CS_ScrollOnePixel
         BCC CS_NoIdleUnderflow
         STA idleTimer
 CS_NoIdleUnderflow 
-		INC screenShiftFlag
+        INC screenShiftFlag
         LDY #$07
 CS_NoScrollWrap 
-		STY scrollX
+        STY scrollX
         RTS
 
 stageEndLSBTbl 
-		.BYTE $9F,$A8,$60,$18
+        .BYTE $9F,$A8,$60,$18
 
 stageEndMSBTbl
-		.BYTE $01,$03,$06,$09
+        .BYTE $01,$03,$06,$09
 
 stageNumEndEnemyTbl 
-		.BYTE $11,$11,$03,$11
+        .BYTE $11,$11,$03,$11
 
 CS_AtStageEnd LDA stageEndFightActive
         BEQ CS_WarningSiren
         RTS
 
 CS_WarningSiren 
-		LDA #$06
+        LDA #$06
         STA platformEnemyCount
         LDA #$E0
         CMP playerRightLimit
@@ -59,17 +59,17 @@ CS_WarningSiren
         LDA #$00
         STA stageEndReached
 CS_WarningSirenDone
-		RTS
+        RTS
 
 ScrollScreen
-		LDA screenShiftFlag
+        LDA screenShiftFlag
         BNE SS_DoScroll
         RTS
 
 SS_DoScroll
-		LDY #$00
+        LDY #$00
 SS_UpperLoop 
-		LDA screen+$141,Y
+        LDA screen+$141,Y
         STA screen+$140,Y
         LDA screen+$169,Y
         STA screen+$168,Y
@@ -106,7 +106,7 @@ SS_UpperLoop
         BNE SS_UpperLoop
         LDY #$00
 SS_LowerLoop 
-		LDA screen+$2D1,Y
+        LDA screen+$2D1,Y
         STA screen+$2D0,Y
         LDA colorRam+$2D1,Y
         STA colorRam+$2D0,Y
@@ -138,9 +138,9 @@ SS_LowerLoop
         RTS
 
 InitStatusPanel 
-		LDY #$00
+        LDY #$00
 ISP_Loop 
-		LDA statusPanelText,Y
+        LDA statusPanelText,Y
         CMP #$FF
         BEQ ISP_Finish
         AND #$3F
@@ -151,9 +151,9 @@ ISP_Loop
         STA statusScreen+$028,Y
         BCC ISP_UseWhiteColor
 ISP_UseCustomColor 
-		.BYTE $2C
+        .BYTE $2C
 ISP_UseWhiteColor
-		LDA #$01
+        LDA #$01
         STA colorRam+$028,Y
         LDA #$01
         STA colorRam,Y
@@ -161,10 +161,10 @@ ISP_UseWhiteColor
         JMP ISP_Loop
 
 ISP_Finish 
-		LDA #$09
+        LDA #$09
         LDY #$09
 ISP_FinishLoop 
-		STA colorRam+$029,Y
+        STA colorRam+$029,Y
         DEY 
         BPL ISP_FinishLoop
         LDA stage
@@ -179,11 +179,11 @@ statusPanelText
         .BYTE $54,$41,$47,$45,$20,$31,$20,$FF
 
 UpdateMusicWaitFrame
-		JSR UpdateMusicChannel3
+        JSR UpdateMusicChannel3
         JSR UpdateMusicChannel2
         JSR UpdateMusicChannel1
 WaitFrame 
-		LDA frameSyncFlag
+        LDA frameSyncFlag
         BEQ WaitFrame
         DEC frameSyncFlag
         RTS

@@ -1,5 +1,5 @@
 RunEnemyCustomCode
-		LDY enemyType,X
+        LDY enemyType,X
         TYA
         ASL
         TAY
@@ -13,20 +13,20 @@ RESC_Jump JMP $FFFF
 
 enemyJumpTblHi   =*+$01
 enemyJumpTblLo
-		.WORD EnemyCodeType0,EnemyCodeType1,EnemyCodeType2,EnemyCodeType3,EnemyCodeType4
+        .WORD EnemyCodeType0,EnemyCodeType1,EnemyCodeType2,EnemyCodeType3,EnemyCodeType4
         .WORD EnemyCodeType5,EnemyCodeType6,EnemyCodeType7,EnemyCodeType8,EnemyCodeType9
 
 EnemyCodeType0
-		RTS
+        RTS
 
 EnemyCodeType1
-		RTS
+        RTS
 
 EnemyCodeType2
-		JMP EnemyCodeType6
+        JMP EnemyCodeType6
 
 EnemyCodeType3
-		RTS
+        RTS
 
 EnemyCodeType9 JSR UpdateParachute
         LDA parachuteActiveFlag
@@ -35,14 +35,14 @@ EnemyCodeType9 JSR UpdateParachute
         RTS
 
 EnemyCodeType8 
-		JMP EnemyCodeType6
+        JMP EnemyCodeType6
 
 EnemyCodeType6 LDA enemyDying,X
         BEQ ECT6_NotDying
         RTS
 
 ECT6_NotDying
-		STX temp
+        STX temp
         LDA enemyFireFlag,X
         BNE DoEnemyFire
         LDA enemyType,X
@@ -60,14 +60,14 @@ ECT6_NotDying
         AND #$0C
         BEQ ECT6_NoFire
 ECT6_SkipChecks 
-		JSR TimerCheck
+        JSR TimerCheck
         BCC ECT6_NoFire
         LDA #$01
         STA enemyFireFlag,X
         JMP DoEnemyFire
 
 ECT6_NoFire 
-		RTS
+        RTS
 
 TimerCheck LDA gameTimer,X
         CMP #$50
@@ -80,10 +80,10 @@ difficultyMod2   =*+$01
         BEQ TC_AtMax
         CLC 
 TC_AtMax
-		RTS
+        RTS
 
 DoEnemyFire 
-		CMP #$01
+        CMP #$01
         BNE DEF_CheckDelayFinish
         LDY enemyType,X
         CPY #$09
@@ -111,32 +111,32 @@ DoEnemyFire
         LDA enemyFireLowerFrTbl,Y
         STA enemyLowerFrame,X
 DEF_NoTurn 
-		INC enemyFireFlag,X
+        INC enemyFireFlag,X
 DEF_Wait 
-		LDX temp
+        LDX temp
         LDA enemyTimer,X
         BEQ DEF_CheckResetFire
         RTS
 
 DEF_CheckResetFire 
-		LDA enemyType,X
+        LDA enemyType,X
         CMP #$09
         BNE DEF_ResetFireFlag
         RTS
 
 DEF_ResetFireFlag 
-		LDA #$00
+        LDA #$00
         STA enemyFireFlag,X
         RTS
 
 DEF_CheckDelayFinish 
-		CMP #$05
+        CMP #$05
         BCS DEF_DoFire
         INC enemyFireFlag,X
         JMP DEF_Wait
 
 DEF_DoFire 
-		LDX #$05
+        LDX #$05
         JSR FFB_Loop
         BCS DEF_Wait
         CPX #$03
@@ -156,11 +156,11 @@ DEF_DoFire
         JMP DEF_NotBazookaMan
 
 DEF_NotRifleman 
-		CMP #$06
+        CMP #$06
         BNE DEF_NotBazookaMan
         JSR PlayBazookaSound
 DEF_NotBazookaMan 
-		LDX temp
+        LDX temp
         LDA #$00
         STA enemyFireFlag,X
         LDA enemyType,X
@@ -181,20 +181,20 @@ DEF_NotBazookaMan
         LDA throwAnimTbl,Y
         STA enemyUpperFrame,X
 DEF_NotGrenadier 
-		RTS
+        RTS
 
 DEF_SetFireDelay 
-		LDA #$48
+        LDA #$48
         STA gameTimer,X
         RTS 
 
 EnemyCodeType4
-		LDA enemyDying,X
+        LDA enemyDying,X
         BEQ ECT4_NotDying
         RTS
 
 ECT4_NotDying 
-		STX temp
+        STX temp
         LDA enemyAuxTimer,X
         BNE ECT4_PrepareFire
         LDA playerCoarseX
@@ -214,10 +214,10 @@ ECT4_NotDying
         JMP ECT4_PrepareFire
 
 ECT4_NoFire 
-		RTS
+        RTS
 
 ECT4_PrepareFire 
-		LDA playerCoarseX
+        LDA playerCoarseX
         CMP enemyCoarseX,X
         LDA #$00
         ROL
@@ -229,7 +229,7 @@ ECT4_PrepareFire
         LDA mortarUpperFrame2Tbl,Y
         STA enemyUpperFrame,X
 ECT4_UpperFrameDone 
-		LDA mortarLowerFrameTbl,Y
+        LDA mortarLowerFrameTbl,Y
         STA enemyLowerFrame,X
         LDA enemyDirTbl,Y
         STA enemyHorizMove,X
@@ -238,15 +238,15 @@ ECT4_UpperFrameDone
         RTS
 
 ECT4_WaitFireDelay
-		CMP #$10
+        CMP #$10
         BCS ECT4_FiringNow
         INC enemyAuxTimer,X
 ECT4_FireFail 
-		LDX temp
+        LDX temp
         RTS
 
 ECT4_FiringNow 
-		STX temp
+        STX temp
         LDX #$05
         JSR FFB_Loop
         BCS ECT4_FireFail
@@ -254,7 +254,7 @@ ECT4_FiringNow
         BCC ECT4_FireFail
         LDY #$02
 InitEnemyBullet 
-		STX bulletIndex
+        STX bulletIndex
         LDX temp
         LDA enemyHorizMove,X
         PHA 
@@ -262,12 +262,12 @@ InitEnemyBullet
         BNE IEB_NoOppositeDir
         EOR #$0C
 IEB_NoOppositeDir 
-		AND #$04
+        AND #$04
         BEQ IEB_FiringRight
         LDA #$F0
         CLC
 IEB_FiringRight 
-		ADC #$0C
+        ADC #$0C
         STA bulletOffset
         PLA
         LDX bulletIndex
@@ -299,10 +299,10 @@ IEB_FiringRight
         JMP InitBulletSpeed
 
 IEB_InitFrameLeft 
-		LDA extraWpnLeftFrameTbl,Y
+        LDA extraWpnLeftFrameTbl,Y
         STA bulletFrame,X
 InitBulletSpeed 
-		LDA bulletXSpeedTbl,Y
+        LDA bulletXSpeedTbl,Y
         STA bulletXSpeed,X
         LDA #$01
         STA bulletActive,X
@@ -313,7 +313,7 @@ InitBulletSpeed
         RTS 
 
 InitGrenadeArc
-		LDY #$19
+        LDY #$19
         TYA
         STA bulletJumpArcIndex,X
         LDA bulletY,X
@@ -339,37 +339,37 @@ InitGrenadeArc
         RTS
 
 bulletXSpeedTbl 
-		.BYTE $04,$04,$01,$06,$02,$02,$01
+        .BYTE $04,$04,$01,$06,$02,$02,$01
 
 mortarUpperFrame1Tbl 
-		.BYTE $14,$1D
+        .BYTE $14,$1D
 
 mortarLowerFrameTbl 
-		.BYTE $6E,$9B
+        .BYTE $6E,$9B
 
 mortarUpperFrame2Tbl 
-		.BYTE $2A,$79
+        .BYTE $2A,$79
 
 enemyDirTbl 
-		.BYTE $04,$08
+        .BYTE $04,$08
 
 enemyBulletTypeTbl
-		.BYTE $00,$00,$00,$00,$00,$00,$01,$00,$05,$06
+        .BYTE $00,$00,$00,$00,$00,$00,$01,$00,$05,$06
 
 enemyFireFrameOfsTbl 
-		.BYTE $00,$00,$02,$00,$00,$00,$00,$00,$04,$06
+        .BYTE $00,$00,$02,$00,$00,$00,$00,$00,$04,$06
 
 enemyFireUpperFrTbl
-		.BYTE $B8,$B9,$94,$95,$41,$3F
+        .BYTE $B8,$B9,$94,$95,$41,$3F
 
 enemyFireLowerFrTbl
-		.BYTE $BA,$BB,$96,$97,$31,$35
+        .BYTE $BA,$BB,$96,$97,$31,$35
 
 throwAnimTbl 
-		.BYTE $3F,$41
+        .BYTE $3F,$41
 
 EnemyCodeType7 
-		LDA enemyDying,X
+        LDA enemyDying,X
         BNE ECT7_DeadOrIdle
         INC enemyCrawlTimer,X
         LDA enemyCrawlTimer,X
@@ -386,7 +386,7 @@ EnemyCodeType7
         LDA #$00
         STA enemyUpperXMSB,X
 ECT7_NoUpperMSB 
-		LDA enemyLowerX,X
+        LDA enemyLowerX,X
         SEC
         SBC #$01
         STA enemyLowerX,X
@@ -394,22 +394,22 @@ ECT7_NoUpperMSB
         LDA #$00
         STA enemyLowerXMSB,X
 ECT7_NoLowerMSB 
-		LDA #$5F
+        LDA #$5F
         STA enemyUpperFrame,X
         LDA #$5E
         STA enemyLowerFrame,X
 ECT7_Done 
-		RTS
+        RTS
 
 ECT7_DeadOrIdle 
-		LDA #$61
+        LDA #$61
         STA enemyUpperFrame,X
         LDA #$60
         STA enemyLowerFrame,X
         RTS 
 
 UpdateParachute
-		LDA parachuteActiveFlag
+        LDA parachuteActiveFlag
         BNE UP_InitDone
         LDA topPlatformCount
         CLC 
@@ -427,13 +427,13 @@ UpdateParachute
         LDA #$00
         LDY #$04
 UP_PreventSpawnLoop 
-		STA spawnEnemyFlag,Y
+        STA spawnEnemyFlag,Y
         DEY 
         BPL UP_PreventSpawnLoop
         JMP MakeEnemiesRunAway
 
 UP_InitDone 
-		LDA parachuteActiveFlag
+        LDA parachuteActiveFlag
         CMP #$02
         BEQ UP_ExtrasCreated
         LDA numEnemies
@@ -446,53 +446,53 @@ UP_InitDone
         RTS
 
 UP_FailCreateExtras
-		LDA #$66
+        LDA #$66
         STA enemyUpperX,X
         STA enemyLowerX,X
         RTS
 
 UP_ExtrasCreated 
-		LDX paraEnemyIndices
+        LDX paraEnemyIndices
         LDA parachuteXSpeed
         BMI UP_NegSpeed
         LDA enemyCoarseX,X
         LDY #$04
 UP_PosSpdTargetLoop
-		CMP paraTargetXTbl,Y
+        CMP paraTargetXTbl,Y
         BCS UP_PosSpdTargetOK
         DEY
         BNE UP_PosSpdTargetLoop
 UP_PosSpdTargetOK 
-		LDA paraNewSpeedTbl,Y
+        LDA paraNewSpeedTbl,Y
         STA parachuteXSpeed
 UP_NegSpeed 
-		LDY #$03
+        LDY #$03
         LDA parachuteXSpeed
         BPL UP_PosSpd
         LDA enemyCoarseX,X
         CMP #$5A
 UP_NegSpdNoTarget 
-		BCC UP_LoopParts
+        BCC UP_LoopParts
         LDA #$01
         STA parachuteYGlideFlag
         LDA #$FF
         STA parachuteXSpeed
         BMI UP_LoopParts
 UP_PosSpd 
-		LDA #$00
+        LDA #$00
         STA parachuteYGlideFlag
 UP_LoopParts 
-		LDX paraEnemyIndices,Y
+        LDX paraEnemyIndices,Y
         LDA parachuteYGlideFlag
         BNE UP_MoveY
         LDA gameTimer
         AND #$03
         BNE UP_SkipYMove
 UP_MoveY 
-		INC enemyUpperY,X
+        INC enemyUpperY,X
         INC enemyLowerY,X
 UP_SkipYMove 
-		LDA enemyUpperY,X
+        LDA enemyUpperY,X
         CMP #$CE
         BCS CleanupParachute
         CPY #$02
@@ -500,7 +500,7 @@ UP_SkipYMove
         LDA #$00
         STA enemyLowerY,X
 UP_AllowLowerSprite 
-		LDA enemyUpperX,X
+        LDA enemyUpperX,X
         SEC 
         SBC parachuteXSpeed
         STA enemyUpperX,X
@@ -512,11 +512,11 @@ UP_AllowLowerSprite
         JMP UP_UpperMSBDone
 
 UP_UpperMSBPosSpd 
-		LDA enemyUpperXMSB,X
+        LDA enemyUpperXMSB,X
         SBC #$00
         STA enemyUpperXMSB,X
 UP_UpperMSBDone 
-		LDA enemyLowerX,X
+        LDA enemyLowerX,X
         SEC 
         SBC parachuteXSpeed
         STA enemyLowerX,X
@@ -528,16 +528,16 @@ UP_UpperMSBDone
         JMP UP_LowerMSBDone
 
 UP_LowerMSBPosSpd 
-		LDA enemyLowerXMSB,X
+        LDA enemyLowerXMSB,X
         SBC #$00
         STA enemyLowerXMSB,X
 UP_LowerMSBDone 
-		DEY
+        DEY
         BPL UP_LoopParts
         RTS
 
 CleanupParachute 
-		LDA midPlatformCount
+        LDA midPlatformCount
         SEC 
         SBC #$02
         STA midPlatformCount
@@ -570,7 +570,7 @@ CP_Loop LDX paraEnemyIndices,Y
         RTS
 
 SpawnParachuteExtras 
-		STX paraEnemyIndices
+        STX paraEnemyIndices
         LDY #$00
         JSR InitParachuteSprites
         JSR FindFreeEnemySlot
@@ -590,7 +590,7 @@ SpawnParachuteExtras
         RTS 
 
 InitParachuteSprites 
-		LDA paraUpperYTbl,Y
+        LDA paraUpperYTbl,Y
         STA enemyUpperY,X
         LDA paraLowerYTbl,Y
         STA enemyLowerY,X
@@ -619,48 +619,48 @@ InitParachuteSprites
         RTS
 
 paraUpperYTbl 
-		.BYTE $67,$5F,$4A,$4A
+        .BYTE $67,$5F,$4A,$4A
 
 paraLowerYTbl 
-		.BYTE $7C,$4A,$4A,$5F
+        .BYTE $7C,$4A,$4A,$5F
 
 paraUpperXTbl 
-		.BYTE $63,$5B,$67,$7F
+        .BYTE $63,$5B,$67,$7F
 
 paraLowerXTbl
-		.BYTE $63,$4F,$67,$73
+        .BYTE $63,$4F,$67,$73
 
 paraUpperFrameTbl 
-		.BYTE $84,$BF,$BD,$BE
+        .BYTE $84,$BF,$BD,$BE
 
 paraLowerFrameTbl 
-		.BYTE $86,$BC,$BD,$C0
+        .BYTE $86,$BC,$BD,$C0
 
 paraUpperColorTbl 
-		.BYTE $0D,$09,$08,$09
+        .BYTE $0D,$09,$08,$09
 
 paraLowerColorTbl 
-		.BYTE $0D,$09,$08,$09
+        .BYTE $0D,$09,$08,$09
 
 paraTargetXTbl 
-		.BYTE $14,$3C,$50,$64,$80
+        .BYTE $14,$3C,$50,$64,$80
 
 paraNewSpeedTbl 
-		.BYTE $FE,$01,$02,$03,$05
+        .BYTE $FE,$01,$02,$03,$05
 
 paraEnemyIndices 
-		.BYTE $00
+        .BYTE $00
 paraEnemyIndex1 
-		.BYTE $00
+        .BYTE $00
 paraEnemyIndex2
-		 .BYTE $00
+         .BYTE $00
 paraEnemyIndex3 
-		.BYTE $00
+        .BYTE $00
 
 CheckParachuteEnemy 
-		LDX #$05
+        LDX #$05
 CPE_Loop 
-		LDA enemyType,X
+        LDA enemyType,X
         CMP #$09
         BEQ CPE_Found
         DEX
@@ -668,24 +668,24 @@ CPE_Loop
         RTS
 
 CPE_Found 
-		JMP RunEnemyCustomCode
+        JMP RunEnemyCustomCode
 
 MakeEnemiesRunAway 
-		LDX #$05
+        LDX #$05
 MERA_Loop 
-		LDA enemyFalling,X
+        LDA enemyFalling,X
         ORA enemyClimbing,X
         ORA enemyJumping,X
         BNE MERA_Skip
         LDA #$04
         STA enemyControls,X
 MERA_Skip 
-		DEX
+        DEX
         BPL MERA_Loop
         RTS
 
 EnemyCodeType5 
-		LDA enemyJumping,X
+        LDA enemyJumping,X
         ORA enemyFalling,X
         BNE ECT5_NoKarateJump
         LDA stage
@@ -696,7 +696,7 @@ EnemyCodeType5
         JMP ECT5_NoKarateJump
 
 ECT5_IsNotDogHandler 
-		LDA enemyCoarseX,X
+        LDA enemyCoarseX,X
         CMP playerCoarseX
         BCC ECT5_NoKarateJump
         SEC
@@ -715,22 +715,22 @@ ECT5_IsNotDogHandler
         DEY
         BNE ECT5_EnemyCheckBelow
 ECT5_EnemyCheckAt
-		LDA platformEnemyCount,Y
+        LDA platformEnemyCount,Y
         CMP #$03
         BCS ECT5_NoKarateJump
         JSR UEP_InitJump
         RTS
 
 ECT5_EnemyCheckBelow 
-		LDA platformEnemyCount-1,Y
+        LDA platformEnemyCount-1,Y
         CMP #$03
         BCS ECT5_NoKarateJump
         BCC ECT5_EnemyCheckAt
 ECT5_NoKarateJump 
-		RTS
+        RTS
 
 ECT5_KarateJumpOK 
-		CPY playerPlatformHeight
+        CPY playerPlatformHeight
         BNE ECT5_NoKarateJump
         LDA enemyControls,X
         ORA #$01
@@ -740,17 +740,17 @@ ECT5_KarateJumpOK
         RTS 
 
 CheckEnemiesRunAway
-		LDX #$05
+        LDX #$05
 CERA_Loop 
-		LDA enemyActive,X
+        LDA enemyActive,X
         BNE CERA_EnemyActive
 CERA_Next 
-		DEX
+        DEX
         BPL CERA_Loop
         RTS
 
 CERA_EnemyActive 
-		LDA enemyType,X
+        LDA enemyType,X
         CMP #$09
         BEQ CERA_Next
         LDA enemyUpperX,X
@@ -759,12 +759,12 @@ CERA_EnemyActive
         LDA enemyUpperXMSB,X
         BNE RemoveEnemy
 CERA_NoRemove 
-		DEX
+        DEX
         BPL CERA_Loop
         RTS
 
 CERA_CheckLeft
-		CMP #$12
+        CMP #$12
         BCS CERA_NoRemove
         LDA enemyUpperXMSB,X
         BNE CERA_NoRemove
@@ -772,7 +772,7 @@ CERA_CheckLeft
         JMP CERA_NoRemove
 
 RemoveEnemy 
-		LDA #$00
+        LDA #$00
         STA enemyUpperY,X
         STA enemyLowerY,X
         STA enemyClimbing,X
@@ -797,7 +797,7 @@ RemoveEnemy
         LDA #$00
         STA enemyLongLadderClimb,X
 RE_NoLongLadderClimb 
-		LDA #$15
+        LDA #$15
         STA enemyYAdjust,X
         LDY enemyPlatformHeight,X
         LDA platformEnemyCount,Y
@@ -811,7 +811,7 @@ RE_NoLongLadderClimb
         BNE RE_NotJumping
         DEC topPlatformCount
 RE_NotJumping
-		DEC platformEnemyCount
+        DEC platformEnemyCount
         DEC midPlatformCount
         LDA platformEnemyCount,Y
         CLC
@@ -822,18 +822,18 @@ RE_NotJumping
 RE_Done RTS
 
 UpdateEnemyClimb
-		LDA enemyControls,X
+        LDA enemyControls,X
         TAY
         AND #$03
         BNE UEC_IsClimbing
         RTS
 
 UEC_IsClimbing
-		AND charTypeAtEnemy,X
+        AND charTypeAtEnemy,X
         AND #$01
         BEQ UEC_CheckClimbDown
 UEC_ClimbUp 
-		DEC enemyUpperY,X
+        DEC enemyUpperY,X
         DEC enemyLowerY,X
         DEC enemyUpperY,X
         DEC enemyLowerY,X
@@ -842,7 +842,7 @@ UEC_ClimbUp
         RTS 
 
 UEC_CheckClimbDown 
-		LDA charTypeAtEnemy,X
+        LDA charTypeAtEnemy,X
         AND #$01
         BNE UEC_ClimbDown
         TYA
@@ -859,7 +859,7 @@ UEC_CheckClimbDown
         JMP UEC_ClimbUp
 
 UEC_ClimbDown 
-		TYA
+        TYA
         AND charTypeBelowEnemy,X
         AND #$02
         BEQ UEC_TerminateClimb
@@ -868,21 +868,21 @@ UEC_ClimbDown
         INC enemyUpperY,X
         INC enemyLowerY,X
 UEC_SetClimbing 
-		LDA #$15
+        LDA #$15
         STA enemyYAdjust,X
         LDA #$01
         STA enemyClimbingCopy,X
         RTS 
 
 UEC_TerminateClimb 
-		LDA #$15
+        LDA #$15
         STA enemyYAdjust,X
         LDA enemyCoarseX,X
         CMP playerCoarseX
         BCC UEC_PlayerOnRight
         LDA #$04
 UEC_SetDirAfterClimb 
-		STA enemyControls,X
+        STA enemyControls,X
         LDA #$00
         STA enemyClimbing,X
         LDA enemyLongLadderClimb,X
@@ -898,28 +898,28 @@ UEC_SetDirAfterClimb
         JMP UEC_ResetLongLadder
 
 UEC_IsMidPlatform 
-		LDY enemyLongLadderClimb,X
+        LDY enemyLongLadderClimb,X
         DEY
         LDA platformEnemyCount,Y
         SEC
         SBC #$01
         STA platformEnemyCount,Y
 UEC_ResetLongLadder 
-		LDA #$00
+        LDA #$00
         STA enemyLongLadderClimb,X
 UEC_NoLongLadder 
-		RTS
+        RTS
 
 UEC_PlayerOnRight
-		LDA #$08
+        LDA #$08
         BNE UEC_SetDirAfterClimb
 UEC_CheckPlatformY 
-		LDY #$02
+        LDY #$02
         LDA enemyUpperY,X
 UEC_PlatformYLoop 
-		CMP platformYTbl,Y
+        CMP platformYTbl,Y
         BEQ UEC_PlatformYFound
         DEY
         BPL UEC_PlatformYLoop
 UEC_PlatformYFound 
-		RTS
+        RTS

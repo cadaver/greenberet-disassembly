@@ -1,8 +1,8 @@
 FindPlayerPlatform
-		LDX #$02
+        LDX #$02
         LDA spriteY
 FPP_Loop
-		CMP platformYTbl,X
+        CMP platformYTbl,X
         BEQ FPP_Found
         DEX
         BPL FPP_Loop
@@ -12,9 +12,9 @@ FPP_Found STX playerPlatformHeight
         RTS
 
 UpdatePlatformCounts 
-		LDX #$05
+        LDX #$05
 UPC_Loop
-		LDY #$02
+        LDY #$02
         LDA enemyClimbing,X
         ORA enemyTimerActive,X
         ORA enemyJumping,X
@@ -22,17 +22,17 @@ UPC_Loop
         BNE UPC_Next
         LDA enemyUpperY,X
 UPC_PlatformLoop 
-		CMP platformYTbl,Y
+        CMP platformYTbl,Y
         BEQ UPC_AtPlatform
         DEY
         BPL UPC_PlatformLoop
 UPC_Next 
-		DEX
+        DEX
         BPL UPC_Loop
         RTS
 
 UPC_AtPlatform 
-		TYA
+        TYA
         LDA enemyPlatformHeight,X
         STA platformTemp
         TYA
@@ -53,33 +53,33 @@ UPC_AtPlatform
         JMP UPC_ResetJump
 
 UPC_DecMidAndBottom 
-		DEC platformEnemyCount
+        DEC platformEnemyCount
         DEC midPlatformCount
         JMP UPC_ResetJump
 
 UPC_DecMidAndTop 
-		DEC midPlatformCount
+        DEC midPlatformCount
         DEC topPlatformCount
 UPC_ResetJump 
-		LDA #$00
+        LDA #$00
         STA enemyJumpPlatformHeight,X
         JMP UPC_Next
 
         JMP UPC_Next
 
 UPC_DecBottomOrMid 
-		TYA
+        TYA
         CMP platformTemp
         BEQ UPC_DecBottom
         DEC midPlatformCount
         JMP UPC_ResetJump
 
 UPC_DecBottom
-		DEC platformEnemyCount
+        DEC platformEnemyCount
         JMP UPC_ResetJump
 
 ScrollEnemies 
-		LDA lastScrollSpeed
+        LDA lastScrollSpeed
         BNE SE_HasScrolling
         RTS
 
@@ -87,7 +87,7 @@ platformYTbl
         .BYTE $CD,$9D,$6D
 
 SE_HasScrolling 
-		LDX #$05
+        LDX #$05
 SE_Loop LDA enemyActive,X
         BNE SE_ScrollEnemy
         DEX
@@ -95,7 +95,7 @@ SE_Loop LDA enemyActive,X
         RTS
 
 SE_ScrollEnemy 
-		LDA enemyUpperX,X
+        LDA enemyUpperX,X
         SEC
         SBC lastScrollSpeed
         STA enemyUpperX,X
@@ -103,7 +103,7 @@ SE_ScrollEnemy
         LDA #$00
         STA enemyUpperXMSB,X
 SE_NoUpperMSBClear 
-		LDA enemyLowerX,X
+        LDA enemyLowerX,X
         SEC
         SBC lastScrollSpeed
         STA enemyLowerX,X
@@ -111,17 +111,17 @@ SE_NoUpperMSBClear
         LDA #$00
         STA enemyLowerXMSB,X
 SE_NoLowerMSBClear 
-		DEX
+        DEX
         BPL SE_Loop
         RTS
 
 ScrollBullets 
-		LDA lastScrollSpeed
+        LDA lastScrollSpeed
         BNE SB_HasScrolling
         RTS
 
 SB_HasScrolling 
-		LDX #$05
+        LDX #$05
 SB_Loop LDA bulletActive,X
         BNE SB_ScrollBullet
         DEX
@@ -129,7 +129,7 @@ SB_Loop LDA bulletActive,X
         RTS
 
 SB_ScrollBullet 
-		LDA bulletX,X
+        LDA bulletX,X
         SEC
         SBC lastScrollSpeed
         STA bulletX,X
@@ -137,34 +137,34 @@ SB_ScrollBullet
         LDA #$00
         STA bulletXMSB,X
 SB_NoMSBClear
-		DEX
+        DEX
         BPL SB_Loop
         RTS
 
 UpdateEnemyPathing 
-		LDX #$05
+        LDX #$05
 UEP_Loop 
-		LDA enemyActive,X
+        LDA enemyActive,X
         BNE UEP_EnemyActive
 UEP_Next 
-		DEX
+        DEX
         BPL UEP_Loop
         RTS
 
 UEP_EnemyActive 
-		LDA enemyTimerActive,X
+        LDA enemyTimerActive,X
         BNE UEP_Next
         LDA enemyType,X
         BNE UEP_TypeCheck
         JMP UEP_Next
 
 UEP_TypeCheck 
-		CMP #$05
+        CMP #$05
         BNE UEP_TypeOK
         JMP UEP_Next
 
 UEP_TypeOK 
-		LDA enemyClimbing,X
+        LDA enemyClimbing,X
         BNE UEP_Next
         LDA enemyJumpPlatformHeight,X
         BNE UEP_Next
@@ -200,7 +200,7 @@ UEP_TypeOK
         LDA #$01
         STA enemyLongLadderClimb,X
 UEP_ClimbDownOK 
-		LDA tempStore
+        LDA tempStore
         STA enemyControls,X
         DEC enemyPlatformHeight,X
         INY
@@ -214,12 +214,12 @@ UEP_ClimbDownOK
         ADC #$01
         STA platformEnemyCount,Y
 UEP_InitClimb 
-		LDA #$01
+        LDA #$01
         STA enemyClimbing,X
         LDA #$00
         STA enemyJumpPlatformHeight,X
 UEP_NoClimbing 
-		DEX
+        DEX
         BMI UEC_Done
         JMP UEP_Loop
 
@@ -230,7 +230,7 @@ UEC_Done
         JMP UEP_NoClimbing
 
 UEP_NoClimbDown 
-		LDA charAtEnemy,X
+        LDA charAtEnemy,X
         CMP #$C8
         BCC UEP_NoClimbing
         SBC #$C8
@@ -261,7 +261,7 @@ UEP_NoClimbDown
         LDA #$03
         STA enemyLongLadderClimb,X
 UEP_NoLongLadderUp
-		LDA tempStore
+        LDA tempStore
         STA enemyControls,X
         INC enemyPlatformHeight,X
         DEY
@@ -277,24 +277,24 @@ UEP_NoLongLadderUp
         JMP UEP_InitClimb
 
 UEP_InitJump 
-		LDA enemyPlatformHeight,X
+        LDA enemyPlatformHeight,X
         CMP #$01
         BNE UEP_InitJumpNotMid
         LDA #$01
         STA enemyJumpPlatformHeight,X
 UEP_InitJumpCommon
-		INC platformEnemyCount
+        INC platformEnemyCount
         JSR InitEnemyJump
         RTS
 
 UEP_InitJumpNotMid 
-		INC midPlatformCount
+        INC midPlatformCount
         LDA #$02
         STA enemyJumpPlatformHeight,X
         JMP UEP_InitJumpCommon
 
 FindFirstSprite
-		LDX #$14
+        LDX #$14
 FFS_Loop LDY spriteOrder,X
         LDA spriteY,Y
         BNE FFS_Found
@@ -305,7 +305,7 @@ FFS_Found STX sprIrqIndex
         RTS
 
 AP_KnifeAnim 
-		DEC playerKnifeTimer
+        DEC playerKnifeTimer
         BNE AP_KnifeAnimDone
         LDA playerJumping
         ORA playerFalling
@@ -315,7 +315,7 @@ AP_KnifeAnim
         JMP AP_SetAnim
 
 InitEnemyJump 
-		LDY enemyType,X
+        LDY enemyType,X
         LDA enemyCanJumpTbl,Y
         BEQ IEJ_Fail
         LDA enemyControls,X
@@ -324,16 +324,16 @@ InitEnemyJump
         LDA #$00
         STA enemyFalling,X
 IEJ_Fail 
-		RTS
+        RTS
 
 enemyCanJumpTbl 
-		.BYTE $00,$01,$01,$01,$00,$01,$00,$00,$00,$00
+        .BYTE $00,$01,$01,$01,$00,$01,$00,$00,$00,$00
 
 AP_KnifeAnimDone
-		RTS
+        RTS
 
 AnimatePlayer 
-		LDA playerKnifeTimer
+        LDA playerKnifeTimer
         BNE AP_KnifeAnim
         LDA playerControls
         BEQ AP_Idle
@@ -352,7 +352,7 @@ AnimatePlayer
         BEQ AP_AtLadderEnd
         TAY
 AP_NoProne 
-		TYA
+        TYA
         CMP playerAnimState
         BNE AP_SetAnimAndReset
         DEC playerRunAnimTimer
@@ -361,7 +361,7 @@ AP_NoProne
         STA playerRunAnimTimer
         LDY playerRunFrame
 AP_SetSpriteFrames 
-		LDA playerUpperFrameTbl,Y
+        LDA playerUpperFrameTbl,Y
         BEQ AP_RestartAnimation
         LDX activeExtraWeapon
         BEQ AP_FrameOK
@@ -373,9 +373,9 @@ AP_SetSpriteFrames
         BEQ AP_SkipWeaponFrame
         BNE AP_FrameOK
 AP_SkipWeaponFrame 
-		LDA playerUpperFrameTbl,Y
+        LDA playerUpperFrameTbl,Y
 AP_FrameOK 
-		STA spriteFrame
+        STA spriteFrame
         LDA playerLowerFrameTbl,Y
         STA playerFrameLower
         INY
@@ -383,7 +383,7 @@ AP_FrameOK
 AP_Done RTS
 
 AP_NotDown
-		LDA playerControls
+        LDA playerControls
         AND #$01
         BEQ AP_Done
 AP_Idle LDA playerClimbingCopy
@@ -394,7 +394,7 @@ AP_Idle LDA playerClimbingCopy
         JMP AP_SetAnim
 
 AP_AtLadderEnd 
-		LDA playerControls
+        LDA playerControls
         AND #$02
         BEQ AP_NotDown
         LDA playerClimbingCopy
@@ -404,12 +404,12 @@ AP_AtLadderEnd
         BEQ AP_NoTurn
         STA playerFacingDir
 AP_NoTurn 
-		LDA playerFacingDir
+        LDA playerFacingDir
         ORA #$02
         JMP AP_SetAnimAndReset
 
 AP_RestartAnimation 
-		LDA playerAnimState
+        LDA playerAnimState
         JMP AP_SetAnim
 
 AP_SetAnimAndReset PHA
@@ -417,19 +417,19 @@ AP_SetAnimAndReset PHA
         STA playerRunAnimTimer
         PLA
 AP_SetAnim 
-		STA playerAnimState
+        STA playerAnimState
         AND #$1F
         TAY
         LDA playerAnimTypeTbl,Y
         TAY
         LDX #$06
 AP_FindOffsetLoop 
-		CMP plrOffsetIndexTbl,X
+        CMP plrOffsetIndexTbl,X
         BEQ AP_OffsetFound
         DEX
         BNE AP_FindOffsetLoop
 AP_OffsetFound 
-		LDA playerLowerY
+        LDA playerLowerY
         SEC
         SBC plrUpperYOffsetTbl,X
         STA spriteY
@@ -441,19 +441,19 @@ AP_OffsetFound
         JMP AP_SetSpriteFrames
 
 plrUpperYOffsetTbl
-		.BYTE $15,$00,$00,$15,$15,$00,$00
+        .BYTE $15,$00,$00,$15,$15,$00,$00
 
 plrUpperXOffsetTbl 
-		.BYTE $00,$18,$18,$F8,$08,$18,$18
+        .BYTE $00,$18,$18,$F8,$08,$18,$18
 
 plrOffsetIndexTbl 
-		.BYTE $00,$0F,$11,$13,$15,$19,$1B
+        .BYTE $00,$0F,$11,$13,$15,$19,$1B
 
 weaponFrameTblOffset 
-		.BYTE $00,$00,$20,$00,$40
+        .BYTE $00,$00,$20,$00,$40
 
 playerUpperFrameTbl 
-		.BYTE $14,$15,$16,$17,$00,$25,$27,$00,$18,$00,$1D,$1E,$1F,$20,$00,$2E
+        .BYTE $14,$15,$16,$17,$00,$25,$27,$00,$18,$00,$1D,$1E,$1F,$20,$00,$2E
         .BYTE $00,$2D,$00,$29,$00,$2B,$00,$21,$00,$2E,$00,$C3,$00,$A2,$A4,$00
         .BYTE $9E,$9F,$9E,$9F,$00,$00,$00,$00,$9E,$00,$A0,$A1,$A0,$A1,$00,$00
         .BYTE $00,$00,$00,$00,$00,$00,$00,$A0,$00,$00,$00,$00,$00,$00,$00,$00
@@ -461,15 +461,15 @@ playerUpperFrameTbl
         .BYTE $00,$00,$00,$00,$00,$00,$00,$AA,$00,$00,$00,$00,$00,$00,$00,$00
 
 playerLowerFrameTbl 
-		.BYTE $10,$11,$12,$13,$00,$24,$26,$00,$22,$00,$19,$1A,$1B,$1C,$00,$2F
+        .BYTE $10,$11,$12,$13,$00,$24,$26,$00,$22,$00,$19,$1A,$1B,$1C,$00,$2F
         .BYTE $00,$2C,$00,$12,$00,$1B,$00,$23,$00,$C4,$00,$2C,$00,$A3,$28,$00
 
 playerAnimTypeTbl 
-		.BYTE $00,$05,$05,$00,$00,$08,$0F,$00,$0A,$17,$11,$00,$00,$00,$00,$1D
+        .BYTE $00,$05,$05,$00,$00,$08,$0F,$00,$0A,$17,$11,$00,$00,$00,$00,$1D
         .BYTE $00,$00,$00,$00,$13,$00,$19,$00,$15,$00,$1B,$00,$00,$00,$00,$00
 
 AnimateEnemies
-		LDX #$05
+        LDX #$05
 AE_Loop LDA enemyActive,X
         BNE AE_EnemyActive
         DEX
@@ -477,7 +477,7 @@ AE_Loop LDA enemyActive,X
         RTS
 
 AE_EnemyActive 
-		LDA enemyControls,X
+        LDA enemyControls,X
         BEQ AE_NoCurrentMove
         LDA enemyFalling,X
         ORA enemyTimerActive,X
@@ -491,7 +491,7 @@ AE_EnemyActive
         STA enemyRunAnimTimer,X
         LDY enemyRunAnimFrame,X
 AE_SetRunFrame 
-		LDA enemyUpperFrameTbl,Y
+        LDA enemyUpperFrameTbl,Y
         BEQ AE_AnimEnd
         STA enemyUpperFrame,X
         LDA enemyLowerFrameTbl,Y
@@ -504,7 +504,7 @@ AE_Next DEX
         RTS
 
 AE_NoCurrentMove 
-		LDA playerClimbingCopy
+        LDA playerClimbingCopy
         ORA playerJumping
         ORA playerFalling
         BNE AE_Next
@@ -512,16 +512,16 @@ AE_NoCurrentMove
         JMP AE_RestartAnimation
 
 AE_AnimEnd
-		LDA enemyLastControls,X
+        LDA enemyLastControls,X
         JMP AE_RestartAnimation
 
 AE_ResetDelay
-		PHA
+        PHA
         LDA #$01
         STA enemyRunAnimTimer,X
         PLA
 AE_RestartAnimation
-		STA enemyLastControls,X
+        STA enemyLastControls,X
         AND #$1F
         PHA
         LDY enemyType,X
@@ -536,7 +536,7 @@ AE_RestartAnimation
         JMP AE_SetRunFrame
 
 enemyUpperFrameTbl 
-		.BYTE $14,$15,$16,$17,$00,$3B,$3D,$00,$3E,$00,$1D,$1E,$1F,$20,$00,$40
+        .BYTE $14,$15,$16,$17,$00,$3B,$3D,$00,$3E,$00,$1D,$1E,$1F,$20,$00,$40
         .BYTE $00,$46,$47,$48,$49,$00,$3B,$3D,$00,$3E,$00,$4E,$4F,$50,$51,$00
         .BYTE $40,$00,$7C,$7D,$7E,$7F,$00,$3B,$3D,$00,$84,$00,$80,$81,$82,$83
         .BYTE $00,$85,$00,$88,$89,$88,$89,$00,$3B,$3D,$00,$90,$00,$8C,$8D,$8C
@@ -544,7 +544,7 @@ enemyUpperFrameTbl
         .BYTE $A5,$A6,$00,$40,$00
 
 enemyLowerFrameTbl 
-		.BYTE $30,$31,$32,$33,$00,$3A,$3C,$00,$92,$00,$34,$35,$36,$37,$00,$93
+        .BYTE $30,$31,$32,$33,$00,$3A,$3C,$00,$92,$00,$34,$35,$36,$37,$00,$93
         .BYTE $00,$42,$43,$44,$45,$00,$3A,$3C,$00,$92,$00,$4A,$4B,$4C,$4D,$00
         .BYTE $93,$00,$42,$43,$44,$45,$00,$3A,$3C,$00,$86,$00,$4A,$4B,$4C,$4D
         .BYTE $00,$87,$00,$30,$31,$32,$33,$00,$3A,$3C,$00,$92,$00,$34,$35,$36
@@ -552,17 +552,17 @@ enemyLowerFrameTbl
         .BYTE $4C,$4D,$00,$93,$00
 
 enemyFirstFrameIndex 
-		.BYTE $00,$05,$05,$00,$00,$08,$0F,$00,$0A,$0F,$11,$00,$00,$00,$00,$00
+        .BYTE $00,$05,$05,$00,$00,$08,$0F,$00,$0A,$0F,$11,$00,$00,$00,$00,$00
         .BYTE $00,$16,$16,$00,$11,$19,$00,$00,$1B,$20,$00,$00,$00,$00,$00,$00
         .BYTE $00,$27,$27,$00,$22,$2A,$00,$00,$2C,$31,$00,$00,$00,$00,$00,$00
         .BYTE $00,$38,$38,$00,$33,$3B,$00,$00,$3D,$42,$00,$00,$00,$00,$00,$00
         .BYTE $00,$49,$49,$00,$44,$4C,$00,$00,$4E,$53,$00,$00,$00,$00,$00,$00
 
 perTypeAnimTblOffset 
-		.BYTE $10,$00,$30,$30,$00,$20,$40,$00,$00,$00
+        .BYTE $10,$00,$30,$30,$00,$20,$40,$00,$00,$00
 
 PlayerWorldCollision
-		LDA playerLowerY
+        LDA playerLowerY
         SEC
 playerYAdjust   =*+$01
         SBC #$2A
@@ -600,17 +600,17 @@ playerYAdjust   =*+$01
         RTS
 
 EnemyWorldCollision
-		LDX #$05
+        LDX #$05
 EWC_Loop
-		LDA enemyActive,X
+        LDA enemyActive,X
         BNE EWC_EnemyActive
 EWC_Next 
-		DEX
+        DEX
         BPL EWC_Loop
         RTS
 
 EWC_EnemyActive 
-		LDA enemyTimerActive,X
+        LDA enemyTimerActive,X
         BNE EWC_Next
         LDA enemyUpperY,X
         SEC
@@ -635,7 +635,7 @@ EWC_EnemyActive
         BCS EWC_NoLeftUnderflow
         INY
 EWC_NoLeftUnderflow 
-		SEC
+        SEC
         SBC lastScrollX
         BCC EWC_XPosDone
         CPY #$00
@@ -643,12 +643,12 @@ EWC_NoLeftUnderflow
         CLC
         BCC EWC_XPosDone
 EWC_AddXPosMSB 
-		PHA
+        PHA
         LDA enemyUpperXMSB,X
         LSR
         PLA
 EWC_XPosDone 
-		ROR
+        ROR
         LSR
         LSR
         TAY
@@ -656,7 +656,7 @@ EWC_XPosDone
         BCC EWC_NoRightOverflow
         LDY #$27
 EWC_NoRightOverflow 
-		LDA (screenPtrLo),Y
+        LDA (screenPtrLo),Y
         STA charAtEnemy,X
         TYA 
         CLC
@@ -674,7 +674,7 @@ EWC_NoRightOverflow
         LDA charTypeTbl,Y
         STA charTypeBelowEnemy,X
 EWC_NoCharBelow 
-		LDA charAtEnemy,X
+        LDA charAtEnemy,X
         CMP #$C8
         BCC EWC_NoCharAt
         SBC #$C8
@@ -682,42 +682,42 @@ EWC_NoCharBelow
         LDA charTypeTbl,Y
         STA charTypeAtEnemy,X
 EWC_NoCharAt 
-		LDA stageEndReached
+        LDA stageEndReached
         BEQ EWC_NoStageEnd
         LDA charBelowEnemy,X
         CMP #$C8
         BCC EWC_JumpToNext
 EWC_JumpToNext
-		JMP EWC_Next
+        JMP EWC_Next
 
 EWC_NoStageEnd 
-		LDA enemyJumpPlatformHeight,X
+        LDA enemyJumpPlatformHeight,X
         ORA enemyJumping,X
         BNE EWC_NoJump
         LDA charBelowEnemy,X
         CMP #$C8
         BCC EWC_NotOnGround
 EWC_NoJump
-		JMP EWC_Next
+        JMP EWC_Next
 
 EWC_NotOnGround
-	 	LDY enemyPlatformHeight,X
+         LDY enemyPlatformHeight,X
         DEY
         BNE EWC_NotInMiddle
 EWC_CheckJumpOK 
-		LDA platformEnemyCount,Y
+        LDA platformEnemyCount,Y
         CMP #$03
         BCS EWC_TurnAtEdge
         JSR UEP_InitJump
         JMP EWC_Next
 
 EWC_NotInMiddle 
-		LDA platformEnemyCount-1,Y
+        LDA platformEnemyCount-1,Y
         CMP #$03
         BCS EWC_TurnAtEdge
         BCC EWC_CheckJumpOK
 EWC_TurnAtEdge 
-		LDA #$FA
+        LDA #$FA
         STA charBelowEnemy,X
         LDA enemyControls,X
         EOR #$0C
@@ -727,10 +727,10 @@ EWC_TurnAtEdge
         JMP EWC_Next
 
 enemyYAdjust 
-		.BYTE $15,$15,$15,$15,$15,$15
+        .BYTE $15,$15,$15,$15,$15,$15
 
 SetCoarseXCoords 
-		LDX #$13
+        LDX #$13
 SCXC_Loop LDA enemyUpperXMSB,X
         LSR 
         LDA enemyUpperX,X
@@ -744,7 +744,7 @@ SCXC_Loop LDA enemyUpperXMSB,X
         RTS 
 
 ReadControls 
-		LDA $DC00
+        LDA $DC00
         EOR #$FF
         AND #$1F
         STA joystickBits
@@ -758,11 +758,11 @@ ReadControls
         JMP RC_NoFireHeldDown
 
 RC_HoldingFire
-		LDA joystickBits
+        LDA joystickBits
         AND #$0F
         STA playerControls
 RC_NoFireHeldDown 
-		LDA playerControls
+        LDA playerControls
         AND #$01
         CMP playerLastUp
         BEQ RC_HoldingUp
@@ -770,7 +770,7 @@ RC_NoFireHeldDown
         LDA #$00
         STA playerJumpInhibit
 RC_HoldingUp 
-		LDA #$00
+        LDA #$00
         STA charTypeBelowPlayer
         STA charTypeAtPlayer
         LDA charBelowPlayer
@@ -782,7 +782,7 @@ RC_HoldingUp
         LDA charTypeTbl,X
         STA charTypeBelowPlayer
 RC_NoSolidCharAt 
-		LDA charAtPlayer
+        LDA charAtPlayer
         CMP #$C8
         BCC RC_NoSolidCharBelow
         SEC
@@ -793,13 +793,13 @@ RC_NoSolidCharAt
 RC_NoSolidCharBelow RTS 
 
 charTypeTbl 
-		.BYTE $0E,$0E,$0C,$0E,$0E,$03,$03,$0E,$0E,$03,$03,$0C,$03,$03,$03,$03
+        .BYTE $0E,$0E,$0C,$0E,$0E,$03,$03,$0E,$0E,$03,$03,$0C,$03,$03,$03,$03
         .BYTE $03,$03,$03,$03,$03,$03,$03,$0F,$03,$0C,$0C,$0C,$03,$0C,$0E,$0C
         .BYTE $03,$0C,$03,$0C,$03,$03,$0E,$0E,$0C,$03,$03,$0E,$0E,$03,$0C,$0C
         .BYTE $0E,$03,$0C,$0C,$0C,$0C,$0C,$0C
 
 MP_Falling 
-		LDA playerFalling
+        LDA playerFalling
         BEQ MP_InitFall
         STA plrFallSpeedSubPixel
         LDA charBelowPlayer
@@ -822,14 +822,14 @@ MP_Falling
         RTS
 
 MP_InitFall 
-		LDA #$01
+        LDA #$01
         STA playerFalling
         LDA #$80
         STA plrFallSpeedSubPixel
         LDA #$00
         STA playerRunSpeed
 MP_NoLanding 
-		LDA plrFallSpeedSubPixel
+        LDA plrFallSpeedSubPixel
         CLC
         ADC playerYSubPixel
         STA playerYSubPixel
@@ -844,14 +844,14 @@ MP_NoLanding
         JMP MP_CheckMoveRight
 
 MP_NoMove
-		RTS
+        RTS
 
 MovePlayer 
-		LDA playerFalling
+        LDA playerFalling
         BEQ MP_NotFalling
         BNE MP_Falling
 MP_NotFalling 
-		LDA playerControls
+        LDA playerControls
         BNE MP_HasMovement
         LDA playerJumping
         BNE MP_IsJumping
@@ -861,10 +861,10 @@ MP_NotFalling
         JMP MP_Falling
 
 MP_IsJumping 
-		JMP MP_HandleJump
+        JMP MP_HandleJump
 
 MP_HasMovement 
-		LDY playerJumping
+        LDY playerJumping
         BNE MP_IsJumping
         LDY charBelowPlayer
         CPY #$C8
@@ -872,12 +872,12 @@ MP_HasMovement
         JMP MP_Falling
 
 MP_HasCharBelow 
-		AND #$13
+        AND #$13
         BEQ MP_NoLadderOrAttack
         JMP MP_CanClimbOrAttack
 
 MP_NoLadderOrAttack 
-		LDA playerKnifeTimer
+        LDA playerKnifeTimer
         BNE MP_NoMove
         LDA playerControls
         AND charTypeBelowPlayer
@@ -895,12 +895,12 @@ playerRightLimit   =*+$01
         BCC MP_MoveRight
         JSR MP_MoveRight
 MP_MoveRight 
-		INC spriteX
+        INC spriteX
         INC playerLowerX
         JMP MP_ExitLadderRight
 
 MP_NoMoveRight 
-		TYA
+        TYA
         AND #$04
         BEQ MP_IsJumping
         LDA spriteX
@@ -913,7 +913,7 @@ MP_NoMoveRight
         BCC MP_MoveLeft
         JSR MP_MoveLeft
 MP_MoveLeft 
-		DEC spriteX
+        DEC spriteX
         DEC playerLowerX
         LDA #$00
         STA playerClimbing
@@ -923,9 +923,9 @@ MP_MoveLeft
         RTS 
 
 MP_CheckScroll 
-		JSR CheckScroll
+        JSR CheckScroll
 MP_ExitLadderRight 
-		LDA #$00
+        LDA #$00
         STA playerClimbing
         STA playerClimbingCopy
         LDA #$08
@@ -933,7 +933,7 @@ MP_ExitLadderRight
         RTS 
 
 MP_HasFirePress 
-		LDA playerClimbingCopy
+        LDA playerClimbingCopy
         BNE MP_NoKnifeAttack
         LDA #$05
         STA playerKnifeTimer
@@ -954,7 +954,7 @@ MP_HasFirePress
         JMP AP_SetAnim
 
 MP_KnifeProneTurn 
-		LDA playerControls
+        LDA playerControls
         AND #$0C
         STA playerFacingDir
         LDA playerControls
@@ -965,14 +965,14 @@ MP_KnifeProneTurn
         JMP AP_SetAnim
 
 MP_KnifeNoProne 
-		LDA playerJumping
+        LDA playerJumping
         ORA playerFalling
         BNE MP_KnifeAirborne
         LDA playerControls
         AND #$0C
         BNE MP_KnifeOnGroundTurn
 MP_KnifeAirborne 
-		LDA playerFacingDir
+        LDA playerFacingDir
         ORA #$10
         PHA
         JSR CheckKnifeCollisions
@@ -980,7 +980,7 @@ MP_KnifeAirborne
         JMP AP_SetAnim
 
 MP_KnifeOnGroundTurn 
-		LDA playerControls
+        LDA playerControls
         AND #$1C
         PHA 
         JSR CheckKnifeCollisions
@@ -988,16 +988,16 @@ MP_KnifeOnGroundTurn
         JMP AP_SetAnim
 
 MP_HandleJump 
-		LDA playerJumping
+        LDA playerJumping
         BNE MP_JumpCheckLadder
         RTS
 
 MP_CanClimbOrAttack 
-		LDA playerControls
+        LDA playerControls
         AND #$10
         BNE MP_HasFirePress
 MP_NoKnifeAttack 
-		LDA playerJumping
+        LDA playerJumping
         BNE MP_JumpCheckLadder
         LDA charTypeAtPlayer
         AND #$03
@@ -1007,7 +1007,7 @@ MP_NoKnifeAttack
         JMP MP_PlayerClimbing
 
 MP_NoLadderAbove 
-		LDA charTypeBelowPlayer
+        LDA charTypeBelowPlayer
         AND #$03
         BEQ MP_NoInitClimb
         AND playerControls
@@ -1015,23 +1015,23 @@ MP_NoLadderAbove
         JMP MP_PlayerClimbing
 
 MP_NoInitClimb 
-		LDA playerClimbing
+        LDA playerClimbing
         BEQ MP_NotClimbing
         JMP MP_PlayerClimbing
 
 MP_NotClimbing 
-		LDA playerControls
+        LDA playerControls
         AND #$01
         BNE MP_HasUpPress
         RTS
 
 MP_HasUpPress 
-		LDA playerJumpInhibit
+        LDA playerJumpInhibit
         BEQ MP_OKToJump
         JMP MP_NoLadderOrAttack
 
 MP_OKToJump 
-		LDA #$01
+        LDA #$01
         STA playerJumping
         STA playerJumpInhibit
         LDA playerControls
@@ -1040,7 +1040,7 @@ MP_OKToJump
         BEQ MP_JumpNoTurn
         STA playerFacingDir
 MP_JumpNoTurn
-		LDA playerFacingDir
+        LDA playerFacingDir
         ORA #$01
         JSR AP_SetAnimAndReset
         LDY #$14
@@ -1050,13 +1050,13 @@ MP_JumpNoTurn
         SBC jumpArcTbl,Y
         STA playerBaseY
 MP_JumpCheckLadder 
-		LDA charTypeAtPlayer
+        LDA charTypeAtPlayer
         AND #$03
         BEQ MP_JumpNoLadder
         AND playerControls
         BNE MP_GrabLadder
 MP_JumpNoLadder 
-		LDY playerJumpArcIndex
+        LDY playerJumpArcIndex
         LDA playerBaseY
         CLC 
         ADC jumpArcTbl,Y
@@ -1077,31 +1077,31 @@ MP_JumpNoLadder
         JMP MP_CheckJumpAttack
 
 MP_DecJumpArc
-		DEY
+        DEY
         BPL MP_JumpArcNotDone
         LDA #$80
         STA playerJumping
         INY
-MP_JumpArcNotDone 	
-		STY playerJumpArcIndex
+MP_JumpArcNotDone     
+        STY playerJumpArcIndex
 MP_CheckJumpAttack 
-		LDA playerControls
+        LDA playerControls
         AND #$10
         BEQ MP_NoJumpAttack
         JMP MP_HasFirePress
 
-MP_NoJumpAttack 	
-		LDA playerJumpControls
+MP_NoJumpAttack     
+        LDA playerJumpControls
         AND #$0C
         BEQ MP_JumpNoHoriz
         TAY
         JMP MP_CheckMoveRight
 
 MP_JumpNoHoriz
-		RTS
+        RTS
 
 MP_GrabLadder 
-		LDA spriteY
+        LDA spriteY
         SEC 
         SBC #$04
         AND #$F8
@@ -1111,14 +1111,14 @@ MP_GrabLadder
         ADC #$15
         STA playerLowerY
 MP_PlayerClimbing 
-		LDA playerControls
+        LDA playerControls
         AND #$03
         TAY
         AND charTypeAtPlayer
         AND #$01
         BEQ MP_NoClimbUp
 MP_ClimbUp 
-		DEC spriteY
+        DEC spriteY
         DEC playerLowerY
         DEC spriteY
         DEC playerLowerY
@@ -1130,7 +1130,7 @@ MP_ClimbUp
         RTS 
 
 MP_NoClimbUp 
-		LDA charTypeAtPlayer
+        LDA charTypeAtPlayer
         AND #$01
         BNE MP_CheckClimbDown
         TYA 
@@ -1147,7 +1147,7 @@ MP_NoClimbUp
         JMP MP_ClimbUp
 
 MP_CheckClimbDown
-		TYA
+        TYA
         AND charTypeBelowPlayer
         AND #$02
         BEQ MP_NoClimbDown
@@ -1161,12 +1161,12 @@ MP_CheckClimbDown
         STA playerClimbingCopy
         STA playerClimbing
 MP_NoClimbDown 
-		LDA #$2A
+        LDA #$2A
         STA playerYAdjust
         RTS
 
 MP_AtLadderTop 
-		LDA #$2A
+        LDA #$2A
         STA playerYAdjust
         LDA #$01
         STA playerLastUp
@@ -1174,11 +1174,11 @@ MP_AtLadderTop
         JMP MP_NoLadderOrAttack
 
 jumpArcTbl 
-		.BYTE $00,$00,$01,$01,$02,$03,$04,$05,$06,$07,$09,$0B,$0D,$0F,$11,$13
+        .BYTE $00,$00,$01,$01,$02,$03,$04,$05,$06,$07,$09,$0B,$0D,$0F,$11,$13
         .BYTE $15,$17,$19,$1B,$1E,$21,$24,$28,$2C,$30,$34,$38,$3C,$3C,$3C,$3C
 
 UpdateEnemies 
-		LDX #$05
+        LDX #$05
 UE_Loop LDA enemyActive,X
         BNE UE_EnemyActive
 UE_Next DEX 
@@ -1186,7 +1186,7 @@ UE_Next DEX
         RTS 
 
 UE_EnemyActive 
-		LDA enemyTimerActive,X
+        LDA enemyTimerActive,X
         BEQ UE_TimerNotActive
         LDA enemyType,X
         CMP #$09
@@ -1195,11 +1195,11 @@ UE_EnemyActive
         JMP UE_Next
 
 UE_TimerNotActive 
-		LDA enemyFalling,X
+        LDA enemyFalling,X
         BEQ UE_NotFalling
         BNE UE_UpdateFall
 UE_NotFalling 
-		JSR RunEnemyCustomCode
+        JSR RunEnemyCustomCode
         LDA enemyTimerActive,X
         BNE UE_Next
         LDA enemyControls,X
@@ -1212,12 +1212,12 @@ UE_NotFalling
         JMP UE_UpdateFall
 
 UE_Jumping 
-		LDA enemyJumping,X
+        LDA enemyJumping,X
         BEQ UE_Next
         JMP UE_UpdateJumpArc
 
 UE_HasControls 
-		LDY enemyJumping,X
+        LDY enemyJumping,X
         BNE UE_Jumping
         LDY charBelowEnemy,X
         CPY #$C8
@@ -1228,20 +1228,20 @@ UE_HasControls
         JMP UE_UpdateFall
 
 UE_HasGroundBelow 
-		TAY
+        TAY
         AND #$01
         BEQ UE_DoHorizMoveOnly
         JMP UE_CheckJumpOrClimb
 
 UE_DoHorizMoveOnly
-		LDA enemyControls,X
+        LDA enemyControls,X
         JSR UE_HorizMovement
         DEX 
         BPL UE_Loop
         RTS
 
 UE_UpdateFall 
-		LDA enemyFalling,X
+        LDA enemyFalling,X
         BEQ UE_InitFall
         LDA enemyJumpSpeed,X
         CLC
@@ -1249,7 +1249,7 @@ UE_UpdateFall
         BCS UE_FallingMotion
         STA enemyJumpSpeed,X
 UE_FallingMotion 
-		LDA charBelowEnemy,X
+        LDA charBelowEnemy,X
         CMP #$C8
         BCC UE_NoLanding
         LDA enemyUpperY,X
@@ -1269,14 +1269,14 @@ UE_FallingMotion
         JMP UE_Next
 
 UE_InitFall 
-		LDA #$01
+        LDA #$01
         STA enemyFalling,X
         LDA #$80
         STA enemyJumpSpeed,X
         LDA #$00
         STA enemyRunSpeed,X
 UE_NoLanding 
-		LDA enemyJumpSpeed,X
+        LDA enemyJumpSpeed,X
         CLC 
         ADC enemyJumpSubPixel,X
         STA enemyJumpSubPixel,X
@@ -1296,7 +1296,7 @@ UE_NoLanding
 UE_Done RTS
 
 UE_HorizMovement 
-		TAY
+        TAY
         AND #$08
         BEQ UE_HorizMovementLeft
         LDA enemyRunSpeed,X
@@ -1306,21 +1306,21 @@ UE_HorizMovement
         BCC UE_MoveRight
         JSR UE_MoveRight
 UE_MoveRight 
-		INC enemyUpperX,X
+        INC enemyUpperX,X
         INC enemyLowerX,X
         BNE UE_RightNoMSB
         LDA #$01
         STA enemyUpperXMSB,X
         STA enemyLowerXMSB,X
 UE_RightNoMSB 
-		LDA #$08
+        LDA #$08
         STA enemyHorizMove,X
         LDA #$00
         STA enemyClimbingCopy,X
         RTS 
 
 UE_HorizMovementLeft
-		TYA
+        TYA
         AND #$04
         BEQ UE_NoHorizMove
         LDA enemyRunSpeed,X
@@ -1330,13 +1330,13 @@ UE_HorizMovementLeft
         BCC UE_MoveLeft
         JSR UE_MoveLeft
 UE_MoveLeft
-		LDA enemyUpperX,X
+        LDA enemyUpperX,X
         BNE UE_LeftNoMSB
         LDA #$00
         STA enemyUpperXMSB,X
         STA enemyLowerXMSB,X
 UE_LeftNoMSB 
-		DEC enemyUpperX,X
+        DEC enemyUpperX,X
         DEC enemyLowerX,X
         LDA #$04
         STA enemyHorizMove,X
@@ -1345,11 +1345,11 @@ UE_LeftNoMSB
         RTS
 
 UE_NoHorizMove 
-		JSR UpdateEnemyClimb
+        JSR UpdateEnemyClimb
         JMP UE_Next
 
 UE_CheckJumpOrClimb 
-		LDA enemyJumping,X
+        LDA enemyJumping,X
         BNE UE_UpdateJumpArc
         LDA charTypeAtEnemy,X
         AND #$03
@@ -1362,7 +1362,7 @@ UE_CheckJumpOrClimb
         JMP UE_NoHorizMove
 
 UE_NoLadderAt 
-		LDA charTypeBelowEnemy,X
+        LDA charTypeBelowEnemy,X
         AND #$03
         BEQ UE_NoLadderBelow
         AND enemyControls,X
@@ -1370,19 +1370,19 @@ UE_NoLadderAt
         JMP UpdateEnemyClimb
 
 UE_NoLadderBelow 
-		LDA enemyClimbingCopy,X
+        LDA enemyClimbingCopy,X
         BEQ UE_NotClimbing
 UE_EnemyGrabLadder 
-		JMP UE_NoHorizMove
+        JMP UE_NoHorizMove
 
 UE_NotClimbing 
-		LDA enemyControls,X
+        LDA enemyControls,X
         AND #$01
         BNE UE_InitJumpArc
         JMP UE_Next
 
 UE_InitJumpArc 
-		LDA #$01
+        LDA #$01
         STA enemyJumping,X
         LDA enemyControls,X
         LDA enemyHorizMove,X
@@ -1398,7 +1398,7 @@ UE_InitJumpArc
         SBC jumpArcTbl,Y
         STA enemyBaseY,X
 UE_UpdateJumpArc 
-		LDA charTypeAtEnemy,X
+        LDA charTypeAtEnemy,X
         AND #$03
         BEQ UE_JumpNoLadder
         LDY enemyType,X
@@ -1407,7 +1407,7 @@ UE_UpdateJumpArc
         AND enemyControls,X
         BNE UE_EnemyGrabLadder
 UE_JumpNoLadder 
-		LDY enemyJumpArcIndex,X
+        LDY enemyJumpArcIndex,X
         LDA enemyBaseY,X
         CLC 
         ADC jumpArcTbl,Y
@@ -1429,20 +1429,20 @@ UE_JumpNoLadder
         JMP UE_CheckJumpHorizMove
 
 UE_DecJumpArc 
-		DEY
+        DEY
         BPL UE_JumpArcNotDone
         LDA #$80
         STA enemyJumping,X
         INY
 UE_JumpArcNotDone 
-		TYA
+        TYA
         STA enemyJumpArcIndex,X
 UE_CheckJumpHorizMove
-		LDA enemyControls,X
+        LDA enemyControls,X
         AND #$0C
         BEQ UE_NoJumpHorizMove
         TAY
         JSR UE_HorizMovement
 UE_NoJumpHorizMove 
-		JMP UE_Next
+        JMP UE_Next
 

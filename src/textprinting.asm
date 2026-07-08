@@ -1,7 +1,4 @@
-
-
-
-ShowTitleScreen 
+ShowTitleScreen
         LDA #$00
         STA frameSyncFlag
         JSR PrintTextScreen
@@ -64,7 +61,8 @@ PTS_Done
 stageTextAddrModTbl 
         .BYTE $00,$00,$06,$06,$00
 
-aC563   .BYTE $00
+frameCount
+        .BYTE $00
 
 InitSprites 
         LDY #$14

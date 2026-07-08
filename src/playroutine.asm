@@ -1,4 +1,4 @@
- 		* = $E000
+         * = $E000
 
 PlaySoundChannel1 LDX #$00
 PlaySound STA playRoutineLo

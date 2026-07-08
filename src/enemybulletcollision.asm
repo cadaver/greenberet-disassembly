@@ -1,4 +1,4 @@
-		* = $FD01
+        * = $FD01
 
 CheckEnemyBulletHits LDX #$02
 CEBH_Loop LDA bulletActive+3,X

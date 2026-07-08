@@ -1,5 +1,5 @@
-CheckKnifeCollisions 
-		LDX #$05
+CheckKnifeCollisions
+        LDX #$05
         PHA
         AND #$02
         LSR
@@ -20,7 +20,7 @@ CheckKnifeCollisions
         ADC knifeOffsetTbl,Y
         STA hitPointX
 CKC_Loop 
-		LDA enemyActive,X
+        LDA enemyActive,X
         BNE CKC_CheckEnemy
         LDA stageEndReached
         BEQ CKC_Next
@@ -33,12 +33,12 @@ CKC_Loop
         BEQ CKC_Next
         JSR CKC_CheckDogBounds
 CKC_Next
-		DEX
+        DEX
         BPL CKC_Loop
         RTS
 
 CKC_CheckEnemy 
-		LDA enemyDying,X
+        LDA enemyDying,X
         ORA enemyHit,X
         BNE CKC_Next
         LDA enemyType,X
@@ -51,14 +51,14 @@ CKC_CheckEnemy
         JMP CKC_Next
 
 CKC_InGyroBossFight
-		CPX #$01
+        CPX #$01
         BEQ CKC_CheckBounds
         CPX #$04
         BEQ CKC_CheckBounds
         JMP CKC_Next
 
 CKC_CheckBounds 
-		LDA enemyCoarseX,X
+        LDA enemyCoarseX,X
         CMP #$0D
         BCC CKC_NoCollision
         CLC 
@@ -98,18 +98,18 @@ CKC_CheckBounds
         LDA #$01
         STA parachuteKillFlag
 CKC_NotParachute 
-		JSR PlayEnemyKillSound
+        JSR PlayEnemyKillSound
         LDX tempStoreX
         LDY tempStoreY
 CKC_NoCollision 
-		JMP CKC_Next
+        JMP CKC_Next
 
 knifeOffsetTbl 
-		.BYTE $00,$F0,$F3,$F9,$0B,$15,$00,$F0
+        .BYTE $00,$F0,$F3,$F9,$0B,$15,$00,$F0
         .BYTE $11,$0D,$F9,$F2
 
 CKC_CheckDogBounds 
-		LDA enemyDying,X
+        LDA enemyDying,X
         BNE CKC_DogBoundsDone
         LDA enemyCoarseX,X
         CMP #$22
@@ -126,13 +126,13 @@ CKC_CheckDogBounds
         CMP knifeHitBoundLow
         BCS CKC_DogBoundsXOK
 CKC_DogBoundsXRetry 
-		LDA $026D ;Never written to
+        LDA $026D ;Never written to
         CMP knifeHitBoundLow
         BCS CKC_DogBoundsDone
         CMP knifeHitBoundHigh
         BCC CKC_DogBoundsDone
 CKC_DogBoundsXOK 
-		LDA enemyUpperY,X
+        LDA enemyUpperY,X
         SEC
         SBC #$0D
         STA knifeHitBoundHigh
@@ -145,13 +145,13 @@ CKC_DogBoundsXOK
         CMP knifeHitBoundLow
         BCS CKC_DogBoundsHit
 CKC_DogBoundsYRetry
-		LDA $0271 ;Never written to
+        LDA $0271 ;Never written to
         CMP knifeHitBoundLow
         BCC CKC_DogBoundsDone
         CMP knifeHitBoundHigh
         BCS CKC_DogBoundsDone
 CKC_DogBoundsHit 
-		LDA #$80
+        LDA #$80
         STA dogHit-1,X ;Use standard enemy indexing, while dog update offsets by one
         STX tempStoreX
         STY tempStoreY
@@ -159,10 +159,10 @@ CKC_DogBoundsHit
         LDX tempStoreX
         LDY tempStoreY
 CKC_DogBoundsDone 
-		RTS
+        RTS
 
 CheckEnemyToPlayer 
-		LDX #$05
+        LDX #$05
         LDA playerCoarseX
         CLC
         STA playerHitCheckX
@@ -170,15 +170,15 @@ CheckEnemyToPlayer
         CLC
         STA playerHitCheckY
 CETP_Loop 
-		LDA enemyActive,X
+        LDA enemyActive,X
         BNE CETP_CheckEnemy
 CETP_Next 
-		DEX
+        DEX
         BPL CETP_Loop
         JMP CheckEnemyBulletHits
 
 CETP_CheckEnemy 
-		LDA enemyDying,X
+        LDA enemyDying,X
         BNE CETP_Next
         LDA enemyCoarseX,X
         CLC 
@@ -199,7 +199,7 @@ CETP_CheckEnemy
         CLC 
         ADC #$12
 CETP_ProneEnemy 
-		ADC #$0A
+        ADC #$0A
         STA enemyTouchBoundHigh
         LDA enemyUpperY,X
         SEC
@@ -215,11 +215,11 @@ CETP_ProneEnemy
         LDA numAliveGyros
         BNE CETP_NoEnemyTouch
 KillPlayer 
-		LDY #$29
+        LDY #$29
         JSR PlaySong
         PLA
         PLA
         JMP InitNextLife
 
 CETP_NoEnemyTouch 
-		JMP CETP_Next
+        JMP CETP_Next

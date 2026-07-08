@@ -76,10 +76,10 @@ SDI_StoreD010
         BMI SDI_AllDone
         JMP SDI_Loop
 
-SDI_AllDone 
+SDI_AllDone
         LDA #$07
         STA sprIrqHWIndex
-        INC aC563
+        INC frameCount
         LDA #$F6
         STA $D012
         LDA #$32

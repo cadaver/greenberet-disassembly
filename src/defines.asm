@@ -259,7 +259,7 @@ score = $03B4
 nextExtraLifeScore = $03B7
 scoreAdd = $03BA
 
-		; Screens and the color RAM
+        ; Screens and the color RAM
 
 screen = $4000
 statusScreen = $C400

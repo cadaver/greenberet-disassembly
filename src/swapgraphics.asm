@@ -1,4 +1,5 @@
-SwapGraphicsData TAY 
+SwapGraphicsData 
+        TAY
         LDA $3FF0,Y
         EOR #$01
         STA $3FF0,Y
@@ -73,7 +74,7 @@ swapLengthTblLo
         .WORD $0440,$0DC0,$0DC0,$0800,$02D0,$0240,$0240,$0280
         .WORD $0687
 
-		.BYTE $30,$35,$35,$30,$30,$35,$35,$35,$35
+        .BYTE $30,$35,$35,$30,$30,$35,$35,$35,$35
 
 FormatWeaponShots LDA collectedExtraWeapon
         BNE FWS_HasWeapon

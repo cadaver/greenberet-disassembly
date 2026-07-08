@@ -1,5 +1,5 @@
-CheckKillEnemies 
-		LDX #$05
+CheckKillEnemies
+        LDX #$05
 CKE_Loop LDA enemyActive,X
         BNE CKE_IsActive
 CKE_Next DEX
@@ -7,14 +7,14 @@ CKE_Next DEX
         RTS 
 
 CKE_IsActive 
-		LDA enemyHit,X
+        LDA enemyHit,X
         BEQ CKE_Next
         LDA enemyDying,X
         BEQ CKE_DoKill
         JMP CKE_NoNewKill
 
 CKE_DoKill
-		LDA enemyType,X
+        LDA enemyType,X
         ASL
         TAY
         SED
@@ -39,7 +39,7 @@ CKE_DoKill
         CMP #$06
         BNE CKE_NoSpawnPickup
 CKE_CheckSpawnPickup 
-		PHA
+        PHA
         LDA enemyLowerY,X
         SEC 
         SBC #$15
@@ -72,7 +72,7 @@ CKE_CheckSpawnPickup
         LDA #$0B
         STA weaponPickupCoarseX
 CKE_NoSpawnPickup 
-		LDA enemyHorizMove,X
+        LDA enemyHorizMove,X
         LSR 
         LSR
         LSR
@@ -82,7 +82,7 @@ CKE_NoSpawnPickup
         LDA enemyDeadLowerFrames,Y
         STA enemyLowerFrame,X
 CKE_NoNewKill 
-		LDA enemyTimer,X
+        LDA enemyTimer,X
         CMP #$60
         BCC CKE_Remove
         AND #$04
@@ -95,28 +95,28 @@ CKE_NoNewKill
         JMP CKE_Next
 
 CKE_Remove 
-		JSR RemoveEnemy
+        JSR RemoveEnemy
         JMP CKE_Next
 
 enemyDeadColorTbl 
-		.BYTE $01,$02
+        .BYTE $01,$02
 
 enemyDeadLowerFrames
-		.BYTE $B0,$B2
+        .BYTE $B0,$B2
 
 enemyDeadUpperFrames
-		.BYTE $B1,$B3
+        .BYTE $B1,$B3
 
 weaponPickupColorTbl
-		.BYTE $01,$05,$01,$05,$01
+        .BYTE $01,$05,$01,$05,$01
 
 weaponPickupFrameTbl
-		.BYTE $67,$67,$6C,$67,$6D
+        .BYTE $67,$67,$6C,$67,$6D
 
 enemyScoreTblLo
-		.BYTE $20
+        .BYTE $20
 
 enemyScoreTblHi
-		.BYTE $00,$50,$02,$35,$00,$25,$00,$50
+        .BYTE $00,$50,$02,$35,$00,$25,$00,$50
         .BYTE $00,$75,$00,$85,$00,$35,$00,$55
         .BYTE $00

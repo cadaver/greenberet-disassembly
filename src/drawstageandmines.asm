@@ -1,10 +1,10 @@
-DrawNewColumn 
-		LDA newColumnFlag
+DrawNewColumn
+        LDA newColumnFlag
         BNE DNC_AdvanceAndDraw
         RTS
 
 DNC_AdvanceAndDraw 
-		LDX #$00
+        LDX #$00
         STX newColumnFlag
         LDA #$07
         STA columnBase
@@ -14,7 +14,7 @@ DNC_AdvanceAndDraw
         BNE DNC_NoMSB
         INC stagePosMSB
 DNC_NoMSB 
-		LDA stagePosLSB
+        LDA stagePosLSB
         TAY
         AND #$07
         STA columnAdd
@@ -33,7 +33,7 @@ DNC_NoMSB
         ADC #$C0
         STA columnSrcHi
 DNC_TileLoop 
-		LDY columnSrcBase
+        LDY columnSrcBase
         LDA #$00
         STA screenPtrLo
         LDA (columnSrcLo),Y
@@ -53,7 +53,7 @@ DNC_TileLoop
         ORA #$10
         STA srcPtrHi
 DNC_RowLoop 
-		LDA columnBase
+        LDA columnBase
         ASL 
         ASL 
         ASL 
@@ -71,18 +71,18 @@ DNC_RowLoop
         JMP DNC_RowLoop
 
 DNC_TileFinished 
-		LDA #$07
+        LDA #$07
         STA columnBase
         CPX #$20
         BCC DNC_NewTile
         JMP DNC_DrawMines
 
 DNC_NewTile 
-		DEC columnSrcBase
+        DEC columnSrcBase
         JMP DNC_TileLoop
 
 AnimateMineChars 
-		LDA stage
+        LDA stage
         ASL
         TAY
         LDA mineCharAddrTblLo,Y
@@ -97,7 +97,7 @@ AnimateMineChars
         LDY mineFrameDataIndex,X
         LDX #$0F
 AMC_Loop 
-		LDA mineFrameData,Y
+        LDA mineFrameData,Y
 mineCharDestLo   =*+$01
 mineCharDestHi   =*+$02
         STA $FFFF,X
@@ -107,10 +107,10 @@ mineCharDestHi   =*+$02
         RTS 
 
 DNC_DrawMines 
-		LDY stage
+        LDY stage
         LDX stageMineStartTbl,Y
 DNC_DrawMinesLoop 
-		LDA stagePosMSB
+        LDA stagePosMSB
         CMP stageMinePosMSBTbl,X
         BNE DNC_DrawMinesNext
         LDA stagePosLSB
@@ -127,70 +127,70 @@ DNC_DrawMinesLoop
         RTS 
 
 DNC_DrawMinesNext 
-		INX
+        INX
         TXA
         CMP stageMineEndTbl,Y
         BCC DNC_DrawMinesLoop
         RTS
 
 stageMineStartTbl 
-		.BYTE $00,$06,$1A,$2E
+        .BYTE $00,$06,$1A,$2E
 stageMineEndTbl 
-		.BYTE $06,$1A,$2E,$44
+        .BYTE $06,$1A,$2E,$44
 
 stageMinePosMSBTbl 
-		.BYTE $00,$00,$00,$00,$00,$00,$01,$01,$02,$02,$02,$02,$02,$02,$02,$02
+        .BYTE $00,$00,$00,$00,$00,$00,$01,$01,$02,$02,$02,$02,$02,$02,$02,$02
         .BYTE $02,$02,$02,$02,$03,$03,$03,$03,$03,$03,$04,$04,$04,$04,$04,$04
         .BYTE $04,$04,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$06,$06,$06,$06
         .BYTE $06,$06,$06,$06,$06,$06,$06,$06,$07,$07,$07,$07,$07,$07,$07,$07
         .BYTE $07,$07,$08,$08
 
 stageMinePosLSBTbl 
-		.BYTE $EC,$ED,$F0,$F1,$F4,$F5,$DA,$DB,$00,$01,$08,$09,$2E,$2F,$B4,$B5
+        .BYTE $EC,$ED,$F0,$F1,$F4,$F5,$DA,$DB,$00,$01,$08,$09,$2E,$2F,$B4,$B5
         .BYTE $B8,$B9,$BC,$BD,$26,$27,$2A,$2B,$2E,$2F,$24,$25,$28,$29,$54,$55
         .BYTE $82,$83,$06,$07,$1C,$1D,$4C,$4D,$94,$95,$EE,$EF,$00,$01,$A8,$A9
         .BYTE $C0,$C1,$C6,$C7,$D8,$D9,$F0,$F1,$08,$09,$26,$27,$C4,$C5,$CC,$CD
         .BYTE $FE,$FF,$0A,$0B
 
 mineFrameDataIndex 
-		.BYTE $0F,$1F
+        .BYTE $0F,$1F
 
 mineCharAddrTblLo
-		.BYTE $90
+        .BYTE $90
 
 mineCharAddrTblHi
-		.BYTE $7A,$F0,$79,$90,$7A,$00,$7D
+        .BYTE $7A,$F0,$79,$90,$7A,$00,$7D
 
 mineCharCodes 
-		.BYTE $52,$3E,$52,$A0
+        .BYTE $52,$3E,$52,$A0
 
 mineClearCharTbl  
-		.BYTE $50,$50,$50,$50
+        .BYTE $50,$50,$50,$50
 
 mineFrameData
-		.BYTE $55,$54,$43,$3F,$FA,$E8,$FF,$30,$55,$15,$C1,$FC,$AF,$2B,$FF,$0C
+        .BYTE $55,$54,$43,$3F,$FA,$E8,$FF,$30,$55,$15,$C1,$FC,$AF,$2B,$FF,$0C
         .BYTE $55,$54,$42,$2A,$AF,$BC,$FF,$30,$55,$15,$81,$A8,$FA,$3E,$FF,$0C
 
 charData1 
-		.BYTE $FF,$FF,$00,$FF,$00,$00,$55,$55,$FF,$00,$FF,$00,$FF,$00,$55,$55
+        .BYTE $FF,$FF,$00,$FF,$00,$00,$55,$55,$FF,$00,$FF,$00,$FF,$00,$55,$55
 
 charData2 
-		.BYTE $42,$50,$54,$55,$55,$55,$55,$55,$55,$55,$55,$55,$55,$15,$05,$C1
+        .BYTE $42,$50,$54,$55,$55,$55,$55,$55,$55,$55,$55,$55,$55,$15,$05,$C1
 
 charData3 
-		.BYTE $77,$00,$FF,$AA,$40,$40,$30,$30,$55,$55,$55,$55,$55,$55,$55,$55
+        .BYTE $77,$00,$FF,$AA,$40,$40,$30,$30,$55,$55,$55,$55,$55,$55,$55,$55
 
 CheckDestroyMines LDX #$02
 CDM_Loop  
-		LDA bulletActive,X
+        LDA bulletActive,X
         BNE CDM_BulletActive
 CDM_Next  
-		DEX
+        DEX
         BPL CDM_Loop
         RTS 
 
 CDM_BulletActive 
-		LDY collectedExtraWeapon
+        LDY collectedExtraWeapon
         LDA bulletY,X
         CMP #$DE
         BCC CDM_Next
@@ -209,7 +209,7 @@ CDM_BulletActive
         JMP CDM_Next
 
 CDM_GrenadeCheck 
-		LDA bulletXSpeed,X
+        LDA bulletXSpeed,X
         BNE CDM_Next
         LDA bulletCoarseX,X
         LSR 
@@ -233,11 +233,11 @@ CDM_GrenadeMineLoop
         JMP CDM_Next
 
 CDM_GrenadeDoDestroy
-	    JSR DestroyMine
+        JSR DestroyMine
         JMP CDM_GrenadeMineLoop
 
 DestroyMine
-		STY tempStoreY2
+        STY tempStoreY2
         LDY stage
         LDA mineClearCharTbl,Y
         LDY tempStoreY2
@@ -248,10 +248,10 @@ DestroyMine
         STA screen+$398,Y
         INY
 DM_OutsideScreen
-		RTS
+        RTS
 
 CheckDestroyMine 
-		STY tempStoreY2
+        STY tempStoreY2
         PHA
         LDA stage
         ASL
@@ -269,7 +269,7 @@ CheckDestroyMine
         BPL CDM_NoUnderFlow
         INY
 CDM_NoUnderFlow
-		PLP
+        PLP
         RTS 
 
 CDM_Done
@@ -279,7 +279,7 @@ CDM_Done
         RTS
 
 CheckPlayerHitMine 
-		LDA stage
+        LDA stage
         ASL 
         TAY
         LDA charAtPlayer
@@ -290,7 +290,7 @@ CheckPlayerHitMine
         RTS
 
 KillPlayerToMine 
-		JSR ResetSID
+        JSR ResetSID
         INC haltPlayerFlag
         JSR PlayExplosionSound
         JSR WaitSongToEnd
@@ -301,9 +301,9 @@ KillPlayerToMine
         JMP InitNextLife
 
 mineLeftCharTbl 
-		.BYTE $52
+        .BYTE $52
 mineRightCharTbl 
-		.BYTE $53,$3E,$3F,$52,$53,$A0,$A1
+        .BYTE $53,$3E,$3F,$52,$53,$A0,$A1
 
 ResetGameChars PHP
         LDY #$0F
@@ -311,7 +311,7 @@ ResetGameChars PHP
         LDA #$30
         STA $01
 RGC_Loop 
-		LDA charData1,Y
+        LDA charData1,Y
         STA $79F0,Y
         LDA charData2,Y
         STA $DA90,Y
@@ -325,19 +325,19 @@ RGC_Loop
         RTS
 
 ResetBank2GameChars 
-		LDY #$0F
+        LDY #$0F
 RB2GC_Loop 
-		LDA charData2,Y
+        LDA charData2,Y
         STA f7A90,Y
         DEY
         BPL RB2GC_Loop
         RTS
 
 BeginStage 
-		LDX #$3F
+        LDX #$3F
         STX haltPlayerFlag
 BS_InitRowPtrs 
-		LDA rowPtrInitData,X
+        LDA rowPtrInitData,X
         STA screenRowPtrs,X
         DEX
         BPL BS_InitRowPtrs
@@ -355,19 +355,19 @@ BS_InitRowPtrs
         LDA #$00
         STA frameSyncFlag
 BS_InitialDrawLoop 
-		JSR UpdateMusicWaitFrame
+        JSR UpdateMusicWaitFrame
         LDA #$01
         STA newColumnFlag
         JSR DrawNewColumn
         LDX #$1E
 BS_IncrementRowPtrs 
-		INC screenRowPtrs,X
+        INC screenRowPtrs,X
         INC colorRowPtrs,X
         BNE BS_IncNoMSB
         INC screenRowPtrsHi,X
         INC colorRowPtrsHi,X
 BS_IncNoMSB 
-		DEX
+        DEX
         DEX
         BPL BS_IncrementRowPtrs
         INC initialDrawColumn
@@ -387,10 +387,10 @@ BS_IncNoMSB
         JMP BS_InitialDrawLoop
 
 BS_InitialDrawDone 
-		LDA #$09
+        LDA #$09
         LDY #$00
 BS_MiddleColorsLoop 
-		STA colorRam+$140,Y
+        STA colorRam+$140,Y
         INY
         CPY #$A0
         BCC BS_MiddleColorsLoop
@@ -405,10 +405,10 @@ BS_MiddleColorsLoop
         RTS
 
 ClearGameScreen 
-		LDY #$00
+        LDY #$00
         LDA #$20
 CGS_Loop 
-		STA screen+$050,Y
+        STA screen+$050,Y
         STA screen+$136,Y
         STA screen+$21C,Y
         STA screen+$302,Y
@@ -417,7 +417,7 @@ CGS_Loop
         BCC CGS_UseBlack
         LDA #$09
 CGS_UseBlack 
-		STA colorRam+$050,Y
+        STA colorRam+$050,Y
         LDA #$09
         STA colorRam+$136,Y
         STA colorRam+$21C,Y
@@ -435,21 +435,21 @@ rowPtrInitData
         .BYTE $7F,$DA,$A7,$DA,$CF,$DA,$F7,$DA,$1F,$DB,$47,$DB,$6F,$DB,$97,$DB
 
 sprAndBitTbl
-		.BYTE $FE,$FD,$FB,$F7,$EF,$DF,$BF,$7F
+        .BYTE $FE,$FD,$FB,$F7,$EF,$DF,$BF,$7F
 
 sprOrBitTbl
-		.BYTE $01,$02,$04,$08,$10,$20,$40,$80
+        .BYTE $01,$02,$04,$08,$10,$20,$40,$80
 
 irqJumpTblHi   =*+$01
 irqJumpTblLo
-		.WORD SpriteDisplayIrq,IrqUpdateGame,ScrollSplitIrq
+        .WORD SpriteDisplayIrq,IrqUpdateGame,ScrollSplitIrq
 
         .BYTE $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
         .BYTE $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
 
 textScreenTblHi   =*+$01
 textScreenTblLo 
-		.WORD titleTexts,rescueCaptivesText,wellDoneText,victoryText
+        .WORD titleTexts,rescueCaptivesText,wellDoneText,victoryText
 
         .BYTE $CA,$4C
 a3DFE   .BYTE $00

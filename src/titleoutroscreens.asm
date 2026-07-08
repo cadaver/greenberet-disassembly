@@ -1,16 +1,16 @@
-InitVideo 
-		LDA #$0B
+InitVideo
+        LDA #$0B
         STA $D011
         CLD
         STX $D01C
         LDY #$06
 IV_RegLoop 
-		LDA videoRegsInitTbl,Y
+        LDA videoRegsInitTbl,Y
         STA $D020,Y
         DEY
         BPL IV_RegLoop
 EnterTitleScreen 
-		LDA #$00
+        LDA #$00
         STA spawnTblIndexMod
         STA stagePosLSB
         STA stagePosMSB
@@ -22,7 +22,7 @@ EnterTitleScreen
         STX playerLowerColor
         LDX #$08
 ETS_ResetScore
-		STA score,X
+        STA score,X
         DEX
         BPL ETS_ResetScore
         LDA #$30
@@ -77,7 +77,7 @@ ETS_ResetScore
         JSR PlaySong
         JSR ToggleScreenOn
 IntroLoop 
-		JSR UpdatePrisoners
+        JSR UpdatePrisoners
         JSR AnimateEnemies
         JSR CopySpritesToIrq
         JSR UpdateEnemies
@@ -107,13 +107,13 @@ IntroLoop
         JMP MainLoop
 
 WaitSongToEnd 
-		JSR UpdateMusicWaitFrame
+        JSR UpdateMusicWaitFrame
         JSR CheckSongEnd
         BNE WaitSongToEnd
         RTS
 
 InitPrisoners 
-		LDX #$03
+        LDX #$03
 IP_Loop LDA prisonerFrameTbl,X
         STA enemyUpperFrame,X
         LDA #$B5
@@ -138,16 +138,16 @@ IP_Loop LDA prisonerFrameTbl,X
         RTS
 
 prisonerFrameTbl 
-		.BYTE $B4,$A7,$B4,$A7,$A7,$B4,$A7,$B4
+        .BYTE $B4,$A7,$B4,$A7,$A7,$B4,$A7,$B4
 
 prisonerXTbl 
-		.BYTE $3F,$87,$D7,$1F
+        .BYTE $3F,$87,$D7,$1F
 
 prisonerXMSBTbl
-		.BYTE $00,$00,$00,$01
+        .BYTE $00,$00,$00,$01
 
 SpawnIntroGuards 
-		LDA #$01
+        LDA #$01
         STA spawnEnemyFlag+2
         STA spawnEnemyFlag+5
         LDA #$03
@@ -155,7 +155,7 @@ SpawnIntroGuards
         STA spawnEnemyType+5
         JSR FindNextSpawnType
 SIG_Loop 
-		JSR FindFreeEnemySlot
+        JSR FindFreeEnemySlot
         LDA #$C5
         JSR CSNE_SetEnemyPos
         JSR FindNextSpawnType
@@ -163,14 +163,14 @@ SIG_Loop
         RTS
 
 UpdatePrisoners 
-		LDX #$03
+        LDX #$03
         LDA gameTimer
         AND #$10
         LSR
         LSR
         TAY
 UPr_Loop 
-		LDA prisonerFrameTbl,Y
+        LDA prisonerFrameTbl,Y
         STA enemyUpperFrame,X
         INY
         DEX
@@ -178,11 +178,11 @@ UPr_Loop
         RTS
 
 UpdateStageOutro 
-		LDA playerCoarseX
+        LDA playerCoarseX
         CMP #$89
         BCS USO_PlayerAtWall
 USO_MovePlayerRight 
-		CLC
+        CLC
         ADC #$01
         STA playerCoarseX
         ASL
@@ -195,12 +195,12 @@ USO_MovePlayerRight
         RTS
 
 USO_SetSpritesOnTop 
-		LDA #$00
+        LDA #$00
         STA $D01B
         RTS
 
 USO_PlayerAtWall 
-		CMP #$8A
+        CMP #$8A
         BCC USO_PlayerClimbing
         LDA spriteY
         CMP #$C0
@@ -213,7 +213,7 @@ USO_PlayerAtWall
         JMP USO_MovePlayerRight
 
 USO_PlayerClimbing 
-		LDA spriteY
+        LDA spriteY
         SEC
         SBC #$03
         LDY #$0F
@@ -232,13 +232,13 @@ USO_PlayerClimbing
         JMP USO_MovePlayerRight
 
 UpdateVictoryAnim 
-		LDA playerCoarseX
+        LDA playerCoarseX
         CMP #$98
         BCS UVA_Finished
         PHA
         LDX #$00
 UVA_Loop 
-		PLA
+        PLA
         PHA
         CMP prisonerFreeXTbl,X
         BCC UVA_Next
@@ -247,14 +247,14 @@ UVA_Loop
         LDA #$8B
         STA enemyLowerFrame,X
 UVA_Next 
-		INX
+        INX
         CPX #$04
         BNE UVA_Loop
         PLA
         JMP USO_MovePlayerRight
 
 UVA_Finished 
-		LDA #$00
+        LDA #$00
         STA temp2
         LDA #$8A
         STA spriteFrame
@@ -263,10 +263,10 @@ UVA_Finished
         RTS
 
 prisonerFreeXTbl 
-		.BYTE $1F,$43,$6B,$8F
+        .BYTE $1F,$43,$6B,$8F
 
 UpdateStageArrows 
-		JSR USA_InitialDraw
+        JSR USA_InitialDraw
         LDX stage
         DEX
         LDY stageArrowPosTbl,X
@@ -281,19 +281,19 @@ UpdateStageArrows
         BEQ USA_UseOutlineArrow
         LDA #$7A
 USA_ArrowAnimLoop 
-		STA screen+$398,Y
+        STA screen+$398,Y
         INY
         DEX
         BNE USA_ArrowAnimLoop
 USA_UseOutlineArrow 
-		PLA
+        PLA
         TAX
         LDA #$75
         .BYTE $2C
 USA_FinishArrowGroup 
-		LDA #$7A
+        LDA #$7A
 USA_FinishLoop 
-		CPX #$03
+        CPX #$03
         BEQ USA_Done
         STA screen+$398,Y
         INY
@@ -301,15 +301,15 @@ USA_FinishLoop
         JMP USA_FinishLoop
 
 USA_Done 
-		RTS
+        RTS
 
 stageArrowPosTbl 
-		.BYTE $0A,$16,$21
+        .BYTE $0A,$16,$21
 
 USA_InitialDraw 
-		LDX stage
+        LDX stage
 USA_InitialDrawLoop 
-		CPX #$01
+        CPX #$01
         BCC USA_Done
         DEX
         TXA

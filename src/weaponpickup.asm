@@ -1,10 +1,10 @@
-UpdateWeaponPickup 
-		LDA weaponPickupType
+UpdateWeaponPickup
+        LDA weaponPickupType
         BNE UWP_CheckCollect
         RTS
 
-UWP_CheckCollect 
-		LDA weaponPickupCoarseX
+UWP_CheckCollect
+        LDA weaponPickupCoarseX
         CLC
         ADC #$06
         CMP playerCoarseX
@@ -32,14 +32,14 @@ UWP_CheckCollect
         STA weaponPickupType
         STA extraPickupY
         JSR FormatWeaponShots
-UWP_AtRest  
-		RTS
+UWP_AtRest
+        RTS
 
-extraWeaponShotsTbl 
-		.BYTE $00,$00,$04,$03,$03
+extraWeaponShotsTbl
+        .BYTE $00,$00,$04,$03,$03
 
 UWP_Move 
-		LDA lastScrollSpeed
+        LDA lastScrollSpeed
         BEQ UWP_NotScrolledOff
         LDA weaponPickupX
         SEC
@@ -49,7 +49,7 @@ UWP_Move
         LDA #$00
         STA weaponPickupXMSB
 UWP_NoMSBClear 
-		LDA weaponPickupCoarseX
+        LDA weaponPickupCoarseX
         CMP #$0A
         BCS UWP_NotScrolledOff
         LDA #$00
@@ -58,7 +58,7 @@ UWP_NoMSBClear
         RTS
 
 UWP_NotScrolledOff 
-		LDA weaponPickupRestFlag
+        LDA weaponPickupRestFlag
         BNE UWP_AtRest
         LDA weaponPickupX
         CLC
@@ -68,7 +68,7 @@ UWP_NotScrolledOff
         LDA #$01
         STA weaponPickupXMSB
 UWP_NoMSBSet 
-		INC extraPickupY
+        INC extraPickupY
         LDY #$00
         STY screenPtrHi
         LDA extraPickupY
@@ -102,4 +102,4 @@ UWP_NoMSBSet
         BNE UWP_NoLanding
         STA weaponPickupRestFlag
 UWP_NoLanding 
-		RTS
+        RTS

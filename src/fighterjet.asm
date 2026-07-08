@@ -1,5 +1,5 @@
 UpdateFighterJet
-		LDA fighterJetIndex
+        LDA fighterJetIndex
         BNE UFJ_IsActive
         LDA playerRightLimit
         CMP #$E0
@@ -8,31 +8,31 @@ UpdateFighterJet
         CMP #$07
         BCS SpawnFighterJet
 UFJ_NoSpawn
-		RTS
+        RTS
 
 SpawnFighterJet
-		LDY #$00
+        LDY #$00
         LDX #$02
 SFJ_SearchEmptyLoop
-		LDA bulletActive+3,X
+        LDA bulletActive+3,X
         BNE SFJ_BulletInUse
         INY
         CPY #$02
         BCS SFJ_SpawnOK
 SFJ_BulletInUse
-		DEX
+        DEX
         BPL SFJ_SearchEmptyLoop
         RTS
 
 SFJ_SpawnOK
-		JMP DoSpawnFighterJet
+        JMP DoSpawnFighterJet
 
 UFJ_IsActive 
-		JSR UFJ_DoJetMove
+        JSR UFJ_DoJetMove
         JMP CheckDropBomb
 
 UFJ_DoJetMove 
-		JMP MoveFighterJet
+        JMP MoveFighterJet
 
 FindJetOrBomb LDA bulletType+3,X
         CMP #$07
@@ -43,7 +43,7 @@ FindJetOrBomb LDA bulletType+3,X
         RTS
 
 MoveFighterJet 
-		LDX fighterJetIndex
+        LDX fighterJetIndex
         LDA bulletCoarseX,X
         CMP #$18
         BCS MFJ_Done
@@ -55,10 +55,10 @@ MoveFighterJet
         LDA #$C1
         STA bulletFrame,X
 MFJ_Done
-		RTS
+        RTS
 
 MFJ_FlyAway 
-		DEC bulletY,X
+        DEC bulletY,X
         LDA bulletY,X
         CMP #$42
         BCS MFJ_Done
@@ -71,23 +71,23 @@ MFJ_FlyAway
         RTS
 
 CheckDropBomb
-		LDA playerCoarseX
+        LDA playerCoarseX
         CLC
         ADC #$07
         CMP bulletCoarseX,X
         BCS CDB_DropOK
 CDB_Fail 
-		RTS
+        RTS
 
 CDB_DropOK 
-		TXA
+        TXA
         CMP fighterJetIndex
         BNE CDB_Check
         TAY
 CDB_Retry 
-		INY
+        INY
 CDB_Check 
-		LDA bulletType,Y
+        LDA bulletType,Y
         CPY #$06
         BCS CDB_Fail
         CMP #$07
@@ -105,7 +105,7 @@ CDB_Check
         RTS
 
 DoSpawnFighterJet 
-		LDA #$07
+        LDA #$07
         STA bulletType+3,X
         TXA
         CLC
@@ -129,7 +129,7 @@ DoSpawnFighterJet
         BEQ DSFJ_BombSlotOK
         INX
 DSFJ_BombSlotOK 
-		INX
+        INX
         LDA #$07
         STA bulletType+3,X
         STA bulletActive+3,X
