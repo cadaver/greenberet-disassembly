@@ -51,7 +51,7 @@ The rough memory layout is:
 - $C000-$DFFF Extra code and data, status panel screen (partial) at $C400 and extra charset data that is swapped in and out of the video bank
 - $E000-$FFFF Music/sound player and final pieces of extra code/data
 
-The source code is divided in files roughly according to the above memory layout. greenberet.asm is the main source file that includes the others. The executable load address is
+The source code is divided in files according to purpose, while keeping the memory order. greenberet.asm is the main source file that includes the others. The executable load address is
 $03BD to initialize the high score counter with the traditionally seen value 0003560. The scores use BCD mode internally and are only 6 digits (3 bytes), the last digit is always 0.
 
 The code will be commented and explained more as an ongoing process, and two bugs are to be found and understood:
