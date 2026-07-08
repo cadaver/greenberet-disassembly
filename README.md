@@ -46,10 +46,9 @@ The rough memory layout is:
 - $0200-$03BF Variables
 - $03C0-$06DF Title screen and stage intermission screen data
 - $06E0-$3FFF Main game code and data
-- $4000-$7FFF Graphics videobank
+- $4000-$7FFF Main graphics video bank
 - $8000-$BFFF Stage data
-- $C000-$CFFF Extra code and data, status panel screen (partial) at $C400 and text font
-- $D000-$DFFF Extra charset data that is swapped in and out
+- $C000-$DFFF Extra code and data, status panel screen (partial) at $C400 and extra charset data that is swapped in and out of the video bank
 - $E000-$FFFF Music/sound player and final pieces of extra code/data
 
 The source code is divided in files roughly according to the above memory layout. greenberet.asm is the main source file that includes the others. The executable load address is
