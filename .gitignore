@@ -1,0 +1,6 @@
+# C64 binaries
+*.bin
+*.prg
+
+# Symbol tables
+labels.txt
