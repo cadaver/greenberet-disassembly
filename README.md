@@ -43,14 +43,14 @@ and it does not appear if there aren't at least 2 free enemy bullets. When the s
 
 The rough memory layout is:
 
-$0200-$03BF Variables
-$03C0-$06DF Title screen and stage intermission screen data
-$06E0-$3FFF Main game code and data
-$4000-$7FFF Graphics videobank
-$8000-$BFFF Stage data
-$C000-$CFFF Extra code and data, status panel screen (partial) at $C400 and text font
-$D000-$DFFF Extra charset data that is swapped in and out
-$E000-$FFFF Music/sound player and final pieces of extra code/data
+- $0200-$03BF Variables
+- $03C0-$06DF Title screen and stage intermission screen data
+- $06E0-$3FFF Main game code and data
+- $4000-$7FFF Graphics videobank
+- $8000-$BFFF Stage data
+- $C000-$CFFF Extra code and data, status panel screen (partial) at $C400 and text font
+- $D000-$DFFF Extra charset data that is swapped in and out
+- $E000-$FFFF Music/sound player and final pieces of extra code/data
 
 The source code is divided in files roughly according to the above memory layout. greenberet.asm is the main source file that includes the others. The executable load address is
 $03BD to initialize the high score counter with the traditionally seen value 0003560. The scores use BCD mode internally and are only 6 digits (3 bytes), the last digit is always 0.
