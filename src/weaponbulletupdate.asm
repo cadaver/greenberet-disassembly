@@ -1,3 +1,9 @@
+        ; Routines for firing the player's extra weapon and updating bullets. Only enemy bullets store their type to
+        ; perform the correct kind of update; player bullets behave instead according to the last collected weapon,
+        ; which means that they can change behavior mid-air when a new weapon is collected. Grenades and player /
+        ; enemy jumps all use a lookup table for the vertical motion arc instead of affecting speed by gravity and
+        ; then adding to position.
+
 FlashBullets
         LDA gameTimer
         AND #$04
@@ -93,7 +99,7 @@ UB_XMoveLeft
 UB_NoMSBClear 
         JMP UB_XMoveNext
 
-CheckGrenadeHitEnemy 
+CheckGrenadeHitEnemy
         LDY #$02
 CGHE_Loop 
         LDA bulletActive,Y
@@ -252,10 +258,10 @@ extraWeaponJumpTblLo
 UEW_NoWeapon 
         RTS
 
-UpdateUnusedWeapon 
+UpdateUnusedWeapon
         RTS
 
-UpdateGrenade 
+UpdateGrenade
         LDX #$02
 UG_Loop LDA bulletActive,X
         BNE UG_GrenadeActive
@@ -263,7 +269,7 @@ UG_Loop LDA bulletActive,X
         BPL UG_Loop
         RTS
 
-UG_GrenadeActive 
+UG_GrenadeActive
         LDA bulletYDir,X
         BNE UG_YMove
         JSR UG_CheckLanding

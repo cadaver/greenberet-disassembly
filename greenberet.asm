@@ -1,6 +1,6 @@
         ; Variable & zeropage variable defines
 
-		.INCLUDE src/defines.asm
+        .INCLUDE src/defines.asm
 
         ; Main game code and data at $03BF-$3FFF
 

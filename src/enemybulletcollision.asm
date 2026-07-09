@@ -1,3 +1,6 @@
+        ; Enemy bullet and dog collisions to player, as well as showing the game over text and checking for extra life
+        ; (first at 30000 points, then at 70000 point intervals). The lives are clamped to 9.
+
         * = $FD01
 
 CheckEnemyBulletHits LDX #$02
@@ -116,17 +119,17 @@ CNEL_Loop LDA score,X
         BPL CNEL_Loop
 CNEL_HasNext SED 
         LDA #$70
-        CLC 
+        CLC
         ADC nextExtraLifeScore+1
         STA nextExtraLifeScore+1
         LDA nextExtraLifeScore+2
         ADC #$00
         STA nextExtraLifeScore+2
-        CLD 
+        CLD
         LDA lives
         CMP #$09
         BCS CNEL_NoNext
         ADC #$01
         STA lives
         JSR FormatLives
-CNEL_NoNext RTS 
+CNEL_NoNext RTS

@@ -1,9 +1,11 @@
+        ; Handle enemies running away from the screen and being removed from the game, and enemy climbing logic.
+
 CheckEnemiesRunAway
         LDX #$05
 CERA_Loop 
         LDA enemyActive,X
         BNE CERA_EnemyActive
-CERA_Next 
+CERA_Next
         DEX
         BPL CERA_Loop
         RTS
@@ -50,7 +52,7 @@ RemoveEnemy
         BEQ RE_NoLongLadderClimb
         DEY 
         LDA platformEnemyCount,Y
-        SEC 
+        SEC
         SBC #$01
         STA platformEnemyCount,Y
         LDA #$00
@@ -66,17 +68,17 @@ RE_NoLongLadderClimb
         DEC numEnemies
         LDA enemyJumpPlatformHeight,X
         BEQ RE_Done
-        CMP #$02
+        CMP #PLATFORM_TOP
         BNE RE_NotJumping
-        DEC topPlatformCount
+        DEC platformEnemyCount+PLATFORM_TOP
 RE_NotJumping
         DEC platformEnemyCount
-        DEC midPlatformCount
+        DEC platformEnemyCount+PLATFORM_MIDDLE
         LDA platformEnemyCount,Y
         CLC
         ADC #$01
         STA platformEnemyCount,Y
-        LDA #$00
+        LDA #PLATFORM_GROUND
         STA enemyJumpPlatformHeight,X
 RE_Done RTS
 
@@ -91,7 +93,7 @@ UEC_IsClimbing
         AND charTypeAtEnemy,X
         AND #$01
         BEQ UEC_CheckClimbDown
-UEC_ClimbUp 
+UEC_ClimbUp
         DEC spriteY+SPR_ENEMYUPPER,X
         DEC spriteY+SPR_ENEMYLOWER,X
         DEC spriteY+SPR_ENEMYUPPER,X
@@ -149,7 +151,7 @@ UEC_SetDirAfterClimb
         JSR UEC_CheckPlatformY
         CPY #$01
         BEQ UEC_IsMidPlatform
-        DEC midPlatformCount
+        DEC platformEnemyCount+PLATFORM_MIDDLE
         LDY enemyLongLadderClimb,X
         DEY
         TYA 
@@ -172,8 +174,8 @@ UEC_NoLongLadder
 UEC_PlayerOnRight
         LDA #$08
         BNE UEC_SetDirAfterClimb
-UEC_CheckPlatformY 
-        LDY #$02
+UEC_CheckPlatformY
+        LDY #PLATFORM_TOP
         LDA spriteY+SPR_ENEMYUPPER,X
 UEC_PlatformYLoop 
         CMP platformYTbl,Y

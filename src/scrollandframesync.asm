@@ -1,3 +1,6 @@
+        ; Scrolling routine. Scrolling is called when the player is at the motion limit on the screen right side.
+        ; Reaching the stage end and activating the warning siren is also checked here.
+
 CheckScroll
         LDY stage
         LDA stagePosMSB
@@ -7,12 +10,12 @@ CheckScroll
         CMP stageEndLSBTbl,Y
         BEQ CS_AtStageEnd
 CS_NoStageEnd LDA playerRunSpeed
-        CLC 
+        CLC
         ADC playerRunSubPixel
         STA playerRunSubPixel
         BCC CS_ScrollOnePixel
         JSR CS_ScrollOnePixel
-CS_ScrollOnePixel 
+CS_ScrollOnePixel
         LDY scrollX
         INC scrollSpeed
         DEY
@@ -22,7 +25,7 @@ CS_ScrollOnePixel
         SBC #$01
         BCC CS_NoIdleUnderflow
         STA idleTimer
-CS_NoIdleUnderflow 
+CS_NoIdleUnderflow
         INC screenShiftFlag
         LDY #$07
 CS_NoScrollWrap 
@@ -42,15 +45,15 @@ CS_AtStageEnd LDA stageEndFightActive
         BEQ CS_WarningSiren
         RTS
 
-CS_WarningSiren 
+CS_WarningSiren
         LDA #$06
         STA platformEnemyCount
         LDA #$E0
         CMP playerRightLimit
         BEQ CS_WarningSirenDone
         STA playerRightLimit
-        STA midPlatformCount
-        STA topPlatformCount
+        STA platformEnemyCount+PLATFORM_MIDDLE
+        STA platformEnemyCount+PLATFORM_TOP
         LDY stage
         LDA stageNumEndEnemyTbl,Y
         STA endFightEnemiesLeft
@@ -130,16 +133,18 @@ SS_LowerLoop
         STA screen+$398,Y
         LDA colorRam+$399,Y
         STA colorRam+$398,Y
-        INY 
+        INY
         CPY #$27
         BNE SS_LowerLoop
         DEC screenShiftFlag
         INC newColumnFlag
         RTS
 
-InitStatusPanel 
+        ; Status panel init routine when the game starts or gameplay resumes.
+
+InitStatusPanel
         LDY #$00
-ISP_Loop 
+ISP_Loop
         LDA statusPanelText,Y
         CMP #$FF
         BEQ ISP_Finish
@@ -178,11 +183,14 @@ statusPanelText
         .BYTE $45,$20,$20,$20,$48,$49,$20,$20,$53,$43,$4F,$52,$45,$20,$20,$53
         .BYTE $54,$41,$47,$45,$20,$31,$20,$FF
 
+        ; Update the music part of the playroutine and wait for the IRQ handler to be ready with the previous frame
+        ; update, after which a new frame can be triggered.
+
 UpdateMusicWaitFrame
         JSR UpdateMusicChannel3
         JSR UpdateMusicChannel2
         JSR UpdateMusicChannel1
-WaitFrame 
+WaitFrame
         LDA frameSyncFlag
         BEQ WaitFrame
         DEC frameSyncFlag

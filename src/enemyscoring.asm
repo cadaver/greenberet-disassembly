@@ -1,3 +1,8 @@
+        ; Go through the active human enemies and check for the hit flag set by knife and player weapon collision 
+        ; routines. If hit, initialize the death animation for the enemy (if not initialized yet), give score and spawn
+        ; the weapon pickup if the enemy killed was the white commandant. The score is accumulated to a separate value
+        ; (also 24 bits like the score) which added to the actual player score once per frame.
+
 CheckKillEnemies
         LDX #$05
 CKE_Loop LDA enemyActive,X
@@ -34,7 +39,7 @@ CKE_DoKill
         STA enemyTimer,X
         STA enemyDying,X
         LDA enemyType,X
-        CMP #$01
+        CMP #ENEMY_COMMANDANT
         BEQ CKE_CheckSpawnPickup
         CMP #$06
         BNE CKE_NoSpawnPickup

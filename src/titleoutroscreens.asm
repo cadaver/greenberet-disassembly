@@ -1,3 +1,8 @@
+        ; One-time VIC-II register init, which falls through to the title screen loop. The title screen initializes the
+        ; game variables like score and lives for the next game, and undoes any graphics block swaps from the last game. 
+        ; The title screen loop is followed by the "rescue the captives" intro scene, which reuses actual gameplay
+        ; enemies.
+
 InitVideo
         LDA #$0B
         STA $D011
@@ -76,7 +81,7 @@ ETS_ResetScore
         LDY #$05
         JSR PlaySong
         JSR ToggleScreenOn
-IntroLoop 
+IntroLoop
         JSR UpdatePrisoners
         JSR AnimateEnemies
         JSR CopySpritesToIrq
@@ -106,13 +111,13 @@ IntroLoop
         JSR InitPlayer
         JMP MainLoop
 
-WaitSongToEnd 
+WaitSongToEnd
         JSR UpdateMusicWaitFrame
         JSR CheckSongEnd
         BNE WaitSongToEnd
         RTS
 
-InitPrisoners 
+InitPrisoners
         LDX #$03
 IP_Loop LDA prisonerFrameTbl,X
         STA spriteFrame+SPR_ENEMYUPPER,X
@@ -133,20 +138,20 @@ IP_Loop LDA prisonerFrameTbl,X
         LDA prisonerXMSBTbl,X
         STA spriteXMSB+SPR_ENEMYUPPER,X
         STA spriteXMSB+SPR_ENEMYLOWER,X
-        DEX 
+        DEX
         BPL IP_Loop
         RTS
 
-prisonerFrameTbl 
+prisonerFrameTbl
         .BYTE $B4,$A7,$B4,$A7,$A7,$B4,$A7,$B4
 
-prisonerXTbl 
+prisonerXTbl
         .BYTE $3F,$87,$D7,$1F
 
 prisonerXMSBTbl
         .BYTE $00,$00,$00,$01
 
-SpawnIntroGuards 
+SpawnIntroGuards
         LDA #$01
         STA spawnEnemyFlag+2
         STA spawnEnemyFlag+5
@@ -154,7 +159,7 @@ SpawnIntroGuards
         STA spawnEnemyType+2
         STA spawnEnemyType+5
         JSR FindNextSpawnType
-SIG_Loop 
+SIG_Loop
         JSR FindFreeEnemySlot
         LDA #$C5
         JSR CSNE_SetEnemyPos
@@ -162,14 +167,14 @@ SIG_Loop
         BCS SIG_Loop
         RTS
 
-UpdatePrisoners 
+UpdatePrisoners
         LDX #$03
         LDA gameTimer
         AND #$10
         LSR
         LSR
         TAY
-UPr_Loop 
+UPr_Loop
         LDA prisonerFrameTbl,Y
         STA spriteFrame+SPR_ENEMYUPPER,X
         INY
@@ -177,11 +182,14 @@ UPr_Loop
         BPL UPr_Loop
         RTS
 
-UpdateStageOutro 
+        ; Stage outro scene update with the player character scaling the fence, as well as the game completion screen.
+        ; Direct coordinate checks are used to control the scene flow.
+
+UpdateStageOutro
         LDA playerCoarseX
         CMP #$89
         BCS USO_PlayerAtWall
-USO_MovePlayerRight 
+USO_MovePlayerRight
         CLC
         ADC #$01
         STA playerCoarseX
@@ -194,12 +202,12 @@ USO_MovePlayerRight
         STA spriteXMSB+SPR_PLRLOWER
         RTS
 
-USO_SetSpritesOnTop 
+USO_SetSpritesOnTop
         LDA #$00
         STA $D01B
         RTS
 
-USO_PlayerAtWall 
+USO_PlayerAtWall
         CMP #$8A
         BCC USO_PlayerClimbing
         LDA spriteY
@@ -212,7 +220,7 @@ USO_PlayerAtWall
         LDA playerCoarseX
         JMP USO_MovePlayerRight
 
-USO_PlayerClimbing 
+USO_PlayerClimbing
         LDA spriteY
         SEC
         SBC #$03
@@ -231,13 +239,13 @@ USO_PlayerClimbing
         LDA playerCoarseX
         JMP USO_MovePlayerRight
 
-UpdateVictoryAnim 
+UpdateVictoryAnim
         LDA playerCoarseX
         CMP #$98
         BCS UVA_Finished
         PHA
         LDX #$00
-UVA_Loop 
+UVA_Loop
         PLA
         PHA
         CMP prisonerFreeXTbl,X
@@ -246,14 +254,14 @@ UVA_Loop
         STA spriteFrame+SPR_ENEMYUPPER,X
         LDA #$8B
         STA spriteFrame+SPR_ENEMYLOWER,X
-UVA_Next 
+UVA_Next
         INX
         CPX #$04
         BNE UVA_Loop
         PLA
         JMP USO_MovePlayerRight
 
-UVA_Finished 
+UVA_Finished
         LDA #$00
         STA temp2
         LDA #$8A
@@ -262,10 +270,12 @@ UVA_Finished
         STA spriteFrame+SPR_PLRLOWER
         RTS
 
-prisonerFreeXTbl 
+prisonerFreeXTbl
         .BYTE $1F,$43,$6B,$8F
 
-UpdateStageArrows 
+        ; Flashing arrow animation in the stage outro screens.
+
+UpdateStageArrows
         JSR USA_InitialDraw
         LDX stage
         DEX
@@ -280,19 +290,19 @@ UpdateStageArrows
         CPX #$00
         BEQ USA_UseOutlineArrow
         LDA #$7A
-USA_ArrowAnimLoop 
+USA_ArrowAnimLoop
         STA screen+$398,Y
         INY
         DEX
         BNE USA_ArrowAnimLoop
-USA_UseOutlineArrow 
+USA_UseOutlineArrow
         PLA
         TAX
         LDA #$75
         .BYTE $2C
-USA_FinishArrowGroup 
+USA_FinishArrowGroup
         LDA #$7A
-USA_FinishLoop 
+USA_FinishLoop
         CPX #$03
         BEQ USA_Done
         STA screen+$398,Y
@@ -300,15 +310,15 @@ USA_FinishLoop
         INX
         JMP USA_FinishLoop
 
-USA_Done 
+USA_Done
         RTS
 
-stageArrowPosTbl 
+stageArrowPosTbl
         .BYTE $0A,$16,$21
 
-USA_InitialDraw 
+USA_InitialDraw
         LDX stage
-USA_InitialDrawLoop 
+USA_InitialDrawLoop
         CPX #$01
         BCC USA_Done
         DEX

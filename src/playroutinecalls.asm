@@ -1,3 +1,6 @@
+        ; Interface for the actual playroutine code for triggering songs and sound effects, and waiting for songs to
+        ; complete.
+
 PlaySong LDX #$05
 PS_SongPointerLoop 
         LDA songPointerTbl,Y
@@ -142,7 +145,7 @@ PlayCollectSound
         LDX #$02
         JMP PlaySound
 
-PlayBazookaSound 
+PlayBazookaSound
         LDA #$FE
         LDY #$EF
         JSR PlaySoundChannel1
@@ -189,5 +192,9 @@ s3F96   LDA aED13
         .BYTE $05,$04,$0A,$00,$00,$00,$00,$07,$41,$05,$B9,$04,$32,$14,$00,$EC
         .BYTE $FF,$14,$00,$00,$00,$03,$06,$03,$00,$0A,$05,$50,$50,$09,$00,$14
         .BYTE $00,$EC,$FF,$80,$08,$00,$00,$9C,$FF,$00,$00,$00,$00,$0A,$0A,$00
-        .BYTE $00,$01,$85,$00,$09,$05,$0C,$01,$85,$00,$09,$05,$0C,$00,$00,$00
-        .BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+        .BYTE $00,$01,$85,$00,$09,$05,$0C,$01,$85,$00,$09,$05,$0C
+
+        ; Flags to tell which graphics blocks have been swapped in memory, to allow resetting on new game
+
+graphicsSwapFlags
+        .BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00

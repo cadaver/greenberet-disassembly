@@ -63,6 +63,12 @@ BULLET_GRENADE = 5  ; Thrown by grenadiers
 BULLET_PARACHUTE = 6 ; Falling projectiles dropped by the parachutist
 BULLET_BOMB = 7     ; Dropped by the fighter jet. Follows the player horizontally while falling
 
+        ; Platform height levels for enemy counting (3 allowed per level to avoid overloading the sprite multiplexer)
+
+PLATFORM_GROUND  = 0
+PLATFORM_MIDDLE = 1
+PLATFORM_TOP = 2
+
         ; Zeropage variables
 
 irqCounter = $02
@@ -195,8 +201,6 @@ enemyStaticIndex = $02BE
 endFightResetFlag = $02C4
 numEnemies = $02C8
 platformEnemyCount = $02C9
-midPlatformCount = $02CA
-topPlatformCount = $02CB
 staticSpawnFlag = $02CC
 spawnEnemyTimer = $02CD
 spawnEnemyType = $02D3
@@ -299,3 +303,4 @@ scoreAdd = $03BA
 screen = $4000
 statusScreen = $C400
 colorRam = $D800
+

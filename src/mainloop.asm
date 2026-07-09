@@ -1,5 +1,15 @@
         * = $06E0
 
+        ; Game frame main loop that calls the per-frame update routines in sequence. Instead of a per-object "tick" that
+        ; would update everything about the object at once, several of the routines go through the enemy or bullet
+        ; arrays, checking which are active, and doing one operation on those active such as movement, animation or
+        ; collision. This helps to keep the routines small and understandable, but loses some CPU cycles on the repeated
+        ; looping and active checks.
+
+        ; The frame syncing with the IRQ happens in the loop beginning. First the IRQ is waited for completion, then the
+        ; previous frame's sprites are copied for the multiplexer and scrolling is performed if necessary. Only after
+        ; that the game logic processing for the new frame is started.
+
 MainLoop
         JSR UpdateMusicWaitFrame
         LDA scrollSpeed
@@ -15,11 +25,17 @@ MainLoop
         JSR CheckNewHighScore
         JSR FormatHighScore
         JSR CheckNextExtraLife
+
+        ; Branch off to calling different routines depending on whether the end-of-the-stage fight is active
+
         LDA stageEndFightActive
         BEQ Main_NoStageEndFight
         JMP UpdateStageEndFight
 
-Main_NoStageEndFight 
+        ; Main loop end without the end fight. Among other things, this will spawn the fighter jet that appears after
+        ; too much idle time.
+
+Main_NoStageEndFight
         LDX parachuteKillFlag
         BEQ Main_NoParachuteKill
         JSR CleanupParachute
@@ -28,7 +44,7 @@ Main_NoStageEndFight
         LDA #$80
         STA enemyTimerActive,X
         STA enemyTimer,X
-Main_NoParachuteKill 
+Main_NoParachuteKill
         JSR TrySpawnStaticEnemy
         JSR CheckParachuteEnemy
         JSR TrySpawnEnemy
@@ -57,7 +73,12 @@ Main_NoParachuteKill
         JSR CheckStartEndFight
         JMP MainLoop
 
-IrqUpdatePlayer 
+        ; This routine is called from the top-of-the screen raster interrupt handler instead of the main program, and
+        ; it reads the joystick and moves the player, and also advances the playroutine's sound effects part. It also
+        ; does a knife collision check for a few frames after a fire press, while the player character is still in the
+        ; knife strike pose.
+
+IrqUpdatePlayer
         JSR ReadControls
         LDA $DC01
         AND #$01
@@ -68,7 +89,7 @@ IrqUpdatePlayer
         JSR AnimatePlayer
         JSR IUP_CheckKnifeHeld
         JSR $0100
-IUP_SkipMove 
+IUP_SkipMove
         JSR FindFirstSprite
         JSR UpdateSoundChannel1
         JSR UpdateSoundChannel2
@@ -83,4 +104,3 @@ IUP_CheckKnifeHeld
 IUP_HasDelayedKnife
         LDA playerAnimState
         JMP CheckKnifeCollisions
-

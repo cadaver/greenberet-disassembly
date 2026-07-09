@@ -1,14 +1,19 @@
+        ; Handle stage completion. Set the stage scrolling position for the next stage, then show the stage outro in a
+        ; loop that waits for the interlude music to complete. Completing the whole game is also handled here by
+        ; checking the stage number. Difficulty changes are also made here, practically affecting the timers that
+        ; control enemy firing frequency.
+
 ClearEnemySprites
         LDX #$12
         LDA #$00
-CES_Loop 
+CES_Loop
         STA spriteY+SPR_ENEMYUPPER,X
         DEX
         BPL CES_Loop
         JSR SortSprites
         JMP CopySpritesToIrq
 
-CompleteStage 
+CompleteStage
         JSR ToggleScreenOn
         LDY stage
         INY
@@ -33,7 +38,7 @@ CompleteStage
         BNE CS_NotLastStage
         LDA #$01
         .BYTE $2C
-CS_NotLastStage 
+CS_NotLastStage
         LDA #$00
         JSR PrintFullScreen
         PLP
@@ -48,7 +53,7 @@ CS_NotLastStage2
         JSR PrintTextScreen
         LDA #$02
         JSR PrintTextScreen
-CS_Common 
+CS_Common
         LDA #$00
         STA scrollX
         STA spawnTblIndexMod
@@ -72,7 +77,7 @@ CS_NotLastStage3
         JSR ToggleScreenOn
         LDA #$00
         STA frameSyncFlag
-CS_StageOutroLoop 
+CS_StageOutroLoop
         JSR CopySpritesToIrq
         LDA stage
         CMP #$04
@@ -81,7 +86,7 @@ CS_StageOutroLoop
         JSR AP_NoProne
         JSR UpdateStageArrows
         JSR UpdateStageOutro
-CS_OutroLoopCommon 
+CS_OutroLoopCommon
         JSR SortSprites
         JSR UpdateMusicWaitFrame
         JSR CheckSongEnd
@@ -111,7 +116,7 @@ CS_OutroLoopCommon
         BMI CS_DifficultyModDone
         LDA #$FA
         STA difficultyMod2
-CS_DifficultyModDone 
+CS_DifficultyModDone
         INY
         STY difficultyMod
         JSR ResetGraphicsSwaps
@@ -126,6 +131,9 @@ CS_IsVictoryScreen
         BEQ CS_OutroLoopCommon
         JSR AP_NoProne
         JMP CS_OutroLoopCommon
+
+        ; Decrement lives and resume gameplay after death, or else show "game over" and return to the title screen. The
+        ; routine searches for the last stage restart point the player has passed.
 
 InitNextLife 
         LDA #$01
@@ -195,10 +203,13 @@ INL_RestartNoMatch
         BEQ INL_RestartFound
 
 stageRestartMSBTbl = stageRestartLSBTBL+1
-stageRestartLSBTbl 
+stageRestartLSBTbl
         .WORD $0028,$0068,$00C8,$0108,$0148,$01C7,$0218,$0268
         .WORD $02D0,$0318,$0368,$03D9,$0438,$0498,$04F8,$0558
         .WORD $05C8,$068E,$06C6,$06F6,$0740,$0788,$0838,$08B8
+
+        ; Prepare graphics data for the stage. Data is swapped between the $4000-$7fff video bank and the $c000-$ffff
+        ; bank holding extra data.
 
 PrepareStageGraphics
         LDY stage
@@ -254,6 +265,8 @@ stageStartPosMSBTbl
 stageEndSongTbl
         .BYTE $06,$17,$1D,$3B,$11
 
+        ; Reset all enemy, bullet and sprite vars when the game begins or resumes.
+
 ResetGameVars LDY #$00
         TYA
 RGV_Loop
@@ -286,6 +299,8 @@ RGV_EnemyAdjustLoop
         DEX
         BPL RGV_EnemyAdjustLoop
         RTS
+
+        ; Enemy spawn handler for the first stage end fight is here instead of stageendfights.asm.
 
 Stage1EndEnemySpawn 
         LDA #$01

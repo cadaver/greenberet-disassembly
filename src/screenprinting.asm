@@ -1,3 +1,6 @@
+        ; Handle printing screen data such as the game logo, prison wall and the stage outro. The printing uses "command
+        ; codes" which allow for a RLE mechanism to save memory.
+
 PrintFullScreen ASL
         TAX
         LDA fullScreenTblLo,X
@@ -93,9 +96,11 @@ storeScreenPtrHi .BYTE $00
 fullScreenTblHi   =*+$01
 fullScreenTblLo .WORD stageOutroScreen,prisonWallScreen,gameTitleLogo,clearWholeScreen
 
+        ; Reset swapped graphics to their original state. Called each time when entering the title screen.
+
 ResetGraphicsSwaps LDY #$08
         PHP
-RGS_Loop LDA $3FF0,Y
+RGS_Loop LDA graphicsSwapFlags,Y
         BEQ RGS_Skip
         TYA
         PHA
@@ -105,7 +110,7 @@ RGS_Loop LDA $3FF0,Y
 RGS_Skip DEY
         BPL RGS_Loop
         PLP
-        RTS 
+        RTS
 
 wpnShotCharsLeft   .BYTE $B6
 wpnShotCharsRight   .BYTE $B7,$B6,$B7,$BA,$20,$B8,$B9,$C2

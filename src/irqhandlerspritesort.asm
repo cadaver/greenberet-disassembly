@@ -1,3 +1,6 @@
+        ; IRQ initialization and the main IRQ handler, which jumps off to the top-of-screen, scroll split and sprite
+        ; multiplexer sub-handlers. It is followed by the sprite sorting routine called by the main loop.
+
 InitIrq SEI
         LDA #<IrqHandler
         STA $FFFE
@@ -16,8 +19,8 @@ InitIrq SEI
 IrqHandler PHA
         TYA
         PHA 
-        TXA 
-        PHA 
+        TXA
+        PHA
         LDA #$FF
         STA $D019
         CLD 
@@ -67,7 +70,7 @@ SS_FoundPos INX
         LDX sortSpriteStoreX
 SS_MoveOrderLoop LDA spriteOrder-1,X
         STA spriteOrder,X
-        DEX 
+        DEX
         CPX sortMoveEndCmp
         BNE SS_MoveOrderLoop
         LDA sortSpriteStoreY
@@ -76,19 +79,19 @@ SS_MoveOrderLoop LDA spriteOrder-1,X
 SS_InOrder INX
         CPX #$15
         BNE SS_Loop
-        PHP 
-        SEI 
+        PHP
+        SEI
         LDA scrollSpeed
         CMP lastScrollSpeed
         BNE SS_HadNewScrollSpeed
         LDA #$00
         STA scrollSpeed
-        PLP 
+        PLP
         RTS
 
-SS_HadNewScrollSpeed   
+SS_HadNewScrollSpeed
         SEC
         SBC lastScrollSpeed
         STA scrollSpeed
         PLP
-        RTS 
+        RTS

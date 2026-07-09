@@ -1,3 +1,9 @@
+        ; Handle spawning of both random and pre-placed enemies. The spawn routines are also reused by the intro prison
+        ; screen and the end-of-the-stage fights. The spawn routines (as well as enemy movement) check the enemy counts
+        ; on each platform level (ground, middle, top) to avoid overloading the sprite multiplexer. Only 3 enemies are
+        ; allowed on each level. The spawn routines also check the screen chars under the spawn positions to avoid
+        ; spawning enemies mid-air.
+
 SetEnemyToSpawn
         LDX #$04
 SETS_Loop
@@ -90,7 +96,7 @@ TSSE_CheckGround
         BCS SpawnStaticEnemy
         JMP TSSE_AbortSpawn
 
-SpawnStaticEnemy 
+SpawnStaticEnemy
         LDA platformEnemyCount,Y
         CLC
         ADC #$01
@@ -154,7 +160,7 @@ TSSE_AbortSpawn
 FindNextStaticEnemy 
         LDY stage
         LDX staticEnemyStartTbl,Y
-FNSE_Loop 
+FNSE_Loop
         LDA staticEnemySpawnFlag,X
         BNE FNSE_Next
         LDA stagePosMSB
@@ -372,7 +378,7 @@ TSE_NextPlatform
         SBC #$01
         BCS TSE_NoPlatformWrap
         LDA #$02
-TSE_NoPlatformWrap 
+TSE_NoPlatformWrap
         TAY
         DEC spawnRetryCount
         BEQ TSE_RetriesExhausted
@@ -417,7 +423,7 @@ CCAS_Left
 CCAS_NoChar 
         RTS
 
-enemySpawnXMSBTbl 
+enemySpawnXMSBTbl
         .BYTE $01,$00
 
 enemySpawnXTbl

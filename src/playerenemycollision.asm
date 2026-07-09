@@ -1,3 +1,8 @@
+        ; Called from player update when player is in the knife strike pose. Check collisions to enemies using
+        ; rectangular hitboxes and set the hit flag on the enemy. Human enemies and dogs are handled separately,
+        ; as both the hitboxes and the hit flags are different. When the gyro fight is active (3rd stage),
+        ; only the middle sprite pair of the enemies can be hit.
+
 CheckKnifeCollisions
         LDX #$05
         PHA
@@ -8,18 +13,18 @@ CheckKnifeCollisions
         CLC
         ADC knifeOffsetTbl,Y
         STA hitPointY
-        PLA 
-        LSR 
+        PLA
+        LSR
         AND #$06
         STY knifeHitTemp
-        CLC 
+        CLC
         ADC knifeHitTemp
         TAY
         LDA playerCoarseX
         CLC
         ADC knifeOffsetTbl,Y
         STA hitPointX
-CKC_Loop 
+CKC_Loop
         LDA enemyActive,X
         BNE CKC_CheckEnemy
         LDA stageEndReached
@@ -37,7 +42,7 @@ CKC_Next
         BPL CKC_Loop
         RTS
 
-CKC_CheckEnemy 
+CKC_CheckEnemy
         LDA enemyDying,X
         ORA enemyHit,X
         BNE CKC_Next
@@ -57,7 +62,7 @@ CKC_InGyroBossFight
         BEQ CKC_CheckBounds
         JMP CKC_Next
 
-CKC_CheckBounds 
+CKC_CheckBounds
         LDA enemyCoarseX,X
         CMP #$0D
         BCC CKC_NoCollision
@@ -150,7 +155,7 @@ CKC_DogBoundsYRetry
         BCC CKC_DogBoundsDone
         CMP knifeHitBoundHigh
         BCS CKC_DogBoundsDone
-CKC_DogBoundsHit 
+CKC_DogBoundsHit
         LDA #$80
         STA dogHit-1,X ;Use standard enemy indexing, while dog update offsets by one
         STX tempStoreX
@@ -161,7 +166,12 @@ CKC_DogBoundsHit
 CKC_DogBoundsDone 
         RTS
 
-CheckEnemyToPlayer 
+        ; Check for active and alive enemies touching the player fatally. Gyrocopters are not fatal to touch.
+        ; The KillPlayer routine will also be called from enemy bullet collision. Note that it halts the main loop
+        ; immediately, plays the death jingle and goes to InitNextLife which waits for it to end and then restarts
+        ; if there are lives remaining.
+
+CheckEnemyToPlayer
         LDX #$05
         LDA playerCoarseX
         CLC
@@ -177,7 +187,7 @@ CETP_Next
         BPL CETP_Loop
         JMP CheckEnemyBulletHits
 
-CETP_CheckEnemy 
+CETP_CheckEnemy
         LDA enemyDying,X
         BNE CETP_Next
         LDA enemyCoarseX,X

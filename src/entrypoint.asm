@@ -1,5 +1,8 @@
+        ; Beginning of game execution. Copy a routine to stack (likely freezer protection-related) and jump to VIC-II
+        ; initialization and the title screen.
+
         * = $4000
-        
+
 EntryPoint
         LDA #$00
         STA $DD05

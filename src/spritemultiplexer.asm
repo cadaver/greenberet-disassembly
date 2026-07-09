@@ -1,8 +1,17 @@
-CopySpritesToIrq 
+        ; Copy sprites from the main program for use by the sprite multiplexer, followed by the actual multiplexer IRQ
+        ; handler code, which sets hardware sprite values in a top-to-bottom sort order. The handler chains into more
+        ; IRQs until all sprites have been displayed.
+
+        ; If the sprite order is unchanged, it will not be copied again. Note also that sprite colors and frames are
+        ; not double-buffered similarly as positions, therefore the main program could theoretically update them again
+        ; while the IRQs use them for displaying, leading into the new animation frames and colors becoming visible one
+        ; frame too early.
+
+CopySpritesToIrq
         LDA sortSprNumReorders
         BEQ CSTI_NoNewOrder
         LDX #$14
-CSTI_WithOrderLoop 
+CSTI_WithOrderLoop
         LDA spriteY,X
         STA irqSpriteY,X
         LDA spriteX,X
@@ -11,7 +20,7 @@ CSTI_WithOrderLoop
         STA irqSpriteXMSB,X
         LDA spriteOrder,X
         STA irqSpriteOrder,X
-        DEX 
+        DEX
         BPL CSTI_WithOrderLoop
         RTS
 
@@ -52,7 +61,7 @@ SDI_Loop
         ORA sprOrBitTbl,Y
         JMP SDI_StoreD010
 
-SDI_NoMSB 
+SDI_NoMSB
         LDA $D010
         AND sprAndBitTbl,Y
 SDI_StoreD010 
@@ -94,7 +103,7 @@ SDI_Done
 SDI_IsLate 
         LDA $D012
         ADC #$02
-SDI_SetupNextIrqPos 
+SDI_SetupNextIrqPos
         ADC #$00
         STA $D012
         STA sprIrqYCheck

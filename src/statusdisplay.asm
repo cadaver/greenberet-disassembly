@@ -1,3 +1,7 @@
+        ; Format game state information for showing on the top of the screen status display. Score accumulation is also
+        ; handled here. The data for the prison wall background is also contained here before the status screen memory
+        ; and before other code.
+
         * = $C257
 
 wpnShotColors
@@ -31,7 +35,7 @@ FS_Loop LDA score,X
         AND #$0F
         ADC #$30
         STA statusScreen+$033,Y
-        INY 
+        INY
         DEX
         BPL FS_Loop
         LDA #$30
@@ -80,7 +84,7 @@ AddAccumulatedScore
         STA scoreAdd+1
         STA scoreAdd+2
         CLD
-        RTS 
+        RTS
 
 CheckNewHighScore 
         LDX #$02
@@ -94,7 +98,7 @@ CNHS_CheckLoop
 CNHS_Done 
         RTS
 
-CNHS_HasNew 
+CNHS_HasNew
         LDX #$02
 CNHS_CopyScoreLoop 
         LDA score,X

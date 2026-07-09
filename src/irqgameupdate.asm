@@ -1,3 +1,7 @@
+        ; Player state init and IRQ handler part of the frame update. The fighter jet idle timer and the "spawn
+        ; modification" timer which makes the martial artists and grenadiers appear after some time are also
+        ; handled here.
+
 InitPlayer
         LDA #$03
         STA playerAnimState
@@ -66,10 +70,12 @@ stageSpawnModWaitTbl
         .BYTE $80,$AA,$D2,$FA
 spawnTblDelay 
         .BYTE $00
-difficultyMod 
+difficultyMod
         .BYTE $00
 
-ScrollSplitIrq 
+        ; Stationary and scrolling screen split IRQ handler.
+
+ScrollSplitIrq
         LDA $D016
         AND #$10
         ORA scrollX
@@ -90,7 +96,7 @@ ScrollSplitIrq
         INC $D012
         RTS
 
-DisplayStageNumber 
+DisplayStageNumber
         LDA stage
         SED
         CLC

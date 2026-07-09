@@ -1,16 +1,18 @@
-SwapGraphicsData 
+        ; Graphics block swapping routine and displaying the extra weapon shots remaining.
+
+SwapGraphicsData
         TAY
-        LDA $3FF0,Y
+        LDA graphicsSwapFlags,Y
         EOR #$01
-        STA $3FF0,Y
+        STA graphicsSwapFlags,Y
         LDA $FF95,Y
         STA sgdBankConfig
         CMP #$35
         BEQ SGD_NoIrqDisable
-        SEI 
+        SEI
 SGD_NoIrqDisable TYA
-        ASL 
-        TAX 
+        ASL
+        TAX
         LDA swapSrcTblLo,X
         STA screenPtrLo
         LDA swapSrcTblHi,X

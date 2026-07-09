@@ -1,3 +1,8 @@
+        ; Handling of the stage-specific end fights using a jump table. Each of them calls CompleteStage when the fight
+        ; is over (typically, all enemies to spawn are exhausted.) The third stage completion has a stack leak bug which
+        ; causes sprite corruption after completing the game several times. See defines.asm for the define that enables
+        ; the fix.
+
 UpdateStageEndFight
         LDA stage
         ASL
@@ -5,14 +10,14 @@ UpdateStageEndFight
         LDA stageEndJumpTblHi,Y
         PHA
         LDA stageEndJumpTblLo,Y
-        PHA 
+        PHA
         RTS
 
 stageEndJumpTblHi   =*+$01
 stageEndJumpTblLo 
         .WORD Stage1EndFight-1,Stage2EndFight-1,Stage3EndFight-1,Stage4EndFight-1
 
-Stage4EndFight 
+Stage4EndFight
         JSR Stage4NextEnemy
         JSR TrySpawnEnemy
         JSR StageEndFightCalls
@@ -182,7 +187,7 @@ InitDogFight
 IDF_Done 
         RTS
 
-UpdateDogs 
+UpdateDogs
         LDA platformEnemyCount
         CMP #$04
         BCS UD_NoSpawnNew
@@ -323,7 +328,7 @@ MD_MoveLeft
         LDA spriteX+SPR_ENEMYDOG,X
         CMP #$12
         BCC MD_RemoveOffScreen
-MD_LeftHasMSB 
+MD_LeftHasMSB
         LDA dogJumping,X
         BEQ MD_NextJump
         JSR DJ_AlreadyJumping
@@ -681,7 +686,7 @@ UGF_HighGyroRightEdge
         JSR SetGyroMidFrame
         JMP UGF_GyroXMove
 
-gyroYPathTbl 
+gyroYPathTbl
         .BYTE $00,$00,$01,$02,$03,$04,$06,$08,$0A,$0C,$0E,$10,$12,$14,$16,$18
         .BYTE $1A,$1C,$1E,$20,$22,$23,$24,$25,$26,$27,$28,$28,$FF
 

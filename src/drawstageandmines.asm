@@ -1,3 +1,11 @@
+        ; Drawing new stage graphics, as well as mines to the bottom of the screen, and mine collision handling. When a
+        ; player-thrown grenade tries to destroy a partially visible mine, the game would lock up. Partial mines cannot
+        ; be destroyed, because the rightmost char is yet to scroll onto the screen, and it would cause a visible error.
+        ; See defines.asm for the define that enables the fix.
+
+        ; Drawing the new graphics uses the (zeropage,x) addressing mode, using a screen memory and color memory pointer
+        ; for each of the 16 rows.
+
 DrawNewColumn
         LDA newColumnFlag
         BNE DNC_AdvanceAndDraw
@@ -96,7 +104,7 @@ AnimateMineChars
         TAX 
         LDY mineFrameDataIndex,X
         LDX #$0F
-AMC_Loop 
+AMC_Loop
         LDA mineFrameData,Y
 mineCharDestLo   =*+$01
 mineCharDestHi   =*+$02
@@ -124,7 +132,7 @@ DNC_DrawMinesLoop
         STA (screenRowPtrs,X)
         LDA #$0F
         STA (colorRowPtrs,X)
-        RTS 
+        RTS
 
 DNC_DrawMinesNext 
         INX
@@ -255,9 +263,7 @@ CDM_GADDestroySkip
         JMP CDM_Next
         NOP ;Padding to keep code size the same
 
-
     .endif
-
 
 DestroyMine
         STY tempStoreY2
@@ -273,12 +279,12 @@ DestroyMine
 DM_OutsideScreen
         RTS
 
-CheckDestroyMine 
+CheckDestroyMine
         STY tempStoreY2
         PHA
         LDA stage
         ASL
-        TAY 
+        TAY
         PLA
         CMP mineLeftCharTbl,Y
         BEQ CDM_Done
@@ -370,10 +376,14 @@ RB2GC_Loop
         BPL RB2GC_Loop
         RTS
 
-BeginStage 
+        ; Stage beginning or resume, which will draw the entire screen with a "wipe" effect, by adjusting the zeropage
+        ; row pointers. The color RAM is also initialized completely here, while scrolling only updates those color
+        ; rows that will actually change their content during scrolling to save CPU time.
+
+BeginStage
         LDX #$3F
         STX haltPlayerFlag
-BS_InitRowPtrs 
+BS_InitRowPtrs
         LDA rowPtrInitData,X
         STA screenRowPtrs,X
         DEX
@@ -441,7 +451,7 @@ BS_MiddleColorsLoop
         STA haltPlayerFlag
         RTS
 
-ClearGameScreen 
+ClearGameScreen
         LDY #$00
         LDA #$20
 CGS_Loop 

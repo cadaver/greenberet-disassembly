@@ -1,3 +1,11 @@
+        ; Movement, animation and world collision for both the player and enemies. For both the player and enemies,
+        ; the current platform height (ground, middle, top) is calculated and enemy counts on each level are maintained.
+        ; This is used both for AI logic and to avoid overloading the sprite multiplexer. Additionally, the sprite X
+        ; coordinates are converted to half-resolution (8-bit only) coarse coordinates for faster hitbox collisions.
+        ; Only the chars $c8-$ff are solid for platforms and ladders, the rest are ignored (backdrops). Both the
+        ; player and enemy logic use the joystick direction bits (1 = up, 2 = down, 4 = left, 8 = right) for movement 
+        ; logic and state bookkeeping.
+
 FindPlayerPlatform
         LDX #$02
         LDA spriteY
@@ -11,7 +19,7 @@ FPP_Loop
 FPP_Found STX playerPlatformHeight
         RTS
 
-UpdatePlatformCounts 
+UpdatePlatformCounts
         LDX #$05
 UPC_Loop
         LDY #$02
@@ -41,27 +49,27 @@ UPC_AtPlatform
         BEQ UPC_Next
         LDA enemyJumpPlatformHeight,X
         BEQ UPC_Next
-        CMP #$02
+        CMP #PLATFORM_TOP
         BNE UPC_DecBottomOrMid
         TYA
         CMP platformTemp
         BEQ UPC_DecMidAndBottom
-        CPY #$00
+        CPY #PLATFORM_GROUND
         BEQ UPC_DecMidAndTop
         DEC platformEnemyCount
-        DEC topPlatformCount
+        DEC platformEnemyCount+PLATFORM_TOP
         JMP UPC_ResetJump
 
 UPC_DecMidAndBottom
         DEC platformEnemyCount
-        DEC midPlatformCount
+        DEC platformEnemyCount+PLATFORM_MIDDLE
         JMP UPC_ResetJump
 
 UPC_DecMidAndTop
-        DEC midPlatformCount
-        DEC topPlatformCount
+        DEC platformEnemyCount+PLATFORM_MIDDLE
+        DEC platformEnemyCount+PLATFORM_TOP
 UPC_ResetJump
-        LDA #$00
+        LDA #PLATFORM_GROUND
         STA enemyJumpPlatformHeight,X
         JMP UPC_Next
 
@@ -71,7 +79,7 @@ UPC_DecBottomOrMid
         TYA
         CMP platformTemp
         BEQ UPC_DecBottom
-        DEC midPlatformCount
+        DEC platformEnemyCount+PLATFORM_MIDDLE
         JMP UPC_ResetJump
 
 UPC_DecBottom
@@ -83,7 +91,7 @@ ScrollEnemies
         BNE SE_HasScrolling
         RTS
 
-platformYTbl 
+platformYTbl
         .BYTE $CD,$9D,$6D
 
 SE_HasScrolling 
@@ -188,7 +196,7 @@ UEP_TypeOK
         LDA platformEnemyCount,Y
         CMP #$03
         BCS UEP_NoClimbing
-        CPY #$01
+        CPY #PLATFORM_MIDDLE
         BNE UEP_ClimbDownOK
         LDA stage
         CMP #$02
@@ -199,7 +207,7 @@ UEP_TypeOK
         INC platformEnemyCount
         LDA #$01
         STA enemyLongLadderClimb,X
-UEP_ClimbDownOK 
+UEP_ClimbDownOK
         LDA tempStore
         STA enemyControls,X
         DEC enemyPlatformHeight,X
@@ -213,10 +221,10 @@ UEP_ClimbDownOK
         CLC
         ADC #$01
         STA platformEnemyCount,Y
-UEP_InitClimb 
+UEP_InitClimb
         LDA #$01
         STA enemyClimbing,X
-        LDA #$00
+        LDA #PLATFORM_GROUND
         STA enemyJumpPlatformHeight,X
 UEP_NoClimbing 
         DEX
@@ -252,12 +260,12 @@ UEP_NoClimbDown
         LDA stage
         CMP #$02
         BNE UEP_NoLongLadderUp
-        CPY #$01
+        CPY #PLATFORM_MIDDLE
         BNE UEP_NoLongLadderUp
-        LDA topPlatformCount
+        LDA platformEnemyCount+PLATFORM_TOP
         CMP #$03
         BCS UEP_NoClimbing
-        INC topPlatformCount
+        INC platformEnemyCount+PLATFORM_TOP
         LDA #$03
         STA enemyLongLadderClimb,X
 UEP_NoLongLadderUp
@@ -278,9 +286,9 @@ UEP_NoLongLadderUp
 
 UEP_InitJump 
         LDA enemyPlatformHeight,X
-        CMP #$01
+        CMP #PLATFORM_MIDDLE
         BNE UEP_InitJumpNotMid
-        LDA #$01
+        LDA #PLATFORM_MIDDLE
         STA enemyJumpPlatformHeight,X
 UEP_InitJumpCommon
         INC platformEnemyCount
@@ -288,8 +296,8 @@ UEP_InitJumpCommon
         RTS
 
 UEP_InitJumpNotMid 
-        INC midPlatformCount
-        LDA #$02
+        INC platformEnemyCount+PLATFORM_MIDDLE
+        LDA #PLATFORM_TOP
         STA enemyJumpPlatformHeight,X
         JMP UEP_InitJumpCommon
 
@@ -332,7 +340,7 @@ enemyCanJumpTbl
 AP_KnifeAnimDone
         RTS
 
-AnimatePlayer 
+AnimatePlayer
         LDA playerKnifeTimer
         BNE AP_KnifeAnim
         LDA playerControls
@@ -351,7 +359,7 @@ AnimatePlayer
         AND #$02
         BEQ AP_AtLadderEnd
         TAY
-AP_NoProne 
+AP_NoProne
         TYA
         CMP playerAnimState
         BNE AP_SetAnimAndReset
@@ -449,7 +457,7 @@ plrUpperXOffsetTbl
 plrOffsetIndexTbl 
         .BYTE $00,$0F,$11,$13,$15,$19,$1B
 
-weaponFrameTblOffset 
+weaponFrameTblOffset
         .BYTE $00,$00,$20,$00,$40
 
 playerUpperFrameTbl 
@@ -701,22 +709,22 @@ EWC_NoJump
         JMP EWC_Next
 
 EWC_NotOnGround
-         LDY enemyPlatformHeight,X
+        LDY enemyPlatformHeight,X
         DEY
         BNE EWC_NotInMiddle
-EWC_CheckJumpOK 
+EWC_CheckJumpOK
         LDA platformEnemyCount,Y
         CMP #$03
         BCS EWC_TurnAtEdge
         JSR UEP_InitJump
         JMP EWC_Next
 
-EWC_NotInMiddle 
+EWC_NotInMiddle
         LDA platformEnemyCount-1,Y
         CMP #$03
         BCS EWC_TurnAtEdge
         BCC EWC_CheckJumpOK
-EWC_TurnAtEdge 
+EWC_TurnAtEdge
         LDA #$FA
         STA charBelowEnemy,X
         LDA enemyControls,X
@@ -726,24 +734,26 @@ EWC_TurnAtEdge
         JSR UE_HorizMovement
         JMP EWC_Next
 
-enemyYAdjust 
+enemyYAdjust
         .BYTE $15,$15,$15,$15,$15,$15
 
-SetCoarseXCoords 
+        ; Calculate coarse X coords (8 bit only, half resolution) for the enemies and player for faster hitbox collision checks.
+
+SetCoarseXCoords
         LDX #$13
 SCXC_Loop LDA spriteXMSB+SPR_ENEMYUPPER,X
-        LSR 
+        LSR
         LDA spriteX+SPR_ENEMYUPPER,X
-        ROR 
+        ROR
         STA enemyCoarseX,X
         DEX
         BPL SCXC_Loop
         LDA spriteX+SPR_PLRLOWER
-        LSR 
+        LSR
         STA playerCoarseX
-        RTS 
+        RTS
 
-ReadControls 
+ReadControls
         LDA $DC00
         EOR #$FF
         AND #$1F
@@ -846,7 +856,7 @@ MP_NoLanding
 MP_NoMove
         RTS
 
-MovePlayer 
+MovePlayer
         LDA playerFalling
         BEQ MP_NotFalling
         BNE MP_Falling
@@ -932,7 +942,7 @@ MP_ExitLadderRight
         STA playerFacingDir
         RTS 
 
-MP_HasFirePress 
+MP_HasFirePress
         LDA playerClimbingCopy
         BNE MP_NoKnifeAttack
         LDA #$05
@@ -1030,7 +1040,7 @@ MP_HasUpPress
         BEQ MP_OKToJump
         JMP MP_NoLadderOrAttack
 
-MP_OKToJump 
+MP_OKToJump
         LDA #$01
         STA playerJumping
         STA playerJumpInhibit
@@ -1177,7 +1187,7 @@ jumpArcTbl
         .BYTE $00,$00,$01,$01,$02,$03,$04,$05,$06,$07,$09,$0B,$0D,$0F,$11,$13
         .BYTE $15,$17,$19,$1B,$1E,$21,$24,$28,$2C,$30,$34,$38,$3C,$3C,$3C,$3C
 
-UpdateEnemies 
+UpdateEnemies
         LDX #$05
 UE_Loop LDA enemyActive,X
         BNE UE_EnemyActive
@@ -1275,7 +1285,7 @@ UE_InitFall
         STA enemyJumpSpeed,X
         LDA #$00
         STA enemyRunSpeed,X
-UE_NoLanding 
+UE_NoLanding
         LDA enemyJumpSpeed,X
         CLC 
         ADC enemyJumpSubPixel,X
@@ -1348,7 +1358,7 @@ UE_NoHorizMove
         JSR UpdateEnemyClimb
         JMP UE_Next
 
-UE_CheckJumpOrClimb 
+UE_CheckJumpOrClimb
         LDA enemyJumping,X
         BNE UE_UpdateJumpArc
         LDA charTypeAtEnemy,X
@@ -1397,7 +1407,7 @@ UE_InitJumpArc
         SEC 
         SBC jumpArcTbl,Y
         STA enemyBaseY,X
-UE_UpdateJumpArc 
+UE_UpdateJumpArc
         LDA charTypeAtEnemy,X
         AND #$03
         BEQ UE_JumpNoLadder
@@ -1434,7 +1444,7 @@ UE_DecJumpArc
         LDA #$80
         STA enemyJumping,X
         INY
-UE_JumpArcNotDone 
+UE_JumpArcNotDone
         TYA
         STA enemyJumpArcIndex,X
 UE_CheckJumpHorizMove

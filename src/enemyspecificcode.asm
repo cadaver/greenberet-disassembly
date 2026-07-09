@@ -1,3 +1,7 @@
+        ; Special per-enemy type code using a jump table. Enemy firing and other special attacks are also handled here,
+        ; checking difficulty timers that make the attacks more frequent the longer the player proceeds and stays alive.
+        ; The parachute soldier creates extra sprites that reuse the enemy upper/lower sprites, but cannot be hit.
+
 RunEnemyCustomCode
         LDY enemyType,X
         TYA
@@ -298,7 +302,7 @@ IEB_FiringRight
         STA spriteY+SPR_BULLET,X
         LDX temp
         LDA enemyCoarseX,X
-        CLC 
+        CLC
         ADC bulletOffset
         LDX bulletIndex
         STA bulletCoarseX,X
@@ -345,7 +349,7 @@ InitGrenadeArc
         STA enemyAuxTimer,X
         TXA 
         PHA 
-        TYA 
+        TYA
         PHA 
         JSR PlayBazookaSound
         PLA 
@@ -431,14 +435,14 @@ ECT7_DeadOrIdle
 UpdateParachute
         LDA parachuteActiveFlag
         BNE UP_InitDone
-        LDA topPlatformCount
+        LDA platformEnemyCount+PLATFORM_TOP
         CLC 
         ADC #$02
-        STA topPlatformCount
-        LDA midPlatformCount
+        STA platformEnemyCount+PLATFORM_TOP
+        LDA platformEnemyCount+PLATFORM_MIDDLE
         CLC 
         ADC #$02
-        STA midPlatformCount
+        STA platformEnemyCount+PLATFORM_MIDDLE
         LDA numEnemies
         CLC
         ADC #$03
@@ -557,14 +561,14 @@ UP_LowerMSBDone
         RTS
 
 CleanupParachute 
-        LDA midPlatformCount
+        LDA platformEnemyCount+PLATFORM_MIDDLE
         SEC
         SBC #$02
-        STA midPlatformCount
-        LDA topPlatformCount
+        STA platformEnemyCount+PLATFORM_MIDDLE
+        LDA platformEnemyCount+PLATFORM_TOP
         SEC
         SBC #$02
-        STA topPlatformCount
+        STA platformEnemyCount+PLATFORM_TOP
         LDA numEnemies
         SEC
         SBC #$03
@@ -674,7 +678,7 @@ paraEnemyIndex1
         .BYTE $00
 paraEnemyIndex2
          .BYTE $00
-paraEnemyIndex3 
+paraEnemyIndex3
         .BYTE $00
 
 CheckParachuteEnemy 

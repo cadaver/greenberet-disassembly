@@ -1,3 +1,5 @@
+        ; Text printing routines, title screen wait loop and sprite initialization.
+
 ShowTitleScreen
         LDA #$00
         STA frameSyncFlag

@@ -1,3 +1,6 @@
+        ; Truck sprite animation at the end of the first stage. When the truck is on screen, sprites are used directly
+        ; but the enemies are set inactive, meaning it cannot be hit by player attacks.
+
 TruckAnimation
         LDA stageEndReached
         BEQ TA_Init
@@ -174,7 +177,7 @@ UET_Next
         BPL UET_Loop
         RTS
 
-TA_AnimateTruck 
+TA_AnimateTruck
         DEC truckAnimTimer
         BNE TA_AnimateSkip
         LDA #$07
