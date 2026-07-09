@@ -10,16 +10,16 @@ CERA_Next
         BPL CERA_Loop
         RTS
 
-CERA_EnemyActive 
+CERA_EnemyActive
         LDA enemyType,X
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BEQ CERA_Next
         LDA spriteX+SPR_ENEMYUPPER,X
         CMP #$50
         BCC CERA_CheckLeft
         LDA spriteXMSB+SPR_ENEMYUPPER,X
         BNE RemoveEnemy
-CERA_NoRemove 
+CERA_NoRemove
         DEX
         BPL CERA_Loop
         RTS

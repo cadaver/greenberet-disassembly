@@ -64,7 +64,7 @@ ECT6_NotDying
         LDA enemyFireFlag,X
         BNE DoEnemyFire
         LDA enemyType,X
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BEQ ECT6_SkipChecks
         LDA enemyPlatformHeight,X
         CMP playerPlatformHeight
@@ -104,7 +104,7 @@ DoEnemyFire
         CMP #$01
         BNE DEF_CheckDelayFinish
         LDY enemyType,X
-        CPY #$09
+        CPY #ENEMY_PARACHUTE
         BEQ DEF_NoTurn
         STA enemyTimerActive,X
         LDA #$3C
@@ -138,7 +138,7 @@ DEF_Wait
 
 DEF_CheckResetFire
         LDA enemyType,X
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BNE DEF_ResetFireFlag
         RTS
 
@@ -168,13 +168,13 @@ DEF_DoFire
         JSR InitEnemyBullet
         LDX temp
         LDA enemyType,X
-        CMP #$02
+        CMP #ENEMY_RIFLEMAN
         BNE DEF_NotRifleman
         JSR PlayEnemyFireSound
         JMP DEF_NotBazookaMan
 
 DEF_NotRifleman
-        CMP #$06
+        CMP #ENEMY_BAZOOKA
         BNE DEF_NotBazookaMan
         JSR PlayBazookaSound
 DEF_NotBazookaMan
@@ -182,12 +182,12 @@ DEF_NotBazookaMan
         LDA #$00
         STA enemyFireFlag,X
         LDA enemyType,X
-        CMP #$09
-        BEQ DEF_SetFireDelay
+        CMP #ENEMY_PARACHUTE
+        BEQ DEF_SetFireDelay ; No animation for parachutist
         LDA #$0F
         STA enemyTimer,X
         LDY enemyType,X
-        CPY #$08
+        CPY #ENEMY_GRENADIER
         BNE DEF_NotGrenadier
         LDA numAliveGyros
         BNE DEF_NotGrenadier
@@ -585,7 +585,7 @@ CP_Loop LDX paraEnemyIndices,Y
         DEY
         BNE CP_Loop
         LDX paraEnemyIndices
-        LDA #$05
+        LDA #ENEMY_MARTIALARTIST
         STA enemyType,X
         LDA #$00
         STA enemyTimerActive,X
@@ -593,7 +593,7 @@ CP_Loop LDX paraEnemyIndices,Y
         STA parachuteActiveFlag
         RTS
 
-SpawnParachuteExtras 
+SpawnParachuteExtras
         STX paraEnemyIndices
         LDY #$00
         JSR InitParachuteSprites
@@ -638,7 +638,7 @@ InitParachuteSprites
         STA enemyActive,X
         LDA #$00
         STA enemyTimer,X
-        LDA #$09
+        LDA #ENEMY_PARACHUTE
         STA enemyType,X
         RTS
 
@@ -685,7 +685,7 @@ CheckParachuteEnemy
         LDX #$05
 CPE_Loop 
         LDA enemyType,X
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BEQ CPE_Found
         DEX
         BPL CPE_Loop

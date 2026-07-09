@@ -123,11 +123,11 @@ CGHE_EnemyLoop
         BNE CGHE_NextEnemy
         CPX #$04
         BCS CGHE_NextEnemy
-        LDA dogActive-1,X ;Use standard enemy indexing, dog update code offsets by one
+        LDA dogActive-1,X ; Use standard enemy indexing, dog update code offsets by one
         BEQ CGHE_NextEnemy
 CGHE_EnemyActive 
         LDA enemyType,X
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BNE CHGE_EnemyOK
         LDA numAliveGyros
         BNE CHGE_CheckGyroHit
@@ -185,7 +185,7 @@ CHGE_EnemyOK
         LDA enemyActive,X
         BNE CGHE_IsHumanEnemy
         LDA #$80
-        STA dogHit-1,X ;Use standard enemy indexing, dog update code offsets by one
+        STA dogHit-1,X ; Use standard enemy indexing, dog update code offsets by one
         JMP CGHE_SkipEnemyHit
 
 CGHE_IsHumanEnemy 
@@ -195,13 +195,13 @@ CGHE_SkipEnemyHit
         STX temp
         STY tempStoreY2
         LDA enemyType,X
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BNE CGHE_NoParachuteHit
         LDA numAliveGyros
         BNE CGHE_NoParachuteHit
         JSR CleanupParachute
         JSR PlayEnemyKillSound
-CGHE_NoParachuteHit 
+CGHE_NoParachuteHit
         LDX temp
         LDY tempStoreY2
         LDA numAliveGyros
@@ -229,7 +229,7 @@ CheckFireExtraWeapon
         BEQ CFEW_NoFire
         STA extraWeaponFireFlag
         CMP #$00
-CFEW_NoFire 
+CFEW_NoFire
         RTS
 
 CFEW_IsClimbing 
@@ -327,7 +327,7 @@ UG_Explode
         JSR CheckBulletExploded
         RTS
 
-UG_NoCharLanding 
+UG_NoCharLanding
         LDA spriteY+SPR_BULLET,X
         CLC 
         ADC #$04
@@ -423,7 +423,7 @@ CGAK_Loop
         JSR CGAK_EnemyBoundCheck
         BCC CGAK_Next
         LDA enemyType,Y
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BNE CGAK_NotParachute
         LDA numAliveGyros
         BNE CGAK_NotParachute
@@ -573,7 +573,7 @@ FFB_Found
         CLC
         RTS
 
-FireExtraWeapon 
+FireExtraWeapon
         LDY collectedExtraWeapon
         DEY 
         CPY #$03
@@ -671,7 +671,7 @@ FEW_InitFlameCommon
         ADC #$01
         STA spriteFrame+SPR_BULLET,X
         LDA bulletXSpeed+1,X
-        CLC 
+        CLC
         ADC #$02
         STA bulletXSpeed,X
         LDA #$01

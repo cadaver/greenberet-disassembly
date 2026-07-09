@@ -28,14 +28,14 @@ SETS_Next
         BPL SETS_Loop
         RTS 
 
-FindNextSpawnType 
+FindNextSpawnType
         LDX #$05
 FNST_Loop 
         LDA spawnEnemyFlag,X
         BEQ FNST_NoSpawn
         STX nextSpawnTblIndex
         SEC 
-        RTS 
+        RTS
 
 FNST_NoSpawn 
         DEX
@@ -69,23 +69,23 @@ TSSE_Fail
 
         .BYTE $02
 
-TSSE_CheckCounts 
+TSSE_CheckCounts
         LDY staticEnemyPlatform
         LDA platformEnemyCount,Y
         CMP #$03
         BCS TSSE_Fail
         LDA nextSpawnTblIndex
-        PHA 
+        PHA
         LDA #$00
         STA nextSpawnTblIndex
         JSR CheckCharAtSpawn
         PLA
         STA nextSpawnTblIndex
-        PHP 
+        PHP
         LDA staticEnemyType
-        CMP #$09
+        CMP #ENEMY_PARACHUTE ; Parachute enemy can also spawn into the air
         BNE TSSE_CheckGround
-        PLP 
+        PLP
         JMP TSSE_DoSpawn
 
 TSSE_DoSpawn 
@@ -253,23 +253,23 @@ staticEnemyStartTbl
 staticEnemyEndTbl
         .BYTE $05,$15,$2B,$3C
 
-staticEnemyType 
+staticEnemyType
         .BYTE $00
 staticEnemyTimer
         .BYTE $00
-staticEnemyPlatform 
+staticEnemyPlatform
         .BYTE $00
-staticInitFlags 
+staticInitFlags
         .BYTE $00
-staticUpperYOffset 
+staticUpperYOffset
         .BYTE $00
-staticLowerYOffset 
+staticLowerYOffset
         .BYTE $00
 staticUpperXOffset
         .BYTE $00
-staticLowerXOffset 
+staticLowerXOffset
         .BYTE $00
-staticEnemyIndex 
+staticEnemyIndex
         .BYTE $00
 
 TrySpawnEnemy
@@ -280,26 +280,26 @@ TrySpawnEnemy
         JSR FindFreeEnemySlot
         BCS TSE_Fail
         JSR CheckSpawnNewEnemyPY
-TSE_Fail 
+TSE_Fail
         RTS
 
-CheckSpawnNewEnemyPY 
+CheckSpawnNewEnemyPY
         LDY playerPlatformHeight
         LDA #$03
         STA spawnRetryCount
-CheckSpawnNewEnemyY 
+CheckSpawnNewEnemyY
         LDA platformEnemyCount,Y
         CMP #$03
         BCC CSNE_CountOK
-CSNE_FailSpawn 
+CSNE_FailSpawn
         JMP TSE_NextPlatform
 
-CSNE_CountOK 
+CSNE_CountOK
         LDA stageEndReached
         BNE CSNE_NoStageEnd
         JSR CheckCharAtSpawn
         BCC CSNE_FailSpawn
-CSNE_NoStageEnd 
+CSNE_NoStageEnd
         LDA platformEnemyCount,Y
         CLC
         ADC #$01
@@ -311,21 +311,21 @@ CSNE_NoStageEnd
         LDA #$A9
         JMP CSNE_SetEnemyPos
 
-CSNE_UsePlatformY 
+CSNE_UsePlatformY
         LDA platformYTbl,Y
-CSNE_SetEnemyPos 
+CSNE_SetEnemyPos
         STA spriteY+SPR_ENEMYUPPER,X
         CLC
         ADC #$15
         STA spriteY+SPR_ENEMYLOWER,X
         LDY nextSpawnTblIndex
         LDA enemySpawnDirTbl,Y
-CSNE_SetEnemyXPos 
+CSNE_SetEnemyXPos
         LDY #$00
         CMP #$04
         BEQ CSNE_SpawnRight
         INY
-CSNE_SpawnRight 
+CSNE_SpawnRight
         LDA enemySpawnXMSBTbl,Y
         STA spriteXMSB+SPR_ENEMYUPPER,X
         STA spriteXMSB+SPR_ENEMYLOWER,X
@@ -339,13 +339,13 @@ CSNE_SpawnRight
         BCC CSNE_NoSpawnXAdjust
         SEC
         SBC #$08
-CSNE_NoSpawnXAdjust 
+CSNE_NoSpawnXAdjust
         CLC
         ADC scrollX
         STA spriteX+SPR_ENEMYUPPER,X
         STA spriteX+SPR_ENEMYLOWER,X
         LDY nextSpawnTblIndex
-        LDA spawnEnemyType,Y        
+        LDA spawnEnemyType,Y
         STA enemyType,X
         PHA
         LDA #$00
@@ -372,7 +372,7 @@ CSNE_NoSpawnXAdjust
         STA nextSpawnTblIndex
         RTS
 
-TSE_NextPlatform 
+TSE_NextPlatform
         TYA
         SEC
         SBC #$01
@@ -384,10 +384,10 @@ TSE_NoPlatformWrap
         BEQ TSE_RetriesExhausted
         JMP CheckSpawnNewEnemyY
 
-TSE_RetriesExhausted 
+TSE_RetriesExhausted
         RTS
 
-CheckCharAtSpawn 
+CheckCharAtSpawn
         SEC
         CPY #$00
         BEQ CCAS_NoChar
@@ -400,7 +400,7 @@ CheckCharAtSpawn
         BEQ CCAS_Left
         INY
         INY
-CCAS_Left 
+CCAS_Left
         LDA spawnScreenPosTblLo,Y
         STA screenPtrLo
         LDA spawnScreenPosTblHi,Y
@@ -420,7 +420,7 @@ CCAS_Left
         LDY tempStore
         AND #$0C
         CMP #$0C
-CCAS_NoChar 
+CCAS_NoChar
         RTS
 
 enemySpawnXMSBTbl
@@ -429,7 +429,7 @@ enemySpawnXMSBTbl
 enemySpawnXTbl
         .BYTE $44,$12
 
-spawnScreenPosTblLo 
+spawnScreenPosTblLo
         .BYTE $F6,$06,$D0,$E0
 
 spawnScreenPosTblHi

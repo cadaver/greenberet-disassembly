@@ -237,7 +237,7 @@ UEC_Done
         PLA
         JMP UEP_NoClimbing
 
-UEP_NoClimbDown 
+UEP_NoClimbDown
         LDA charAtEnemy,X
         CMP #$C8
         BCC UEP_NoClimbing
@@ -678,7 +678,7 @@ EWC_NoRightOverflow
         CMP #$C8
         BCC EWC_NoCharBelow
         SBC #$C8
-        TAY 
+        TAY
         LDA charTypeTbl,Y
         STA charTypeBelowEnemy,X
 EWC_NoCharBelow 
@@ -1199,7 +1199,7 @@ UE_EnemyActive
         LDA enemyTimerActive,X
         BEQ UE_TimerNotActive
         LDA enemyType,X
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BEQ UE_Next
         JSR RunEnemyCustomCode
         JMP UE_Next
@@ -1315,7 +1315,7 @@ UE_HorizMovement
         STA enemyRunSubPixel,X
         BCC UE_MoveRight
         JSR UE_MoveRight
-UE_MoveRight 
+UE_MoveRight
         INC spriteX+SPR_ENEMYUPPER,X
         INC spriteX+SPR_ENEMYLOWER,X
         BNE UE_RightNoMSB
@@ -1367,7 +1367,7 @@ UE_CheckJumpOrClimb
         AND enemyControls,X
         BEQ UE_NoLadderBelow
         LDA enemyType,X
-        CMP #$05
+        CMP #ENEMY_MARTIALARTIST
         BEQ UE_NoLadderBelow
         JMP UE_NoHorizMove
 
@@ -1412,7 +1412,7 @@ UE_UpdateJumpArc
         AND #$03
         BEQ UE_JumpNoLadder
         LDY enemyType,X
-        CPY #$05
+        CPY #ENEMY_MARTIALARTIST
         BEQ UE_JumpNoLadder
         AND enemyControls,X
         BNE UE_EnemyGrabLadder

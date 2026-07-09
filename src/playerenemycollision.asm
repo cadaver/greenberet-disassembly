@@ -47,7 +47,7 @@ CKC_CheckEnemy
         ORA enemyHit,X
         BNE CKC_Next
         LDA enemyType,X
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BNE CKC_CheckBounds
         LDA numAliveGyros
         BNE CKC_InGyroBossFight
@@ -96,7 +96,7 @@ CKC_CheckBounds
         STX tempStoreX
         STY tempStoreY
         LDA enemyType,X
-        CMP #$09
+        CMP #ENEMY_PARACHUTE
         BNE CKC_NotParachute
         LDA numAliveGyros
         BNE CKC_NotParachute
@@ -131,12 +131,12 @@ CKC_CheckDogBounds
         CMP knifeHitBoundLow
         BCS CKC_DogBoundsXOK
 CKC_DogBoundsXRetry 
-        LDA $026D ;Never written to
+        LDA $026D ; Never written to
         CMP knifeHitBoundLow
         BCS CKC_DogBoundsDone
         CMP knifeHitBoundHigh
         BCC CKC_DogBoundsDone
-CKC_DogBoundsXOK 
+CKC_DogBoundsXOK
         LDA spriteY+SPR_ENEMYUPPER,X
         SEC
         SBC #$0D
@@ -150,7 +150,7 @@ CKC_DogBoundsXOK
         CMP knifeHitBoundLow
         BCS CKC_DogBoundsHit
 CKC_DogBoundsYRetry
-        LDA $0271 ;Never written to
+        LDA $0271 ; Never written to
         CMP knifeHitBoundLow
         BCC CKC_DogBoundsDone
         CMP knifeHitBoundHigh
