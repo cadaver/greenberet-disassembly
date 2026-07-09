@@ -1,4 +1,4 @@
-        * = $6e0
+        * = $06E0
 
 MainLoop
         JSR UpdateMusicWaitFrame

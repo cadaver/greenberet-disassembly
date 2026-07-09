@@ -5,6 +5,25 @@
 
 GRENADE_HANG_FIX = 0
 
+        ; If nonzero, border will be flashed if enemy custom code with illegal type is attempted to be run.
+        ; Total code size is retained the same
+
+ILLEGAL_ENEMY_TYPE_CHECK = 0
+
+        ; If nonzero, lives are not decremented
+
+INFINITE_LIVES_CHEAT = 0
+
+        ; If nonzero, extra weapons have infinite shots to aid in testing
+
+INFINITE_SHOTS_CHEAT = 0
+
+        ; If nonzero, player will be invulnerable to aid in testing. Note that this disables collisions entirely;
+        ; a bazooka shot that explodes and tries to kill the player will remain indefinitely on screen in the final
+        ; fights and prevent progress
+
+INVULNERABILITY_CHEAT = 0
+
         ; Zeropage variables
 
 irqCounter = $02

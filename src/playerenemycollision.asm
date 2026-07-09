@@ -198,7 +198,7 @@ CETP_CheckEnemy
         BEQ CETP_ProneEnemy
         CLC 
         ADC #$12
-CETP_ProneEnemy 
+CETP_ProneEnemy
         ADC #$0A
         STA enemyTouchBoundHigh
         LDA enemyUpperY,X
@@ -214,12 +214,26 @@ CETP_ProneEnemy
         STY temp2
         LDA numAliveGyros
         BNE CETP_NoEnemyTouch
-KillPlayer 
+
+KillPlayer
+
+    .if INVULNERABILITY_CHEAT = 0
+
+        ; Original code, proceed with player death
         LDY #$29
+
+    .else
+
+        ; Cheat code, skip death + extra byte to keep memory alignment the same
+        RTS
+        NOP
+
+    .endif
+
         JSR PlaySong
         PLA
         PLA
         JMP InitNextLife
 
-CETP_NoEnemyTouch 
+CETP_NoEnemyTouch
         JMP CETP_Next

@@ -181,7 +181,7 @@ charData3
         .BYTE $77,$00,$FF,$AA,$40,$40,$30,$30,$55,$55,$55,$55,$55,$55,$55,$55
 
 CheckDestroyMines LDX #$02
-CDM_Loop  
+CDM_Loop
         LDA bulletActive,X
         BNE CDM_BulletActive
 CDM_Next  
@@ -312,20 +312,34 @@ CheckPlayerHitMine
         BEQ KillPlayerToMine
         RTS
 
-KillPlayerToMine 
+KillPlayerToMine
+
+    .if INVULNERABILITY_CHEAT = 0
+
+        ; Original code, proceed with player death
         JSR ResetSID
+
+    .else
+
+        ; Cheat code, skip death + extra bytes to keep memory alignment the same
+        RTS
+        NOP
+        NOP
+
+    .endif
+
         INC haltPlayerFlag
         JSR PlayExplosionSound
         JSR WaitSongToEnd
         LDY #$29
         JSR PlaySong
         PLA
-        PLA 
+        PLA
         JMP InitNextLife
 
-mineLeftCharTbl 
+mineLeftCharTbl
         .BYTE $52
-mineRightCharTbl 
+mineRightCharTbl
         .BYTE $53,$3E,$3F,$52,$53,$A0,$A1
 
 ResetGameChars PHP
@@ -333,7 +347,7 @@ ResetGameChars PHP
         SEI
         LDA #$30
         STA $01
-RGC_Loop 
+RGC_Loop
         LDA charData1,Y
         STA $79F0,Y
         LDA charData2,Y

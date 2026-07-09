@@ -131,7 +131,19 @@ InitNextLife
         LDA #$01
         STA haltPlayerFlag
         JSR WaitSongToEnd
+
+    .if INFINITE_LIVES_CHEAT = 0
+
+        ; Original code, lives are decremented
         DEC lives
+    
+    .else
+
+        ; Cheat code, lives not decremented
+        LDA lives
+
+    .endif
+
         BPL INL_NoGameOver
         JSR ShowGameOver
         LDY #$23

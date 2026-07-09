@@ -3,7 +3,7 @@
 CheckEnemyBulletHits LDX #$02
 CEBH_Loop LDA bulletActive+3,X
         BNE CEBH_CheckBullet
-CEBH_Next DEX 
+CEBH_Next DEX
         BPL CEBH_Loop
         JMP CEBH_BulletsDone
 
@@ -24,10 +24,22 @@ CEBH_CheckBullet LDA spriteY
         CMP #$05
         BEQ CEBH_DoKill
         TXA
-        CLC 
+        CLC
         ADC #$03
-        TAX 
+        TAX
+
+    .if INVULNERABILITY_CHEAT = 0
+    
+        ; Original code, explode grenade then kill player
         JSR ExplodeGrenade
+
+    .else
+
+        ; If player death is skipped, also need to disable explosions to not cause funny animation and hang progress in the final fights
+        BIT ExplodeGrenade
+
+    .endif
+
 CEBH_DoKill JMP KillPlayer
 
 CEBH_NoHit JMP CEBH_Next
@@ -63,11 +75,12 @@ CEBH_CheckDog LDA dogCoarseX,X
         JMP KillPlayer
 
 ShowGameOver LDX #$09
-bFD7A   LDA gameOverText,X
+SGO_Loop
+        LDA gameOverText,X
         AND #$3F
         STA statusScreen+$1,X
         DEX
-        BPL bFD7A
+        BPL SGO_Loop
         RTS
 
 gameOverText 
@@ -80,7 +93,7 @@ victoryText
         .BYTE $50,$52,$4F,$43,$45,$45,$44,$20,$54,$4F,$20,$4E,$45,$58,$54,$20
         .BYTE $43,$41,$4D,$50,$FF,$00,$BF,$E0,$D8,$1C,$FF,$D0,$1C,$1C,$B2,$F9
         .BYTE $CA,$0C,$0F,$BF,$F0,$5F,$08,$8E,$D8,$C2,$4F,$FC,$C2,$4F,$FC,$D0
-        .BYTE $1C,$1C,$78,$F9,$BF,$60,$CC,$04,$28,$02,$CE,$32,$02,$28,$01,$28          
+        .BYTE $1C,$1C,$78,$F9,$BF,$60,$CC,$04,$28,$02,$CE,$32,$02,$28,$01,$28
         .BYTE $01,$28,$02,$28,$02,$CC,$02,$32,$04,$32,$02,$CE,$32,$04,$D0,$1C
         .BYTE $1C,$02,$FC,$C2,$BF,$FC,$5F,$0E,$C2,$BF,$FC,$5F,$08,$3C,$02,$3E
         .BYTE $02,$3F,$02,$C2,$F4,$FC,$BF,$48,$43,$0C,$D8,$06,$88,$D8,$07,$FF

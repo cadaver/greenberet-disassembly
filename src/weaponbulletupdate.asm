@@ -1,4 +1,4 @@
-FlashBullets 
+FlashBullets
         LDA gameTimer
         AND #$04
         LSR
@@ -11,10 +11,10 @@ FB_Loop STA bulletColor,X
         BPL FB_Loop
         RTS
 
-colorFlashTbl 
+colorFlashTbl
         .BYTE $07,$02
 
-UpdateBullets 
+UpdateBullets
         JSR CheckRemoveBullets
         JSR CheckGrenadeHitEnemy
         JSR CheckDestroyMines
@@ -23,7 +23,19 @@ UpdateBullets
         JSR FindFreeBullet
         BCS UB_NoFireExtraWeapon
         JSR FireExtraWeapon
+
+    .if INFINITE_SHOTS_CHEAT = 0
+
+        ; Original code, extra weapon shots will be decremented by one
         DEC extraWeaponShotsLeft
+
+    .else
+
+        ; Cheat code, no decrement
+        LDA extraWeaponShotsLeft
+
+    .endif
+
         BNE UB_ShotsNotExhausted
         LDA #$00
         STA activeExtraWeapon
