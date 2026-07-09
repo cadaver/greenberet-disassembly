@@ -1,4 +1,4 @@
-        ; IRQ initialization and the main IRQ handler, which jumps off to the top-of-screen, scroll split and sprite
+        ; IRQ initialization and the main IRQ handler, which jumps off to the bottom screen, scroll split and sprite
         ; multiplexer sub-handlers. It is followed by the sprite sorting routine called by the main loop.
 
 InitIrq SEI

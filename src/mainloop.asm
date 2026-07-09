@@ -73,7 +73,7 @@ Main_NoParachuteKill
         JSR CheckStartEndFight
         JMP MainLoop
 
-        ; This routine is called from the top-of-the screen raster interrupt handler instead of the main program, and
+        ; This routine is called from the screen bottom raster interrupt handler instead of the main program, and
         ; it reads the joystick and moves the player, and also advances the playroutine's sound effects part. It also
         ; does a knife collision check for a few frames after a fire press, while the player character is still in the
         ; knife strike pose.
