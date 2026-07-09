@@ -56,11 +56,11 @@ S4NE_NoReset
         LDA enemyDirTbl,Y
         STA enemySpawnDirTbl
         DEC endFightEnemiesLeft
-S4NE_Done 
+S4NE_Done
         RTS
 
-finaleSpawnTypeTbl 
-        .BYTE $03,$06,$05,$08
+finaleSpawnTypeTbl
+        .BYTE ENEMY_PRISONGUARD,ENEMY_BAZOOKA,ENEMY_MARTIALARTIST,ENEMY_GRENADIER
 
 Stage2EndFight
         JSR InitDogFight
@@ -96,7 +96,7 @@ UpdateDogHandler
         LDA #$00
         STA nextSpawnTblIndex
         STA enemyJumping
-        LDA #$05
+        LDA #ENEMY_MARTIALARTIST
         STA spawnEnemyType
         LDA nextDogHandlerDir
         EOR #$0C
@@ -107,10 +107,10 @@ UpdateDogHandler
         INC platformEnemyCount
         STA enemyCoarseX
         LDA #$CD
-        STA enemyUpperY
+        STA spriteY+SPR_ENEMYUPPER
         CLC 
         ADC #$15
-        STA enemyLowerY
+        STA spriteY+SPR_ENEMYLOWER
         LDA nextDogHandlerDir
         STA enemyControls
         LDA #$1E
@@ -143,8 +143,8 @@ UDH_CommandDogsAnim
         ROL
         TAY
         LDA dogHandlerFrameTbl,Y
-        STA enemyUpperFrame
-UDH_Done 
+        STA spriteFrame+SPR_ENEMYUPPER
+UDH_Done
         RTS
 
 dogHandlerFrameTbl 
@@ -193,7 +193,7 @@ UD_NoSpawnNew
         JSR AnimateDogs
         RTS 
 
-CheckKilledDogs 
+CheckKilledDogs
         LDX #$02
 CKD_Loop 
         LDA dogDead,X
@@ -230,11 +230,11 @@ RemoveDeadDog
         STA dogActive,X
         STA dogHit,X
         STA dogDead,X
-        STA dogXMSB,X
-        STA dogX,X
+        STA spriteXMSB+SPR_ENEMYDOG,X
+        STA spriteX+SPR_ENEMYDOG,X
         STA dogCoarseX,X
         DEC platformEnemyCount
-        STA dogY,X
+        STA spriteY+SPR_ENEMYDOG,X
 RDD_HasDelay
         RTS
 
@@ -263,25 +263,25 @@ AD_DoAnimate
         LDA dogDir,X
         CMP #$08
         BNE AD_AnimateLeft
-        LDA dogFrame,X
+        LDA spriteFrame+SPR_ENEMYDOG,X
         CLC
         ADC #$01
         CMP #$CC
         BCC AD_RightDone
         LDA #$C9
 AD_RightDone
-        STA dogFrame,X
+        STA spriteFrame+SPR_ENEMYDOG,X
         JMP AD_Next
 
 AD_AnimateLeft
-        LDA dogFrame,X
+        LDA spriteFrame+SPR_ENEMYDOG,X
         CLC
         ADC #$01
         CMP #$CF
         BCC AD_LeftDone
         LDA #$CC
 AD_LeftDone 
-        STA dogFrame,X
+        STA spriteFrame+SPR_ENEMYDOG,X
         JMP AD_Next
 
 MoveDogs
@@ -296,15 +296,15 @@ MD_IsActive
         LDA dogDir,X
         CMP #$04
         BEQ MD_MoveLeft
-        LDA dogX,X
+        LDA spriteX+SPR_ENEMYDOG,X
         CLC 
         ADC #$04
-        STA dogX,X
-        LDA dogXMSB,X
+        STA spriteX+SPR_ENEMYDOG,X
+        LDA spriteXMSB+SPR_ENEMYDOG,X
         ADC #$00
-        STA dogXMSB,X
+        STA spriteXMSB+SPR_ENEMYDOG,X
         BEQ MD_RightNoMSB
-        LDA dogX,X
+        LDA spriteX+SPR_ENEMYDOG,X
         CMP #$50
         BCS MD_RemoveOffScreen
 MD_RightNoMSB
@@ -312,15 +312,15 @@ MD_RightNoMSB
         JMP MD_Next
 
 MD_MoveLeft 
-        LDA dogX,X
+        LDA spriteX+SPR_ENEMYDOG,X
         SEC
         SBC #$04
-        STA dogX,X
-        LDA dogXMSB,X
+        STA spriteX+SPR_ENEMYDOG,X
+        LDA spriteXMSB+SPR_ENEMYDOG,X
         SBC #$00
-        STA dogXMSB,X
+        STA spriteXMSB+SPR_ENEMYDOG,X
         BNE MD_LeftHasMSB
-        LDA dogX,X
+        LDA spriteX+SPR_ENEMYDOG,X
         CMP #$12
         BCC MD_RemoveOffScreen
 MD_LeftHasMSB 
@@ -336,10 +336,10 @@ MD_RemoveOffScreen
         STA dogJumping,X
         STA dogDead,X
         STA dogHit,X
-        STA dogX,X
-        STA dogXMSB,X
+        STA spriteX+SPR_ENEMYDOG,X
+        STA spriteXMSB+SPR_ENEMYDOG,X
         DEC platformEnemyCount
-        STA dogY,X
+        STA spriteY+SPR_ENEMYDOG,X
         STA dogCoarseX,X
         JMP MD_Next
 
@@ -376,20 +376,20 @@ SND_FoundFree
         LDA staticEnemyType
         STA dogDir,X
         LDA staticInitFlags
-        STA dogColor,X
+        STA spriteColor+SPR_ENEMYDOG,X
         LDA #$E2
-        STA dogY,X
+        STA spriteY+SPR_ENEMYDOG,X
         INC platformEnemyCount
         INC dogActive,X
         LDA staticEnemyType
         CMP #$04
         BNE SND_SpawnOnLeft
         LDA #$01
-        STA dogXMSB,X
+        STA spriteXMSB+SPR_ENEMYDOG,X
         LDA #$4E
-        STA dogX,X
+        STA spriteX+SPR_ENEMYDOG,X
         LDA #$CD
-        STA dogFrame,X
+        STA spriteFrame+SPR_ENEMYDOG,X
 SND_Common
         LDA #$01
         STA enemyAuxTimer,X
@@ -399,11 +399,11 @@ SND_Common
 
 SND_SpawnOnLeft 
         LDA #$00
-        STA dogXMSB,X
+        STA spriteXMSB+SPR_ENEMYDOG,X
         LDA #$10
-        STA dogX,X
+        STA spriteX+SPR_ENEMYDOG,X
         LDA #$CA
-        STA dogFrame,X
+        STA spriteFrame+SPR_ENEMYDOG,X
         JMP SND_Common
 
 DJ_Done RTS
@@ -417,10 +417,10 @@ DogJump LDA dogJumping,X
         BNE DJ_Done
         LDA #$CA
 DJ_SetFrameAndInit
-        STA dogFrame,X
+        STA spriteFrame+SPR_ENEMYDOG,X
         INC dogJumping,X
         LDY #$11
-        LDA dogY,X
+        LDA spriteY+SPR_ENEMYDOG,X
         SEC
         SBC jumpArcTbl,Y
         STA dogBaseY,X
@@ -431,7 +431,7 @@ DJ_AlreadyJumping
         LDA dogBaseY,X
         CLC 
         ADC jumpArcTbl,Y
-        STA dogY,X
+        STA spriteY+SPR_ENEMYDOG,X
         LDA dogJumping,X
         BPL DJ_Fall
         INY
@@ -692,9 +692,9 @@ SetGyroMidFrame
         LDY #$00
 SGMF_Loop
         LDA gyroUpperMidFrameTbl,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA gyroLowerMidFrameTbl,Y
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
         INX
         INY
         CPY #$03
@@ -713,17 +713,17 @@ ThrowGyroGrenade
 TGG_HasDir
         LDA #$08
         STA enemyHorizMove,X
-        LDA #$08
+        LDA #ENEMY_GRENADIER
         STA enemyType,X
         LDA gyroY,Y
-TGG_GyroNotActive 
+TGG_GyroNotActive
         BEQ TGG_Done
         STX temp
         STY temp2
         JSR DEF_DoFire
         LDY temp2
         LDX temp
-        LDA #$09
+        LDA #ENEMY_PARACHUTE
         STA enemyType,X
         DEX
 TGG_Done
@@ -750,8 +750,8 @@ DG_PieceLoop
         STA enemyActive,X
         STA enemyHit,X
         STA enemyDying,X
-        STA enemyUpperY,X
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYUPPER,X
+        STA spriteY+SPR_ENEMYLOWER,X
         INX
         CPX tempStore
         BNE DG_PieceLoop
@@ -802,9 +802,9 @@ AG_GetFrame
         TAY
 AG_SpriteLoop
         LDA gyroUpperFrameTbl,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA gyroLowerFrameTbl,Y
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
         INY
         INX
 gyroSprEndCmp   =*+$01
@@ -845,12 +845,12 @@ gyroLowerMidFrameTbl
 
 MultiplyGyroXCoords LDX #$0B
 MGXC_Loop
-        LDA enemyUpperX,X
+        LDA spriteX+SPR_ENEMYUPPER,X
         ASL
-        STA enemyUpperX,X
+        STA spriteX+SPR_ENEMYUPPER,X
         LDA #$00
         ADC #$00
-        STA enemyUpperXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
         DEX
         BPL MGXC_Loop
         RTS
@@ -882,8 +882,8 @@ UGS_NoGrenade
         SEC
         SBC #$0C
 UGS_SpriteLoop
-        STA enemyUpperX,X
-        STA enemyLowerX,X
+        STA spriteX+SPR_ENEMYUPPER,X
+        STA spriteX+SPR_ENEMYLOWER,X
         CLC
         ADC #$0C
         INX
@@ -894,20 +894,20 @@ UGS_SpriteLoop
         SBC #$03
         TAX
 UGS_SpriteYLoop 
-        LDA enemyUpperX,X
+        LDA spriteX+SPR_ENEMYUPPER,X
         CMP #$AC
         BCS UGS_ClipRight
         LDA gyroY,Y
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         CLC
         ADC #$15
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
         JMP UGS_YDone
 
 UGS_ClipRight 
         LDA #$00
-        STA enemyUpperY,X
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYUPPER,X
+        STA spriteY+SPR_ENEMYLOWER,X
 UGS_YDone 
         INX
         CPX tempStore
@@ -985,7 +985,7 @@ SpawnGyrocopter LDA gyroXInitTbl,Y
         CLC 
         ADC #$03
         STA tempStore
-SG_SpriteLoop LDA #$09
+SG_SpriteLoop LDA #ENEMY_PARACHUTE
         STA enemyActive,X
         STA enemyType,X
 
@@ -996,9 +996,9 @@ SG_SpriteLoop LDA #$09
         LDA #$00
         STA enemyDying,X
         LDA #$01
-        STA enemyUpperColor,X
+        STA spriteColor+SPR_ENEMYUPPER,X
         LDA #$06
-        STA enemyLowerColor,X
+        STA spriteColor+SPR_ENEMYLOWER,X
         INX
         CPX tempStore
         BNE SG_SpriteLoop
@@ -1015,9 +1015,9 @@ SG_SpriteLoop LDA #$09
         ; Shortened code for the stack fix above
 
         LDA #$01
-        STA enemyUpperColor,X
+        STA spriteColor+SPR_ENEMYUPPER,X
         LDA #$06
-        STA enemyLowerColor,X
+        STA spriteColor+SPR_ENEMYLOWER,X
         LDA #$00
         STA enemyDying,X
         INX

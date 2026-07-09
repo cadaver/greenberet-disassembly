@@ -18,19 +18,19 @@ TA_Init LDA truckInitFlag
         LDX #$02
 TA_SpriteLoop 
         LDA truckColorTbl,Y
-        STA enemyUpperColor,X
+        STA spriteColor+SPR_ENEMYUPPER,X
         LDA truckFrameTbl,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         DEY
         LDA truckFrameTbl,Y
-        STA enemyUpperFrame+3,X
+        STA spriteFrame+SPR_ENEMYUPPER+3,X
         LDA truckColorTbl,Y
-        STA enemyUpperColor+3,X
+        STA spriteColor+SPR_ENEMYUPPER+3,X
         DEY
         LDA truckFrameTbl,Y
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
         LDA truckColorTbl,Y
-        STA enemyLowerColor,X
+        STA spriteColor+SPR_ENEMYLOWER,X
         DEY
         DEX
         BPL TA_SpriteLoop
@@ -39,20 +39,20 @@ TA_SpriteCoordLoop
         LDA platformYTbl
         SEC
         SBC #$19
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         CLC
         ADC #$15
-        STA enemyUpperY+3,X
+        STA spriteY+SPR_ENEMYUPPER+3,X
         CLC
         ADC #$15
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
         LDA #$00
-        STA enemyUpperX,X
-        STA enemyUpperXMSB,X
-        STA enemyUpperX+3,X
-        STA enemyUpperXMSB+3,X
-        STA enemyLowerX,X
-        STA enemyLowerXMSB,X
+        STA spriteX+SPR_ENEMYUPPER,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
+        STA spriteX+SPR_ENEMYUPPER+3,X
+        STA spriteXMSB+SPR_ENEMYUPPER+3,X
+        STA spriteX+SPR_ENEMYLOWER,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
         DEX
         BPL TA_SpriteCoordLoop
 TA_TruckCreated 
@@ -68,47 +68,47 @@ truckColorTbl
 
 TA_MoveTruck 
         JSR TA_AnimateTruck
-        LDA enemyUpperX
+        LDA spriteX+SPR_ENEMYUPPER
         CLC
         ADC firstStageEndCounter
-        STA enemyUpperX
-        STA enemyUpperX+3
-        STA enemyLowerX
+        STA spriteX+SPR_ENEMYUPPER
+        STA spriteX+SPR_ENEMYUPPER+3
+        STA spriteX+SPR_ENEMYLOWER
         BCC TA_NoMSB
         LDA #$01
-        STA enemyUpperXMSB
-        STA enemyUpperXMSB+3
-        STA enemyLowerXMSB
+        STA spriteXMSB+SPR_ENEMYUPPER
+        STA spriteXMSB+SPR_ENEMYUPPER+3
+        STA spriteXMSB+SPR_ENEMYLOWER
 TA_NoMSB 
         LDA enemyCoarseX
         CMP #$0A
         BCC TA_Done
-        LDA enemyUpperX+1
+        LDA spriteX+SPR_ENEMYUPPER+1
         CLC
         ADC firstStageEndCounter
-        STA enemyUpperX+1
-        STA enemyUpperX+4
-        STA enemyLowerX+1
+        STA spriteX+SPR_ENEMYUPPER+1
+        STA spriteX+SPR_ENEMYUPPER+4
+        STA spriteX+SPR_ENEMYLOWER+1
         BCC TA_NoMSB2
         LDA #$01
-        STA enemyUpperXMSB+1
-        STA enemyUpperXMSB+4
-        STA enemyLowerXMSB+1
+        STA spriteXMSB+SPR_ENEMYUPPER+1
+        STA spriteXMSB+SPR_ENEMYUPPER+4
+        STA spriteXMSB+SPR_ENEMYLOWER+1
 TA_NoMSB2 
         LDA dogCoarseX
         CMP #$0A
         BCC TA_Done
-        LDA enemyUpperX+2
+        LDA spriteX+SPR_ENEMYUPPER+2
         CLC
         ADC firstStageEndCounter
-        STA enemyUpperX+2
-        STA enemyUpperX+5
-        STA enemyLowerX+2
+        STA spriteX+SPR_ENEMYUPPER+2
+        STA spriteX+SPR_ENEMYUPPER+5
+        STA spriteX+SPR_ENEMYLOWER+2
         BCC TA_NoMSB3
         LDA #$01
-        STA enemyUpperXMSB+2
-        STA enemyUpperXMSB+5
-        STA enemyLowerXMSB+2
+        STA spriteXMSB+SPR_ENEMYUPPER+2
+        STA spriteXMSB+SPR_ENEMYUPPER+5
+        STA spriteXMSB+SPR_ENEMYLOWER+2
 TA_NoMSB3 
         LDA truckCoarseX
         CMP #$32
@@ -126,7 +126,7 @@ TA_NoMSB3
         LDA #$00
         LDY #$08
 TA_RemoveTruckLoop 
-        STA enemyUpperY,Y
+        STA spriteY+SPR_ENEMYUPPER,Y
         DEY
         BPL TA_RemoveTruckLoop
 TA_Done RTS
@@ -159,14 +159,14 @@ UET_Loop
         STA enemyTimerActive,X
         LDY enemyPlatformHeight,X
         LDA platformYTbl,Y
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         CLC 
         ADC #$15
-        STA enemyLowerY,X
-        LDA enemyUpperX,X
-        STA enemyLowerX,X
-        LDA enemyUpperXMSB,X
-        STA enemyLowerXMSB,X
+        STA spriteY+SPR_ENEMYLOWER,X
+        LDA spriteX+SPR_ENEMYUPPER,X
+        STA spriteX+SPR_ENEMYLOWER,X
+        LDA spriteXMSB+SPR_ENEMYUPPER,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
         LDA #$03
         STA enemyLastControls,X
 UET_Next 
@@ -181,22 +181,22 @@ TA_AnimateTruck
         SEC
         SBC firstStageEndCounter
         STA truckAnimTimer
-        LDA enemyLowerFrame
+        LDA spriteFrame+SPR_ENEMYLOWER
         CLC
         ADC #$01
         CMP #$72
         BCS TA_AnimationWrap
-        STA enemyLowerFrame
-        LDA enemyLowerFrame+2
+        STA spriteFrame+SPR_ENEMYLOWER
+        LDA spriteFrame+SPR_ENEMYLOWER+2
         CLC 
         ADC #$01
-        STA enemyLowerFrame+2
+        STA spriteFrame+SPR_ENEMYLOWER+2
 TA_AnimateSkip 
         RTS
 
 TA_AnimationWrap
         LDA #$6F
-        STA enemyLowerFrame
+        STA spriteFrame+SPR_ENEMYLOWER
         LDA #$72
-        STA enemyLowerFrame+2
+        STA spriteFrame+SPR_ENEMYLOWER+2
         RTS

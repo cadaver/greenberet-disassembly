@@ -2,7 +2,7 @@ ClearEnemySprites
         LDX #$12
         LDA #$00
 CES_Loop 
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         DEX
         BPL CES_Loop
         JSR SortSprites
@@ -62,7 +62,7 @@ CS_Common
         STA spriteY
         CLC
         ADC #$15
-        STA playerLowerY
+        STA spriteY+SPR_PLRLOWER
         LDA #$08
         STA temp2
         PLP
@@ -325,9 +325,14 @@ S1EES_DoSpawn
         STA enemyLastControls,X
         LDA #$00
         STA enemyTimerActive,X
-S1EES_Wait 
+S1EES_Wait
         RTS
 
-stage1EndEnemyTypeTbl 
-        .BYTE $05,$00,$00,$05,$00,$05,$00,$05,$00,$05,$05,$00,$00,$05,$00,$00
-        .BYTE $05,$00,$05,$00
+stage1EndEnemyTypeTbl
+        .BYTE ENEMY_MARTIALARTIST,ENEMY_UNARMED,ENEMY_UNARMED
+        .BYTE ENEMY_MARTIALARTIST,ENEMY_UNARMED,ENEMY_MARTIALARTIST
+        .BYTE ENEMY_UNARMED,ENEMY_MARTIALARTIST,ENEMY_UNARMED
+        .BYTE ENEMY_MARTIALARTIST,ENEMY_MARTIALARTIST,ENEMY_UNARMED
+        .BYTE ENEMY_UNARMED,ENEMY_MARTIALARTIST,ENEMY_UNARMED
+        .BYTE ENEMY_UNARMED,ENEMY_MARTIALARTIST,ENEMY_UNARMED
+        .BYTE ENEMY_MARTIALARTIST,ENEMY_UNARMED

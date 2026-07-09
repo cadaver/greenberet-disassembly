@@ -6,7 +6,7 @@ FlashBullets
         TAY
         LDX #$05
         LDA colorFlashTbl,Y
-FB_Loop STA bulletColor,X
+FB_Loop STA spriteColor+SPR_BULLET,X
         DEX
         BPL FB_Loop
         RTS
@@ -55,13 +55,13 @@ UB_XMoveNext
         BNE UB_NoFlameThrower
         LDA flameDetachedTimer
         BEQ UB_NoFlameThrower
-        LDA bulletX
+        LDA spriteX+SPR_BULLET
         SEC 
-        SBC bulletX+2
+        SBC spriteX+SPR_BULLET+2
         CMP #$17
         BCS UB_NoFlameThrower
         LDA #$00
-        STA bulletY+1
+        STA spriteY+SPR_BULLET+1
         LDA #$06
         STA bulletXSpeed+2
 UB_NoFlameThrower 
@@ -72,24 +72,24 @@ UB_DoXMove
         LDA bulletXDir,X
         CMP #$08
         BNE UB_XMoveLeft
-        LDA bulletX,X
+        LDA spriteX+SPR_BULLET,X
         CLC 
         ADC bulletXSpeed,X
-        STA bulletX,X
+        STA spriteX+SPR_BULLET,X
         BCC UB_NoMSBSet
         LDA #$01
-        STA bulletXMSB,X
+        STA spriteXMSB+SPR_BULLET,X
 UB_NoMSBSet 
         JMP UB_XMoveNext
 
 UB_XMoveLeft 
-        LDA bulletX,X
+        LDA spriteX+SPR_BULLET,X
         SEC
         SBC bulletXSpeed,X
-        STA bulletX,X
+        STA spriteX+SPR_BULLET,X
         BCS UB_NoMSBClear
         LDA #$00
-        STA bulletXMSB,X
+        STA spriteXMSB+SPR_BULLET,X
 UB_NoMSBClear 
         JMP UB_XMoveNext
 
@@ -141,7 +141,7 @@ CHGE_CheckGyroHit
         JMP CGHE_NextEnemy
 
 CHGE_EnemyOK
-        LDA bulletY,Y
+        LDA spriteY+SPR_BULLET,Y
         SEC
         SBC #$13
         STA playerHitCheckY
@@ -163,11 +163,11 @@ CHGE_EnemyOK
         BCS CGHE_Done
         CMP enemyTouchBoundLow
         BCC CGHE_Done
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         CLC
         ADC #$10
         STA enemyTouchBoundHigh
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         SEC 
         SBC #$10
         STA enemyTouchBoundLow
@@ -273,13 +273,13 @@ UG_GrenadeActive
 
 UG_YMove
         LDY bulletJumpArcIndex,X
-        LDA bulletYBase,X
+        LDA bulletBaseY,X
         CLC
         ADC jumpArcTbl,Y
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         LDA bulletYDir,X
         BPL UG_YMoveDecSpeed
-        LDA bulletY,X
+        LDA spriteY+SPR_BULLET,X
         CMP #$E2
         BCS UG_YMoveAtBottom
         INY
@@ -322,16 +322,16 @@ UG_Explode
         RTS
 
 UG_NoCharLanding 
-        LDA bulletY,X
+        LDA spriteY+SPR_BULLET,X
         CLC 
         ADC #$04
         CMP #$E2
         BCS UG_Explode
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         RTS
 
 CheckCharAtBullet 
-        LDA bulletY,X
+        LDA spriteY+SPR_BULLET,X
         SEC
         SBC #$26
         LDY #$00
@@ -370,9 +370,9 @@ EG_NotExplodedYet
         STA bulletXSpeed,X
         LDA #$01
         STA bulletExploded,X
-        STA bulletColor,X
+        STA spriteColor+SPR_BULLET,X
         LDA #$62
-        STA bulletFrame,X
+        STA spriteFrame+SPR_BULLET,X
         LDA #$05
         STA bulletTimer,X
         STX bulletIndex
@@ -394,17 +394,17 @@ UpdateExplosion
         BNE UE_NoNewFrame
         LDA #$05
         STA bulletTimer,X
-        LDA bulletFrame,X
+        LDA spriteFrame+SPR_BULLET,X
         CMP #$64
         BCS UE_Remove
-        INC bulletFrame,X
-UE_NoNewFrame 
+        INC spriteFrame+SPR_BULLET,X
+UE_NoNewFrame
         RTS
 
 UE_Remove 
         LDA #$00
         STA bulletActive,X
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         STA bulletExploded,X
 UpdateBazooka 
         RTS
@@ -446,17 +446,17 @@ CGAK_EnemyBoundCheck
 CGAK_NoXUnderFlow
         CMP bulletCoarseX,X
         BCS CGAK_BoundsFail
-        LDA enemyUpperY,Y
+        LDA spriteY+SPR_ENEMYUPPER,Y
         CLC 
         ADC #$46
         BCC CGAK_NoYOverFlow
         LDA #$FF
 CGAK_NoYOverFlow 
-        CMP bulletY,X
+        CMP spriteY+SPR_BULLET,X
         BCC CGAK_BoundsFail
         SEC 
         SBC #$46
-        CMP bulletY,X
+        CMP spriteY+SPR_BULLET,X
         BCS CGAK_BoundsFail
         SEC 
         RTS
@@ -493,7 +493,7 @@ UFT_PlayerStanding
         CLC 
         ADC #$0A
 UFT_StoreY
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         DEX 
         BPL UFT_FlameLoop
         LDA bulletCoarseX
@@ -537,7 +537,7 @@ CRB_Next DEX
 CRB_Remove 
         LDA #$00
         STA bulletActive,X
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         STA bulletYDir,X
         LDA collectedExtraWeapon
         CMP #$04
@@ -589,28 +589,28 @@ FEW_FireRight
         PLA 
         STA bulletXDir,X
         LDA extraWpnColorTbl,Y
-        STA bulletColor,X
+        STA spriteColor+SPR_BULLET,X
         LDA spriteY
         CLC
         ADC #$0A
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         LDA spriteX
         CLC 
         ADC bulletOffset
-        STA bulletX,X
+        STA spriteX+SPR_BULLET,X
         LDA #$00
         STA flameDetachedTimer
-        STA bulletXMSB,X
+        STA spriteXMSB+SPR_BULLET,X
         LDA bulletXDir,X
         CMP #$04
         BEQ FEW_UseLeftFrame
         LDA extraWpnRightFrTbl,Y
-        STA bulletFrame,X
+        STA spriteFrame+SPR_BULLET,X
         JMP FEW_InitCommon
 
 FEW_UseLeftFrame 
         LDA extraWpnLeftFrameTbl,Y
-        STA bulletFrame,X
+        STA spriteFrame+SPR_BULLET,X
 FEW_InitCommon 
         LDA extraWpnSpeedTbl,Y
         STA bulletXSpeed,X
@@ -626,10 +626,10 @@ FEW_InitGrenade
         LDY #$12
         TYA 
         STA bulletJumpArcIndex,X
-        LDA bulletY,X
+        LDA spriteY+SPR_BULLET,X
         SEC 
         SBC jumpArcTbl,Y
-        STA bulletYBase,X
+        STA bulletBaseY,X
         LDA #$01
         STA bulletYDir,X
         RTS 
@@ -640,30 +640,30 @@ FEW_FlamePieceLoop
         LDA playerFacingDir
         STA bulletXDir,X
         LDA extraWpnColorTbl,Y
-        STA bulletColor,X
-        LDA bulletY+1,X
-        STA bulletY,X
+        STA spriteColor+SPR_BULLET,X
+        LDA spriteY+SPR_BULLET+1,X
+        STA spriteY+SPR_BULLET,X
         LDA bulletXDir,X
         AND #$04
         BEQ FEW_InitFlameRight
-        LDA bulletX+1,X
-        STA bulletX,X
+        LDA spriteX+SPR_BULLET+1,X
+        STA spriteX+SPR_BULLET,X
         LDA #$00
-        STA bulletXMSB,X
+        STA spriteXMSB+SPR_BULLET,X
         JMP FEW_InitFlameCommon
 
 FEW_InitFlameRight
-        LDA bulletX+1,X
+        LDA spriteX+SPR_BULLET+1,X
         CLC
-        STA bulletX,X
-        LDA bulletXMSB+1,X
+        STA spriteX+SPR_BULLET,X
+        LDA spriteXMSB+SPR_BULLET+1,X
         ADC #$00
-        STA bulletXMSB,X
+        STA spriteXMSB+SPR_BULLET,X
 FEW_InitFlameCommon
-        LDA bulletFrame+1,X
+        LDA spriteFrame+SPR_BULLET+1,X
         CLC 
         ADC #$01
-        STA bulletFrame,X
+        STA spriteFrame+SPR_BULLET,X
         LDA bulletXSpeed+1,X
         CLC 
         ADC #$02
@@ -706,30 +706,30 @@ bulletCodeJumpTblLo
 BulletCodeType7
         CPX fighterJetIndex
         BEQ BulletCodeType0
-        LDA bulletY,X
+        LDA spriteY+SPR_BULLET,X
         BEQ BulletCodeType0
         CLC
         ADC #$04
         PHA
-        LDA playerLowerX
+        LDA spriteX+SPR_PLRLOWER
         CLC
         ADC #$09
-        STA bulletX,X
+        STA spriteX+SPR_BULLET,X
         PLA
         JMP BCT6_CheckY
 
-BulletCodeType6 LDA bulletY,X
+BulletCodeType6 LDA spriteY+SPR_BULLET,X
         CLC
         ADC #$02
 BCT6_CheckY
         CMP #$F3
         BCS BC_Remove
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         RTS
 
 BC_Remove
         LDA #$01
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         LDA #$00
         STA bulletActive,X
 BulletCodeType0 RTS
@@ -746,10 +746,10 @@ BulletCodeType2
 
 EnemyGrenadeArc
         LDY bulletJumpArcIndex,X
-        LDA bulletYBase,X
+        LDA bulletBaseY,X
         CLC
         ADC jumpArcTbl,Y
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         LDA bulletYDir,X
         BPL EGA_DecSpeed
         INY

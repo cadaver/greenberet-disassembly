@@ -8,10 +8,10 @@ CEBH_Next DEX
         JMP CEBH_BulletsDone
 
 CEBH_CheckBullet LDA spriteY
-        CMP bulletY+3,X
+        CMP spriteY+SPR_BULLET+3,X
         BCS CEBH_NoHit
         ADC #$1C
-        CMP bulletY+3,X
+        CMP spriteY+SPR_BULLET+3,X
         BCC CEBH_NoHit
         LDA playerCoarseX
         CMP bulletCoarseX+3,X
@@ -21,15 +21,15 @@ CEBH_CheckBullet LDA spriteY
         BCC CEBH_NoHit
         LDA bulletType+3,X
         BEQ CEBH_DoKill
-        CMP #$05
+        CMP #BULLET_GRENADE
         BEQ CEBH_DoKill
         TXA
         CLC
-        ADC #$03
+        ADC #$03 ; Transform to standard bullet indexing for the ExplodeGrenade routine
         TAX
 
     .if INVULNERABILITY_CHEAT = 0
-    
+
         ; Original code, explode grenade then kill player
         JSR ExplodeGrenade
 
@@ -63,7 +63,7 @@ CEBH_CheckDog LDA dogCoarseX,X
         SBC #$06
         CMP playerCoarseX
         BCS CEBH_DogNext
-        LDA dogY,X
+        LDA spriteY+SPR_ENEMYDOG,X
         CLC
         ADC #$0A
         CMP spriteY

@@ -35,7 +35,7 @@ UFJ_DoJetMove
         JMP MoveFighterJet
 
 FindJetOrBomb LDA bulletType+3,X
-        CMP #$07
+        CMP #BULLET_BOMB
         BEQ MoveFighterJet
         INX
         CPX #$03
@@ -47,25 +47,25 @@ MoveFighterJet
         LDA bulletCoarseX,X
         CMP #$18
         BCS MFJ_Done
-        LDA bulletFrame,X
+        LDA spriteFrame+SPR_BULLET,X
         CMP #$C1
         BEQ MFJ_FlyAway
         LDA #$00
         STA bulletXSpeed,X
         LDA #$C1
-        STA bulletFrame,X
+        STA spriteFrame+SPR_BULLET,X
 MFJ_Done
         RTS
 
 MFJ_FlyAway 
-        DEC bulletY,X
-        LDA bulletY,X
+        DEC spriteY+SPR_BULLET,X
+        LDA spriteY+SPR_BULLET,X
         CMP #$42
         BCS MFJ_Done
         LDA #$00
         STA fighterJetIndex
         STA bulletActive,X
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         LDA #$00
         STA idleTimer
         RTS
@@ -76,36 +76,36 @@ CheckDropBomb
         ADC #$07
         CMP bulletCoarseX,X
         BCS CDB_DropOK
-CDB_Fail 
+CDB_Fail
         RTS
 
-CDB_DropOK 
+CDB_DropOK
         TXA
         CMP fighterJetIndex
         BNE CDB_Check
         TAY
-CDB_Retry 
+CDB_Retry
         INY
-CDB_Check 
+CDB_Check
         LDA bulletType,Y
         CPY #$06
         BCS CDB_Fail
-        CMP #$07
+        CMP #BULLET_BOMB
         BNE CDB_Retry
-        LDA bulletY,Y
+        LDA spriteY+SPR_BULLET,Y
         BNE CDB_Fail
-        LDA bulletX,X
-        STA bulletX,Y
-        LDA bulletXMSB,X
-        STA bulletXMSB,Y
-        LDA bulletY,X
+        LDA spriteX+SPR_BULLET,X
+        STA spriteX+SPR_BULLET,Y
+        LDA spriteXMSB+SPR_BULLET,X
+        STA spriteXMSB+SPR_BULLET,Y
+        LDA spriteY+SPR_BULLET,X
         CLC 
         ADC #$15
-        STA bulletY,Y
+        STA spriteY+SPR_BULLET,Y
         RTS
 
 DoSpawnFighterJet 
-        LDA #$07
+        LDA #BULLET_BOMB
         STA bulletType+3,X
         TXA
         CLC
@@ -113,15 +113,15 @@ DoSpawnFighterJet
         STA fighterJetIndex
         STA bulletActive+3,X
         LDA #$50
-        STA bulletY+3,X
+        STA spriteY+SPR_BULLET+3,X
         LDA #$C2
-        STA bulletFrame+3,X
+        STA spriteFrame+SPR_BULLET+3,X
         LDA #$05
-        STA bulletColor+3,X
+        STA spriteColor+SPR_BULLET+3,X
         LDA #$40
-        STA bulletX+3,X
+        STA spriteX+SPR_BULLET+3,X
         LDA #$01
-        STA bulletXMSB+3,X
+        STA spriteXMSB+SPR_BULLET+3,X
         LDA #$04
         STA bulletXSpeed+3,X
         STA bulletXDir+3,X
@@ -130,18 +130,18 @@ DoSpawnFighterJet
         INX
 DSFJ_BombSlotOK 
         INX
-        LDA #$07
+        LDA #BULLET_BOMB
         STA bulletType+3,X
         STA bulletActive+3,X
         LDA #$00
-        STA bulletY+3,X
+        STA spriteY+SPR_BULLET+3,X
         LDA #$00
         STA bulletXSpeed+3,X
         LDA #$01
-        STA bulletXMSB+3,X
+        STA spriteXMSB+SPR_BULLET+3,X
         LDA #$40
-        STA bulletX+3,X
+        STA spriteX+SPR_BULLET+3,X
         LDA #$65
-        STA bulletFrame+3,X
+        STA spriteFrame+SPR_BULLET+3,X
         JSR PlayFighterJetSound
         RTS

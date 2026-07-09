@@ -24,6 +24,40 @@ INFINITE_SHOTS_CHEAT = 0
 
 INVULNERABILITY_CHEAT = 0
 
+        ; Sprite index defines. There are 21 "virtual sprites" total used by the sprite multiplexer.
+
+SPR_PLRUPPER = 0    ; Player head + arms
+SPR_PLRLOWER = 1    ; Player legs
+SPR_ENEMYUPPER = 2  ; Enemy heads + arms
+SPR_ENEMYDOG = 3    ; Enemy dogs
+SPR_ENEMYLOWER = 8  ; Enemy legs
+SPR_BULLET = 14     ; Player (first 3) and enemy (last 3) bullets
+SPR_PICKUP = 20     ; Weapon dropped by the enemy commandant
+
+        ; Enemy types
+
+ENEMY_UNARMED = 0   ; Unarmed brown soldier
+ENEMY_COMMANDANT = 1 ; White unarmed soldier who drops the extra weapon
+ENEMY_RIFLEMAN = 2  ; Blue soldier with rifle
+ENEMY_PRISONGUARD = 3 ; Blue soldier who never fires, used in the intro and in the last stage end fight
+ENEMY_MORTAR = 4    ; Stationary green mortar soldier
+ENEMY_MARTIALARTIST = 5 ; Green soldier who does karate jumps. Also used as dog handlers in the second stage end fight
+ENEMY_BAZOOKA = 6   ; Brown soldier with bazooka
+ENEMY_CRAWLER = 7   ; Unarmed brown soldier who crawls
+ENEMY_GRENADIER = 8 ; Grey-blue soldier who throws grenades
+ENEMY_PARACHUTE = 9 ; Parachute soldier. Transforms into martial artist on landing. Also used for gyrocopters in the third stage end fight
+
+        ; Enemy bullet types
+
+BULLET_RIFLE = 0    ; Standard rifle bullet
+BULLET_BAZOOKA = 1  ; Bazooka rocket
+BULLET_MORTAR = 2   ; Mortar shot
+BULLET_FLAME = 3    ; Not used by enemies; if enemy is changed to use it it will explode on player contact
+BULLET_SLOWGRENADE = 4 ; Not used by enemies; if enemy is changed to use it it will move slowly without arcing and explode on player contact
+BULLET_GRENADE = 5  ; Thrown by grenadiers
+BULLET_PARACHUTE = 6 ; Falling projectiles dropped by the parachutist
+BULLET_BOMB = 7     ; Dropped by the fighter jet. Follows the player horizontally while falling
+
         ; Zeropage variables
 
 irqCounter = $02
@@ -50,12 +84,6 @@ irqSpriteOrder = $20
 spriteOrder = $35
 irqSpriteY = $4A
 spriteY = $5F
-playerLowerY = $60
-enemyUpperY = $61
-dogY = $62
-enemyLowerY = $67
-bulletY = $6D
-extraPickupY = $73
 irqSpriteXMSB = $74
 irqSpriteX = $89
 screenRowPtrs = $A0
@@ -94,38 +122,14 @@ playRoutineHi = $FD
 
 staticEnemySpawnFlag = $0144
 spriteX = $0180
-playerLowerX = $0181
-enemyUpperX = $0182
-dogX = $0183
-enemyLowerX = $0188
-bulletX = $018E
-weaponPickupX = $0194
 spriteXMSB = $0195
-playerLowerXMSB = $0196
-enemyUpperXMSB = $0197
-dogXMSB = $0198
-enemyLowerXMSB = $019D
-bulletXMSB = $01A3
-weaponPickupXMSB = $01A9
 spriteColor = $01AA
-playerLowerColor = $01AB
-enemyUpperColor = $01AC
-dogColor = $01AD
-enemyLowerColor = $01B2
-bulletColor = $01B8
-weaponPickupColor = $01BE
 spriteFrame = $01BF
-playerFrameLower = $01C0
-enemyUpperFrame = $01C1
-dogFrame = $01C2
-enemyLowerFrame = $01C7
-bulletFrame = $01CD
-weaponPickupFrame = $01D3
 flameDetachedTimer = $0200
 playerJumpArcIndex = $0201
 lastScrollSpeed = $0202
 playerBaseY = $0203
-bulletYBase = $0204
+bulletBaseY = $0204
 bulletJumpArcIndex = $020A
 bulletYDir = $0210
 bulletLastChar = $0216

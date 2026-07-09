@@ -191,7 +191,7 @@ CDM_Next
 
 CDM_BulletActive 
         LDY collectedExtraWeapon
-        LDA bulletY,X
+        LDA spriteY+SPR_BULLET,X
         CMP #$DE
         BCC CDM_Next
         CPY #$03

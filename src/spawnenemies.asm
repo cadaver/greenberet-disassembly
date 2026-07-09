@@ -1,21 +1,21 @@
 SetEnemyToSpawn
         LDX #$04
-SETS_Loop     
+SETS_Loop
         LDA spawnEnemyFlag,X
         BNE SETS_Next
         DEC spawnEnemyTimer,X
         BNE SETS_Next
-        TXA 
-        CLC 
+        TXA
+        CLC
         ADC spawnTblIndexMod
-        TAY 
+        TAY
         LDA enemySpawnTypeTbl,Y
         STA spawnEnemyType,X
         LDA spawnEnemyTimerTbl,Y
         STA spawnEnemyTimer,X
         LDA #$01
         STA spawnEnemyFlag,X
-        RTS 
+        RTS
 
 SETS_Next 
         DEX
@@ -100,34 +100,34 @@ SpawnStaticEnemy
         LDA platformYTbl,Y
         CLC 
         ADC staticUpperYOffset
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         LDA platformYTbl,Y
         CLC 
         ADC staticLowerYOffset
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
         LDA #$01
-        STA enemyUpperXMSB,X
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
         LDA #$4F
         CLC
         ADC staticUpperXOffset
-        STA enemyUpperX,X
+        STA spriteX+SPR_ENEMYUPPER,X
         LDA #$4F
         CLC
         ADC staticLowerXOffset
-        STA enemyLowerX,X
+        STA spriteX+SPR_ENEMYLOWER,X
         LDA staticInitFlags
         STA enemyRunSpeed,X
         LDA staticEnemyType
         STA enemyType,X
         TAY
         LDA perTypeUpperColor,Y
-        STA enemyUpperColor,X
-        STA enemyLowerColor,X
+        STA spriteColor+SPR_ENEMYUPPER,X
+        STA spriteColor+SPR_ENEMYLOWER,X
         LDA perTypeUpperInitFrame,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA perTypeLowerInitFrame,Y
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
         LDA perTypeTimerInit,Y
         STA enemyTimer,X
         LDA #$01
@@ -205,11 +205,15 @@ staticEnemyPosMSBTbl
         .BYTE $04,$04,$04,$05,$05,$05,$05,$05,$05,$05,$05,$06,$06,$06,$06,$06
         .BYTE $06,$06,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07
 
-staticEnemyTypeTbl 
+        ; See types in defines.asm
+
+staticEnemyTypeTbl
         .BYTE $01,$01,$04,$01,$01,$01,$06,$07,$06,$06,$07,$01,$06,$09,$06,$01
         .BYTE $09,$06,$04,$07,$06,$04,$01,$04,$01,$07,$04,$07,$04,$01,$07,$04
         .BYTE $01,$04,$04,$06,$06,$09,$09,$06,$07,$06,$01,$06,$07,$01,$07,$07
         .BYTE $07,$01,$06,$07,$01,$06,$04,$04,$01,$06,$09,$09
+
+        ; Weapon dropped by the commandants (type 1)
 
 staticEnemyWpnType
         .BYTE $04,$04,$00,$04,$04,$02,$00,$00,$00,$00,$00,$02,$00,$00,$00,$02
@@ -223,24 +227,24 @@ staticEnemyPlatformTbl
         .BYTE $01,$00,$00,$02,$02,$00,$00,$01,$01,$00,$01,$02,$00,$02,$00,$00
         .BYTE $00,$02,$02,$00,$02,$02,$00,$00,$01,$00,$00,$00
 
-staticPerTypeUpperOffsetY 
+staticPerTypeUpperOffsetY
         .BYTE $00,$15,$00,$00,$00,$00,$15,$15,$00,$33
 
-staticPerTypeLowerOffsetY 
+staticPerTypeLowerOffsetY
         .BYTE $15,$15,$15,$15,$15,$15,$15,$15,$15,$33
 
-staticPerTypeUpperOffsetX 
+staticPerTypeUpperOffsetX
         .BYTE $00,$00,$00,$00,$00,$00,$00,$00
         .BYTE $00,$18
 
-staticPerTypeLowerOffsetX 
+staticPerTypeLowerOffsetX
         .BYTE $00,$18,$00,$00,$00,$00,$18,$18
         .BYTE $00,$18
 
-staticEnemyStartTbl 
+staticEnemyStartTbl
         .BYTE $00,$05,$15,$2B
 
-staticEnemyEndTbl 
+staticEnemyEndTbl
         .BYTE $05,$15,$2B,$3C
 
 staticEnemyType 
@@ -304,10 +308,10 @@ CSNE_NoStageEnd
 CSNE_UsePlatformY 
         LDA platformYTbl,Y
 CSNE_SetEnemyPos 
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         CLC
         ADC #$15
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
         LDY nextSpawnTblIndex
         LDA enemySpawnDirTbl,Y
 CSNE_SetEnemyXPos 
@@ -317,8 +321,8 @@ CSNE_SetEnemyXPos
         INY
 CSNE_SpawnRight 
         LDA enemySpawnXMSBTbl,Y
-        STA enemyUpperXMSB,X
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
         LDA enemySpawnXTbl,Y
         CPY #$00
         BNE CSNE_NoSpawnXAdjust
@@ -332,10 +336,10 @@ CSNE_SpawnRight
 CSNE_NoSpawnXAdjust 
         CLC
         ADC scrollX
-        STA enemyUpperX,X
-        STA enemyLowerX,X
+        STA spriteX+SPR_ENEMYUPPER,X
+        STA spriteX+SPR_ENEMYLOWER,X
         LDY nextSpawnTblIndex
-        LDA spawnEnemyType,Y
+        LDA spawnEnemyType,Y        
         STA enemyType,X
         PHA
         LDA #$00
@@ -343,9 +347,9 @@ CSNE_NoSpawnXAdjust
         PLA
         TAY
         LDA perTypeUpperColor,Y
-        STA enemyUpperColor,X
+        STA spriteColor+SPR_ENEMYUPPER,X
         LDA perTypeLowerColor,Y
-        STA enemyLowerColor,X
+        STA spriteColor+SPR_ENEMYLOWER,X
         LDA perTypeInitFlags,Y
         STA enemyRunSpeed,X
         LDA #$01
@@ -451,7 +455,7 @@ CheckTooManyEnemies
 FindFreeEnemySlot
         LDX #$05
 FFES_Loop
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         BEQ FFES_Found
         DEX
         BPL FFES_Loop

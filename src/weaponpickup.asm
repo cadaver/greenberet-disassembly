@@ -13,14 +13,14 @@ UWP_CheckCollect
         SBC #$0C
         CMP playerCoarseX
         BCS UWP_Move
-        LDA playerLowerY
+        LDA spriteY+SPR_PLRLOWER
         CLC 
         ADC #$14
-        CMP extraPickupY
+        CMP spriteY+SPR_PICKUP
         BCC UWP_Move
         SEC 
         SBC #$28
-        CMP extraPickupY
+        CMP spriteY+SPR_PICKUP
         BCS UWP_Move
         LDY weaponPickupType
         STY collectedExtraWeapon
@@ -30,7 +30,7 @@ UWP_CheckCollect
         JSR PlayCollectSound
         LDA #$00
         STA weaponPickupType
-        STA extraPickupY
+        STA spriteY+SPR_PICKUP
         JSR FormatWeaponShots
 UWP_AtRest
         RTS
@@ -41,37 +41,37 @@ extraWeaponShotsTbl
 UWP_Move 
         LDA lastScrollSpeed
         BEQ UWP_NotScrolledOff
-        LDA weaponPickupX
+        LDA spriteX+SPR_PICKUP
         SEC
         SBC lastScrollSpeed
-        STA weaponPickupX
+        STA spriteX+SPR_PICKUP
         BCS UWP_NoMSBClear
         LDA #$00
-        STA weaponPickupXMSB
+        STA spriteXMSB+SPR_PICKUP
 UWP_NoMSBClear 
         LDA weaponPickupCoarseX
         CMP #$0A
         BCS UWP_NotScrolledOff
         LDA #$00
-        STA extraPickupY
+        STA spriteY+SPR_PICKUP
         STA weaponPickupType
         RTS
 
 UWP_NotScrolledOff 
         LDA weaponPickupRestFlag
         BNE UWP_AtRest
-        LDA weaponPickupX
+        LDA spriteX+SPR_PICKUP
         CLC
         ADC #$02
-        STA weaponPickupX
+        STA spriteX+SPR_PICKUP
         BCC UWP_NoMSBSet
         LDA #$01
-        STA weaponPickupXMSB
+        STA spriteXMSB+SPR_PICKUP
 UWP_NoMSBSet 
-        INC extraPickupY
+        INC spriteY+SPR_PICKUP
         LDY #$00
         STY screenPtrHi
-        LDA extraPickupY
+        LDA spriteY+SPR_PICKUP
         SEC
         SBC #$15
         AND #$F8

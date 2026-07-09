@@ -19,7 +19,7 @@ EnterTitleScreen
         STA difficultyMod
         LDX #$0B
         STX spriteColor
-        STX playerLowerColor
+        STX spriteColor+SPR_PLRLOWER
         LDX #$08
 ETS_ResetScore
         STA score,X
@@ -115,24 +115,24 @@ WaitSongToEnd
 InitPrisoners 
         LDX #$03
 IP_Loop LDA prisonerFrameTbl,X
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA #$B5
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
         LDA #$0B
-        STA enemyUpperColor,X
+        STA spriteColor+SPR_ENEMYUPPER,X
         LDA #$09
-        STA enemyLowerColor,X
+        STA spriteColor+SPR_ENEMYLOWER,X
         LDA #$A0
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         CLC
         ADC #$15
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
         LDA prisonerXTbl,X
-        STA enemyUpperX,X
-        STA enemyLowerX,X
+        STA spriteX+SPR_ENEMYUPPER,X
+        STA spriteX+SPR_ENEMYLOWER,X
         LDA prisonerXMSBTbl,X
-        STA enemyUpperXMSB,X
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
         DEX 
         BPL IP_Loop
         RTS
@@ -150,7 +150,7 @@ SpawnIntroGuards
         LDA #$01
         STA spawnEnemyFlag+2
         STA spawnEnemyFlag+5
-        LDA #$03
+        LDA #ENEMY_PRISONGUARD
         STA spawnEnemyType+2
         STA spawnEnemyType+5
         JSR FindNextSpawnType
@@ -171,7 +171,7 @@ UpdatePrisoners
         TAY
 UPr_Loop 
         LDA prisonerFrameTbl,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         INY
         DEX
         BPL UPr_Loop
@@ -187,11 +187,11 @@ USO_MovePlayerRight
         STA playerCoarseX
         ASL
         STA spriteX
-        STA playerLowerX
+        STA spriteX+SPR_PLRLOWER
         LDA #$00
         ROL
         STA spriteXMSB
-        STA playerLowerXMSB
+        STA spriteXMSB+SPR_PLRLOWER
         RTS
 
 USO_SetSpritesOnTop 
@@ -208,7 +208,7 @@ USO_PlayerAtWall
         ADC #$03
         STA spriteY
         ADC #$15
-        STA playerLowerY
+        STA spriteY+SPR_PLRLOWER
         LDA playerCoarseX
         JMP USO_MovePlayerRight
 
@@ -221,7 +221,7 @@ USO_PlayerClimbing
         STA spriteY
         CLC
         ADC #$15
-        STA playerLowerY
+        STA spriteY+SPR_PLRLOWER
         CMP #$70
         BCS USO_SetSpritesOnTop
         LDA #$FF
@@ -243,9 +243,9 @@ UVA_Loop
         CMP prisonerFreeXTbl,X
         BCC UVA_Next
         LDA #$8A
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA #$8B
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
 UVA_Next 
         INX
         CPX #$04
@@ -259,7 +259,7 @@ UVA_Finished
         LDA #$8A
         STA spriteFrame
         LDA #$8B
-        STA playerFrameLower
+        STA spriteFrame+SPR_PLRLOWER
         RTS
 
 prisonerFreeXTbl 

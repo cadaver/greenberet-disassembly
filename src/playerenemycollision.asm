@@ -73,11 +73,11 @@ CKC_CheckBounds
         BCS CKC_NoCollision
         CMP knifeHitBoundLow
         BCC CKC_NoCollision
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         CLC
         ADC #$10
         STA knifeHitBoundHigh
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         SEC
         SBC #$10
         STA knifeHitBoundLow
@@ -132,7 +132,7 @@ CKC_DogBoundsXRetry
         CMP knifeHitBoundHigh
         BCC CKC_DogBoundsDone
 CKC_DogBoundsXOK 
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         SEC
         SBC #$0D
         STA knifeHitBoundHigh
@@ -193,15 +193,15 @@ CETP_CheckEnemy
         BCC CETP_NoEnemyTouch
         CMP enemyTouchBoundHigh
         BCS CETP_NoEnemyTouch
-        LDA enemyUpperY,X
-        CMP enemyLowerY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
+        CMP spriteY+SPR_ENEMYLOWER,X
         BEQ CETP_ProneEnemy
         CLC 
         ADC #$12
 CETP_ProneEnemy
         ADC #$0A
         STA enemyTouchBoundHigh
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         SEC
         SBC #$15
         STA enemyTouchBoundLow

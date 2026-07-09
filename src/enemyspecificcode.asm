@@ -16,17 +16,27 @@ enemyJumpTblLo
         .WORD EnemyCodeType0,EnemyCodeType1,EnemyCodeType2,EnemyCodeType3,EnemyCodeType4
         .WORD EnemyCodeType5,EnemyCodeType6,EnemyCodeType7,EnemyCodeType8,EnemyCodeType9
 
+        ; Unarmed
+
 EnemyCodeType0
         RTS
+
+        ; Commandant
 
 EnemyCodeType1
         RTS
 
+        ; Rifleman who shoots
+
 EnemyCodeType2
         JMP EnemyCodeType6
 
+        ; Prison guard (does not shoot)
+
 EnemyCodeType3
         RTS
+
+        ; Parachute
 
 EnemyCodeType9 JSR UpdateParachute
         LDA parachuteActiveFlag
@@ -34,8 +44,12 @@ EnemyCodeType9 JSR UpdateParachute
         BEQ EnemyCodeType8
         RTS
 
+        ; Grenadier
+
 EnemyCodeType8
         JMP EnemyCodeType6
+
+        ; Bazooka
 
 EnemyCodeType6 LDA enemyDying,X
         BEQ ECT6_NotDying
@@ -59,14 +73,14 @@ ECT6_NotDying
         LDA charTypeBelowEnemy,X
         AND #$0C
         BEQ ECT6_NoFire
-ECT6_SkipChecks 
+ECT6_SkipChecks
         JSR TimerCheck
         BCC ECT6_NoFire
         LDA #$01
         STA enemyFireFlag,X
         JMP DoEnemyFire
 
-ECT6_NoFire 
+ECT6_NoFire
         RTS
 
 TimerCheck LDA gameTimer,X
@@ -78,11 +92,11 @@ difficultyMod1   =*+$01
 difficultyMod2   =*+$01
         CMP #$50
         BEQ TC_AtMax
-        CLC 
+        CLC
 TC_AtMax
         RTS
 
-DoEnemyFire 
+DoEnemyFire
         CMP #$01
         BNE DEF_CheckDelayFinish
         LDY enemyType,X
@@ -94,48 +108,48 @@ DoEnemyFire
         LDA playerCoarseX
         CMP enemyCoarseX,X
         LDA #$00
-        ROL 
-        TAY 
+        ROL
+        TAY
         LDA enemyDirTbl,Y
         STA enemyHorizMove,X
         STA enemyControls,X
         TYA
         PHA
         LDY enemyType,X
-        PLA 
+        PLA
         CLC
         ADC enemyFireFrameOfsTbl,Y
         TAY
         LDA enemyFireUpperFrTbl,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA enemyFireLowerFrTbl,Y
-        STA enemyLowerFrame,X
-DEF_NoTurn 
+        STA spriteFrame+SPR_ENEMYLOWER,X
+DEF_NoTurn
         INC enemyFireFlag,X
-DEF_Wait 
+DEF_Wait
         LDX temp
         LDA enemyTimer,X
         BEQ DEF_CheckResetFire
         RTS
 
-DEF_CheckResetFire 
+DEF_CheckResetFire
         LDA enemyType,X
         CMP #$09
         BNE DEF_ResetFireFlag
         RTS
 
-DEF_ResetFireFlag 
+DEF_ResetFireFlag
         LDA #$00
         STA enemyFireFlag,X
         RTS
 
-DEF_CheckDelayFinish 
+DEF_CheckDelayFinish
         CMP #$05
         BCS DEF_DoFire
         INC enemyFireFlag,X
         JMP DEF_Wait
 
-DEF_DoFire 
+DEF_DoFire
         LDX #$05
         JSR FFB_Loop
         BCS DEF_Wait
@@ -155,11 +169,11 @@ DEF_DoFire
         JSR PlayEnemyFireSound
         JMP DEF_NotBazookaMan
 
-DEF_NotRifleman 
+DEF_NotRifleman
         CMP #$06
         BNE DEF_NotBazookaMan
         JSR PlayBazookaSound
-DEF_NotBazookaMan 
+DEF_NotBazookaMan
         LDX temp
         LDA #$00
         STA enemyFireFlag,X
@@ -176,24 +190,26 @@ DEF_NotBazookaMan
         LDA enemyHorizMove,X
         CMP #$08
         LDA #$00
-        ROL 
+        ROL
         TAY
         LDA throwAnimTbl,Y
-        STA enemyUpperFrame,X
-DEF_NotGrenadier 
+        STA spriteFrame+SPR_ENEMYUPPER,X
+DEF_NotGrenadier
         RTS
 
-DEF_SetFireDelay 
+DEF_SetFireDelay
         LDA #$48
         STA gameTimer,X
-        RTS 
+        RTS
+
+        ; Mortar
 
 EnemyCodeType4
         LDA enemyDying,X
         BEQ ECT4_NotDying
         RTS
 
-ECT4_NotDying 
+ECT4_NotDying
         STX temp
         LDA enemyAuxTimer,X
         BNE ECT4_PrepareFire
@@ -213,24 +229,24 @@ ECT4_NotDying
         STA enemyAuxTimer,X
         JMP ECT4_PrepareFire
 
-ECT4_NoFire 
+ECT4_NoFire
         RTS
 
-ECT4_PrepareFire 
+ECT4_PrepareFire
         LDA playerCoarseX
         CMP enemyCoarseX,X
         LDA #$00
         ROL
         TAY
         LDA mortarUpperFrame1Tbl,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA enemyAuxTimer,X
         BEQ ECT4_UpperFrameDone
         LDA mortarUpperFrame2Tbl,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
 ECT4_UpperFrameDone 
         LDA mortarLowerFrameTbl,Y
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
         LDA enemyDirTbl,Y
         STA enemyHorizMove,X
         LDA enemyAuxTimer,X
@@ -273,13 +289,13 @@ IEB_FiringRight
         LDX bulletIndex
         STA bulletXDir,X
         LDA extraWpnColorTbl,Y
-        STA bulletColor,X
+        STA spriteColor+SPR_BULLET,X
         LDX temp
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         CLC 
         ADC #$10
         LDX bulletIndex
-        STA bulletY,X
+        STA spriteY+SPR_BULLET,X
         LDX temp
         LDA enemyCoarseX,X
         CLC 
@@ -287,21 +303,21 @@ IEB_FiringRight
         LDX bulletIndex
         STA bulletCoarseX,X
         ASL
-        STA bulletX,X
+        STA spriteX+SPR_BULLET,X
         LDA #$00
         ROL 
-        STA bulletXMSB,X
+        STA spriteXMSB+SPR_BULLET,X
         LDA bulletXDir,X
         CMP #$04
         BEQ IEB_InitFrameLeft
         LDA extraWpnRightFrTbl,Y
-        STA bulletFrame,X
+        STA spriteFrame+SPR_BULLET,X
         JMP InitBulletSpeed
 
 IEB_InitFrameLeft 
         LDA extraWpnLeftFrameTbl,Y
-        STA bulletFrame,X
-InitBulletSpeed 
+        STA spriteFrame+SPR_BULLET,X
+InitBulletSpeed
         LDA bulletXSpeedTbl,Y
         STA bulletXSpeed,X
         LDA #$01
@@ -316,10 +332,10 @@ InitGrenadeArc
         LDY #$19
         TYA
         STA bulletJumpArcIndex,X
-        LDA bulletY,X
+        LDA spriteY+SPR_BULLET,X
         SEC 
         SBC jumpArcTbl,Y
-        STA bulletYBase,X
+        STA bulletBaseY,X
         LDA #$01
         STA bulletYDir,X
         LDA #$02
@@ -338,25 +354,27 @@ InitGrenadeArc
         TAX
         RTS
 
-bulletXSpeedTbl 
+bulletXSpeedTbl
         .BYTE $04,$04,$01,$06,$02,$02,$01
 
 mortarUpperFrame1Tbl 
         .BYTE $14,$1D
 
-mortarLowerFrameTbl 
+mortarLowerFrameTbl
         .BYTE $6E,$9B
 
 mortarUpperFrame2Tbl 
         .BYTE $2A,$79
 
-enemyDirTbl 
+enemyDirTbl
         .BYTE $04,$08
 
 enemyBulletTypeTbl
-        .BYTE $00,$00,$00,$00,$00,$00,$01,$00,$05,$06
+        .BYTE BULLET_RIFLE,BULLET_RIFLE,BULLET_RIFLE,BULLET_RIFLE
+        .BYTE BULLET_RIFLE,BULLET_RIFLE,BULLET_BAZOOKA,BULLET_RIFLE
+        .BYTE BULLET_GRENADE,BULLET_PARACHUTE
 
-enemyFireFrameOfsTbl 
+enemyFireFrameOfsTbl
         .BYTE $00,$00,$02,$00,$00,$00,$00,$00,$04,$06
 
 enemyFireUpperFrTbl
@@ -368,6 +386,8 @@ enemyFireLowerFrTbl
 throwAnimTbl 
         .BYTE $3F,$41
 
+        ; Crawler
+
 EnemyCodeType7 
         LDA enemyDying,X
         BNE ECT7_DeadOrIdle
@@ -378,34 +398,34 @@ EnemyCodeType7
         LDA enemyCrawlTimer,X
         AND #$10
         BNE ECT7_DeadOrIdle
-        LDA enemyUpperX,X
+        LDA spriteX+SPR_ENEMYUPPER,X
         SEC
         SBC #$01
-        STA enemyUpperX,X
+        STA spriteX+SPR_ENEMYUPPER,X
         BCS ECT7_NoUpperMSB
         LDA #$00
-        STA enemyUpperXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
 ECT7_NoUpperMSB 
-        LDA enemyLowerX,X
+        LDA spriteX+SPR_ENEMYLOWER,X
         SEC
         SBC #$01
-        STA enemyLowerX,X
+        STA spriteX+SPR_ENEMYLOWER,X
         BCS ECT7_NoLowerMSB
         LDA #$00
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
 ECT7_NoLowerMSB 
         LDA #$5F
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA #$5E
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
 ECT7_Done 
         RTS
 
 ECT7_DeadOrIdle 
         LDA #$61
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA #$60
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
         RTS 
 
 UpdateParachute
@@ -447,8 +467,8 @@ UP_InitDone
 
 UP_FailCreateExtras
         LDA #$66
-        STA enemyUpperX,X
-        STA enemyLowerX,X
+        STA spriteX+SPR_ENEMYUPPER,X
+        STA spriteX+SPR_ENEMYLOWER,X
         RTS
 
 UP_ExtrasCreated 
@@ -489,48 +509,48 @@ UP_LoopParts
         AND #$03
         BNE UP_SkipYMove
 UP_MoveY 
-        INC enemyUpperY,X
-        INC enemyLowerY,X
+        INC spriteY+SPR_ENEMYUPPER,X
+        INC spriteY+SPR_ENEMYLOWER,X
 UP_SkipYMove 
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         CMP #$CE
         BCS CleanupParachute
         CPY #$02
         BNE UP_AllowLowerSprite
         LDA #$00
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
 UP_AllowLowerSprite 
-        LDA enemyUpperX,X
+        LDA spriteX+SPR_ENEMYUPPER,X
         SEC 
         SBC parachuteXSpeed
-        STA enemyUpperX,X
+        STA spriteX+SPR_ENEMYUPPER,X
         LDA parachuteXSpeed
         BPL UP_UpperMSBPosSpd
-        LDA enemyUpperXMSB,X
+        LDA spriteXMSB+SPR_ENEMYUPPER,X
         SBC #$FF
-        STA enemyUpperXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
         JMP UP_UpperMSBDone
 
 UP_UpperMSBPosSpd 
-        LDA enemyUpperXMSB,X
+        LDA spriteXMSB+SPR_ENEMYUPPER,X
         SBC #$00
-        STA enemyUpperXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
 UP_UpperMSBDone 
-        LDA enemyLowerX,X
+        LDA spriteX+SPR_ENEMYLOWER,X
         SEC 
         SBC parachuteXSpeed
-        STA enemyLowerX,X
+        STA spriteX+SPR_ENEMYLOWER,X
         LDA parachuteXSpeed
         BPL UP_LowerMSBPosSpd
-        LDA enemyLowerXMSB,X
+        LDA spriteXMSB+SPR_ENEMYLOWER,X
         SBC #$FF
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
         JMP UP_LowerMSBDone
 
 UP_LowerMSBPosSpd 
-        LDA enemyLowerXMSB,X
+        LDA spriteXMSB+SPR_ENEMYLOWER,X
         SBC #$00
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
 UP_LowerMSBDone 
         DEY
         BPL UP_LoopParts
@@ -538,7 +558,7 @@ UP_LowerMSBDone
 
 CleanupParachute 
         LDA midPlatformCount
-        SEC 
+        SEC
         SBC #$02
         STA midPlatformCount
         LDA topPlatformCount
@@ -556,8 +576,8 @@ CP_Loop LDX paraEnemyIndices,Y
         LDA #$00
         STA enemyTimerActive,X
         STA enemyType,X
-        STA enemyUpperY,X
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYUPPER,X
+        STA spriteY+SPR_ENEMYLOWER,X
         DEY
         BNE CP_Loop
         LDX paraEnemyIndices
@@ -587,28 +607,28 @@ SpawnParachuteExtras
         JSR InitParachuteSprites
         LDA #$04
         STA parachuteXSpeed
-        RTS 
+        RTS
 
 InitParachuteSprites 
         LDA paraUpperYTbl,Y
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         LDA paraLowerYTbl,Y
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
         LDA paraUpperXTbl,Y
-        STA enemyUpperX,X
+        STA spriteX+SPR_ENEMYUPPER,X
         LDA paraLowerXTbl,Y
-        STA enemyLowerX,X
+        STA spriteX+SPR_ENEMYLOWER,X
         LDA #$01
-        STA enemyUpperXMSB,X
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
         LDA paraUpperFrameTbl,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA paraLowerFrameTbl,Y
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
         LDA paraUpperColorTbl,Y
-        STA enemyUpperColor,X
+        STA spriteColor+SPR_ENEMYUPPER,X
         LDA paraLowerColorTbl,Y
-        STA enemyLowerColor,X
+        STA spriteColor+SPR_ENEMYLOWER,X
         LDA #$01
         STA enemyTimerActive,X
         STA enemyActive,X
@@ -636,13 +656,13 @@ paraUpperFrameTbl
 paraLowerFrameTbl 
         .BYTE $86,$BC,$BD,$C0
 
-paraUpperColorTbl 
+paraUpperColorTbl
         .BYTE $0D,$09,$08,$09
 
 paraLowerColorTbl 
         .BYTE $0D,$09,$08,$09
 
-paraTargetXTbl 
+paraTargetXTbl
         .BYTE $14,$3C,$50,$64,$80
 
 paraNewSpeedTbl 
@@ -683,6 +703,8 @@ MERA_Skip
         DEX
         BPL MERA_Loop
         RTS
+
+        ; Martial artist / dog handler
 
 EnemyCodeType5 
         LDA enemyJumping,X
@@ -738,188 +760,3 @@ ECT5_KarateJumpOK
         LDA #$00
         STA enemyFalling,X
         RTS 
-
-CheckEnemiesRunAway
-        LDX #$05
-CERA_Loop 
-        LDA enemyActive,X
-        BNE CERA_EnemyActive
-CERA_Next 
-        DEX
-        BPL CERA_Loop
-        RTS
-
-CERA_EnemyActive 
-        LDA enemyType,X
-        CMP #$09
-        BEQ CERA_Next
-        LDA enemyUpperX,X
-        CMP #$50
-        BCC CERA_CheckLeft
-        LDA enemyUpperXMSB,X
-        BNE RemoveEnemy
-CERA_NoRemove 
-        DEX
-        BPL CERA_Loop
-        RTS
-
-CERA_CheckLeft
-        CMP #$12
-        BCS CERA_NoRemove
-        LDA enemyUpperXMSB,X
-        BNE CERA_NoRemove
-        JSR RemoveEnemy
-        JMP CERA_NoRemove
-
-RemoveEnemy 
-        LDA #$00
-        STA enemyUpperY,X
-        STA enemyLowerY,X
-        STA enemyClimbing,X
-        STA enemyActive,X
-        STA enemyFalling,X
-        STA enemyTimerActive,X
-        STA enemyJumping,X
-        STA enemyHit,X
-        STA enemyDying,X
-        STA enemyClimbingCopy,X
-        STA enemyUpperX,X
-        STA enemyUpperXMSB,X
-        STA enemyCoarseX,X
-        STA enemyAuxTimer,X
-        LDY enemyLongLadderClimb,X
-        BEQ RE_NoLongLadderClimb
-        DEY 
-        LDA platformEnemyCount,Y
-        SEC 
-        SBC #$01
-        STA platformEnemyCount,Y
-        LDA #$00
-        STA enemyLongLadderClimb,X
-RE_NoLongLadderClimb 
-        LDA #$15
-        STA enemyYAdjust,X
-        LDY enemyPlatformHeight,X
-        LDA platformEnemyCount,Y
-        SEC
-        SBC #$01
-        STA platformEnemyCount,Y
-        DEC numEnemies
-        LDA enemyJumpPlatformHeight,X
-        BEQ RE_Done
-        CMP #$02
-        BNE RE_NotJumping
-        DEC topPlatformCount
-RE_NotJumping
-        DEC platformEnemyCount
-        DEC midPlatformCount
-        LDA platformEnemyCount,Y
-        CLC
-        ADC #$01
-        STA platformEnemyCount,Y
-        LDA #$00
-        STA enemyJumpPlatformHeight,X
-RE_Done RTS
-
-UpdateEnemyClimb
-        LDA enemyControls,X
-        TAY
-        AND #$03
-        BNE UEC_IsClimbing
-        RTS
-
-UEC_IsClimbing
-        AND charTypeAtEnemy,X
-        AND #$01
-        BEQ UEC_CheckClimbDown
-UEC_ClimbUp 
-        DEC enemyUpperY,X
-        DEC enemyLowerY,X
-        DEC enemyUpperY,X
-        DEC enemyLowerY,X
-        LDA #$01
-        STA enemyClimbingCopy,X
-        RTS 
-
-UEC_CheckClimbDown 
-        LDA charTypeAtEnemy,X
-        AND #$01
-        BNE UEC_ClimbDown
-        TYA
-        AND #$01
-        BEQ UEC_ClimbDown
-        LDA enemyYAdjust,X
-        CMP #$06
-        BEQ UEC_SetClimbing
-        LDA charAtEnemy,X
-        CMP #$C8
-        BCC UEC_TerminateClimb
-        LDA #$06
-        STA enemyYAdjust,X
-        JMP UEC_ClimbUp
-
-UEC_ClimbDown 
-        TYA
-        AND charTypeBelowEnemy,X
-        AND #$02
-        BEQ UEC_TerminateClimb
-        INC enemyUpperY,X
-        INC enemyLowerY,X
-        INC enemyUpperY,X
-        INC enemyLowerY,X
-UEC_SetClimbing 
-        LDA #$15
-        STA enemyYAdjust,X
-        LDA #$01
-        STA enemyClimbingCopy,X
-        RTS 
-
-UEC_TerminateClimb 
-        LDA #$15
-        STA enemyYAdjust,X
-        LDA enemyCoarseX,X
-        CMP playerCoarseX
-        BCC UEC_PlayerOnRight
-        LDA #$04
-UEC_SetDirAfterClimb 
-        STA enemyControls,X
-        LDA #$00
-        STA enemyClimbing,X
-        LDA enemyLongLadderClimb,X
-        BEQ UEC_NoLongLadder
-        JSR UEC_CheckPlatformY
-        CPY #$01
-        BEQ UEC_IsMidPlatform
-        DEC midPlatformCount
-        LDY enemyLongLadderClimb,X
-        DEY
-        TYA 
-        STA enemyPlatformHeight,X
-        JMP UEC_ResetLongLadder
-
-UEC_IsMidPlatform 
-        LDY enemyLongLadderClimb,X
-        DEY
-        LDA platformEnemyCount,Y
-        SEC
-        SBC #$01
-        STA platformEnemyCount,Y
-UEC_ResetLongLadder 
-        LDA #$00
-        STA enemyLongLadderClimb,X
-UEC_NoLongLadder 
-        RTS
-
-UEC_PlayerOnRight
-        LDA #$08
-        BNE UEC_SetDirAfterClimb
-UEC_CheckPlatformY 
-        LDY #$02
-        LDA enemyUpperY,X
-UEC_PlatformYLoop 
-        CMP platformYTbl,Y
-        BEQ UEC_PlatformYFound
-        DEY
-        BPL UEC_PlatformYLoop
-UEC_PlatformYFound 
-        RTS

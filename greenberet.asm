@@ -17,6 +17,7 @@
         .INCLUDE src/spawnenemies.asm
         .INCLUDE src/playerenemyupdate.asm
         .INCLUDE src/enemyspecificcode.asm
+        .INCLUDE src/enemyremoveandclimb.asm
         .INCLUDE src/scrollandframesync.asm
         .INCLUDE src/titleoutroscreens.asm
         .INCLUDE src/irqgameupdate.asm

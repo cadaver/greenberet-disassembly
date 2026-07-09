@@ -20,18 +20,18 @@ UPC_Loop
         ORA enemyJumping,X
         ORA enemyFalling,X
         BNE UPC_Next
-        LDA enemyUpperY,X
-UPC_PlatformLoop 
+        LDA spriteY+SPR_ENEMYUPPER,X
+UPC_PlatformLoop
         CMP platformYTbl,Y
         BEQ UPC_AtPlatform
         DEY
         BPL UPC_PlatformLoop
-UPC_Next 
+UPC_Next
         DEX
         BPL UPC_Loop
         RTS
 
-UPC_AtPlatform 
+UPC_AtPlatform
         TYA
         LDA enemyPlatformHeight,X
         STA platformTemp
@@ -52,22 +52,22 @@ UPC_AtPlatform
         DEC topPlatformCount
         JMP UPC_ResetJump
 
-UPC_DecMidAndBottom 
+UPC_DecMidAndBottom
         DEC platformEnemyCount
         DEC midPlatformCount
         JMP UPC_ResetJump
 
-UPC_DecMidAndTop 
+UPC_DecMidAndTop
         DEC midPlatformCount
         DEC topPlatformCount
-UPC_ResetJump 
+UPC_ResetJump
         LDA #$00
         STA enemyJumpPlatformHeight,X
         JMP UPC_Next
 
         JMP UPC_Next
 
-UPC_DecBottomOrMid 
+UPC_DecBottomOrMid
         TYA
         CMP platformTemp
         BEQ UPC_DecBottom
@@ -95,21 +95,21 @@ SE_Loop LDA enemyActive,X
         RTS
 
 SE_ScrollEnemy 
-        LDA enemyUpperX,X
+        LDA spriteX+SPR_ENEMYUPPER,X
         SEC
         SBC lastScrollSpeed
-        STA enemyUpperX,X
+        STA spriteX+SPR_ENEMYUPPER,X
         BCS SE_NoUpperMSBClear
         LDA #$00
-        STA enemyUpperXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
 SE_NoUpperMSBClear 
-        LDA enemyLowerX,X
+        LDA spriteX+SPR_ENEMYLOWER,X
         SEC
         SBC lastScrollSpeed
-        STA enemyLowerX,X
+        STA spriteX+SPR_ENEMYLOWER,X
         BCS SE_NoLowerMSBClear
         LDA #$00
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
 SE_NoLowerMSBClear 
         DEX
         BPL SE_Loop
@@ -129,13 +129,13 @@ SB_Loop LDA bulletActive,X
         RTS
 
 SB_ScrollBullet 
-        LDA bulletX,X
+        LDA spriteX+SPR_BULLET,X
         SEC
         SBC lastScrollSpeed
-        STA bulletX,X
+        STA spriteX+SPR_BULLET,X
         BCS SB_NoMSBClear
         LDA #$00
-        STA bulletXMSB,X
+        STA spriteXMSB+SPR_BULLET,X
 SB_NoMSBClear
         DEX
         BPL SB_Loop
@@ -223,7 +223,7 @@ UEP_NoClimbing
         BMI UEC_Done
         JMP UEP_Loop
 
-UEC_Done 
+UEC_Done
         RTS
 
         PLA
@@ -377,7 +377,7 @@ AP_SkipWeaponFrame
 AP_FrameOK 
         STA spriteFrame
         LDA playerLowerFrameTbl,Y
-        STA playerFrameLower
+        STA spriteFrame+SPR_PLRLOWER
         INY
         STY playerRunFrame
 AP_Done RTS
@@ -429,11 +429,11 @@ AP_FindOffsetLoop
         DEX
         BNE AP_FindOffsetLoop
 AP_OffsetFound 
-        LDA playerLowerY
+        LDA spriteY+SPR_PLRLOWER
         SEC
         SBC plrUpperYOffsetTbl,X
         STA spriteY
-        LDA playerLowerX
+        LDA spriteX+SPR_PLRLOWER
         CLC
         ADC plrUpperXOffsetTbl,X
         STA spriteX
@@ -493,9 +493,9 @@ AE_EnemyActive
 AE_SetRunFrame 
         LDA enemyUpperFrameTbl,Y
         BEQ AE_AnimEnd
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA enemyLowerFrameTbl,Y
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
         INY
         TYA
         STA enemyRunAnimFrame,X
@@ -535,7 +535,7 @@ AE_RestartAnimation
         TAY
         JMP AE_SetRunFrame
 
-enemyUpperFrameTbl 
+enemyUpperFrameTbl
         .BYTE $14,$15,$16,$17,$00,$3B,$3D,$00,$3E,$00,$1D,$1E,$1F,$20,$00,$40
         .BYTE $00,$46,$47,$48,$49,$00,$3B,$3D,$00,$3E,$00,$4E,$4F,$50,$51,$00
         .BYTE $40,$00,$7C,$7D,$7E,$7F,$00,$3B,$3D,$00,$84,$00,$80,$81,$82,$83
@@ -543,7 +543,7 @@ enemyUpperFrameTbl
         .BYTE $8D,$00,$91,$00,$9C,$9D,$9C,$9D,$00,$AD,$AF,$00,$3E,$00,$A5,$A6
         .BYTE $A5,$A6,$00,$40,$00
 
-enemyLowerFrameTbl 
+enemyLowerFrameTbl
         .BYTE $30,$31,$32,$33,$00,$3A,$3C,$00,$92,$00,$34,$35,$36,$37,$00,$93
         .BYTE $00,$42,$43,$44,$45,$00,$3A,$3C,$00,$92,$00,$4A,$4B,$4C,$4D,$00
         .BYTE $93,$00,$42,$43,$44,$45,$00,$3A,$3C,$00,$86,$00,$4A,$4B,$4C,$4D
@@ -562,7 +562,7 @@ perTypeAnimTblOffset
         .BYTE $10,$00,$30,$30,$00,$20,$40,$00,$00,$00
 
 PlayerWorldCollision
-        LDA playerLowerY
+        LDA spriteY+SPR_PLRLOWER
         SEC
 playerYAdjust   =*+$01
         SBC #$2A
@@ -580,7 +580,7 @@ playerYAdjust   =*+$01
         LDA screenPtrHi
         ADC #$40
         STA screenPtrHi
-        LDA playerLowerX
+        LDA spriteX+SPR_PLRLOWER
         SEC
         SBC #$0A
         SEC
@@ -612,7 +612,7 @@ EWC_Next
 EWC_EnemyActive 
         LDA enemyTimerActive,X
         BNE EWC_Next
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         SEC
         SBC enemyYAdjust,X
         LDY #$00
@@ -629,7 +629,7 @@ EWC_EnemyActive
         LDA screenPtrHi
         ADC #$40
         STA screenPtrHi
-        LDA enemyUpperX,X
+        LDA spriteX+SPR_ENEMYUPPER,X
         SEC
         SBC #$0A
         BCS EWC_NoLeftUnderflow
@@ -644,7 +644,7 @@ EWC_NoLeftUnderflow
         BCC EWC_XPosDone
 EWC_AddXPosMSB 
         PHA
-        LDA enemyUpperXMSB,X
+        LDA spriteXMSB+SPR_ENEMYUPPER,X
         LSR
         PLA
 EWC_XPosDone 
@@ -731,14 +731,14 @@ enemyYAdjust
 
 SetCoarseXCoords 
         LDX #$13
-SCXC_Loop LDA enemyUpperXMSB,X
+SCXC_Loop LDA spriteXMSB+SPR_ENEMYUPPER,X
         LSR 
-        LDA enemyUpperX,X
+        LDA spriteX+SPR_ENEMYUPPER,X
         ROR 
         STA enemyCoarseX,X
         DEX
         BPL SCXC_Loop
-        LDA playerLowerX
+        LDA spriteX+SPR_PLRLOWER
         LSR 
         STA playerCoarseX
         RTS 
@@ -811,9 +811,9 @@ MP_Falling
         AND #$F8
         ORA #$05
         STA spriteY
-        CLC 
+        CLC
         ADC #$15
-        STA playerLowerY
+        STA spriteY+SPR_PLRLOWER
         LDA #$00
         STA playerFalling
         LDA #$80
@@ -838,7 +838,7 @@ MP_NoLanding
         STA spriteY
         CLC 
         ADC #$15
-        STA playerLowerY
+        STA spriteY+SPR_PLRLOWER
         LDA playerFacingDir
         TAY 
         JMP MP_CheckMoveRight
@@ -860,7 +860,7 @@ MP_NotFalling
         BCS MP_IsJumping
         JMP MP_Falling
 
-MP_IsJumping 
+MP_IsJumping
         JMP MP_HandleJump
 
 MP_HasMovement 
@@ -896,7 +896,7 @@ playerRightLimit   =*+$01
         JSR MP_MoveRight
 MP_MoveRight 
         INC spriteX
-        INC playerLowerX
+        INC spriteX+SPR_PLRLOWER
         JMP MP_ExitLadderRight
 
 MP_NoMoveRight 
@@ -914,7 +914,7 @@ MP_NoMoveRight
         JSR MP_MoveLeft
 MP_MoveLeft 
         DEC spriteX
-        DEC playerLowerX
+        DEC spriteX+SPR_PLRLOWER
         LDA #$00
         STA playerClimbing
         STA playerClimbingCopy
@@ -1045,7 +1045,7 @@ MP_JumpNoTurn
         JSR AP_SetAnimAndReset
         LDY #$14
         STY playerJumpArcIndex
-        LDA playerLowerY
+        LDA spriteY+SPR_PLRLOWER
         SEC 
         SBC jumpArcTbl,Y
         STA playerBaseY
@@ -1060,7 +1060,7 @@ MP_JumpNoLadder
         LDA playerBaseY
         CLC 
         ADC jumpArcTbl,Y
-        STA playerLowerY
+        STA spriteY+SPR_PLRLOWER
         SEC 
         SBC #$15
         STA spriteY
@@ -1109,7 +1109,7 @@ MP_GrabLadder
         STA spriteY
         CLC
         ADC #$15
-        STA playerLowerY
+        STA spriteY+SPR_PLRLOWER
 MP_PlayerClimbing 
         LDA playerControls
         AND #$03
@@ -1119,9 +1119,9 @@ MP_PlayerClimbing
         BEQ MP_NoClimbUp
 MP_ClimbUp 
         DEC spriteY
-        DEC playerLowerY
+        DEC spriteY+SPR_PLRLOWER
         DEC spriteY
-        DEC playerLowerY
+        DEC spriteY+SPR_PLRLOWER
         LDA #$00
         STA playerJumping
         LDA #$01
@@ -1152,9 +1152,9 @@ MP_CheckClimbDown
         AND #$02
         BEQ MP_NoClimbDown
         INC spriteY
-        INC playerLowerY
+        INC spriteY+SPR_PLRLOWER
         INC spriteY
-        INC playerLowerY
+        INC spriteY+SPR_PLRLOWER
         LDA #$00
         STA playerJumping
         LDA #$01
@@ -1252,15 +1252,15 @@ UE_FallingMotion
         LDA charBelowEnemy,X
         CMP #$C8
         BCC UE_NoLanding
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         SEC
         SBC #$04
         AND #$F8
         ORA #$05
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         CLC
         ADC #$15
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
         LDA #$00
         STA enemyFalling,X
         LDY enemyType,X
@@ -1280,12 +1280,12 @@ UE_NoLanding
         CLC 
         ADC enemyJumpSubPixel,X
         STA enemyJumpSubPixel,X
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         ADC #$04
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         CLC 
         ADC #$15
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
         LDA enemyHorizMove,X
         TAY
         JSR UE_HorizMovement
@@ -1306,12 +1306,12 @@ UE_HorizMovement
         BCC UE_MoveRight
         JSR UE_MoveRight
 UE_MoveRight 
-        INC enemyUpperX,X
-        INC enemyLowerX,X
+        INC spriteX+SPR_ENEMYUPPER,X
+        INC spriteX+SPR_ENEMYLOWER,X
         BNE UE_RightNoMSB
         LDA #$01
-        STA enemyUpperXMSB,X
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
 UE_RightNoMSB 
         LDA #$08
         STA enemyHorizMove,X
@@ -1330,14 +1330,14 @@ UE_HorizMovementLeft
         BCC UE_MoveLeft
         JSR UE_MoveLeft
 UE_MoveLeft
-        LDA enemyUpperX,X
+        LDA spriteX+SPR_ENEMYUPPER,X
         BNE UE_LeftNoMSB
         LDA #$00
-        STA enemyUpperXMSB,X
-        STA enemyLowerXMSB,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
+        STA spriteXMSB+SPR_ENEMYLOWER,X
 UE_LeftNoMSB 
-        DEC enemyUpperX,X
-        DEC enemyLowerX,X
+        DEC spriteX+SPR_ENEMYUPPER,X
+        DEC spriteX+SPR_ENEMYLOWER,X
         LDA #$04
         STA enemyHorizMove,X
         LDA #$00
@@ -1393,7 +1393,7 @@ UE_InitJumpArc
         LDY #$12
         TYA
         STA enemyJumpArcIndex,X
-        LDA enemyLowerY,X
+        LDA spriteY+SPR_ENEMYLOWER,X
         SEC 
         SBC jumpArcTbl,Y
         STA enemyBaseY,X
@@ -1411,10 +1411,10 @@ UE_JumpNoLadder
         LDA enemyBaseY,X
         CLC 
         ADC jumpArcTbl,Y
-        STA enemyLowerY,X
+        STA spriteY+SPR_ENEMYLOWER,X
         SEC 
         SBC #$15
-        STA enemyUpperY,X
+        STA spriteY+SPR_ENEMYUPPER,X
         LDA enemyJumping,X
         BPL UE_DecJumpArc
         INY

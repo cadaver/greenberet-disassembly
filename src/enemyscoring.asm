@@ -40,14 +40,14 @@ CKE_DoKill
         BNE CKE_NoSpawnPickup
 CKE_CheckSpawnPickup 
         PHA
-        LDA enemyLowerY,X
+        LDA spriteY+SPR_ENEMYLOWER,X
         SEC 
         SBC #$15
-        STA enemyUpperY,X
-        LDA enemyLowerX,X
-        STA enemyUpperX,X
-        LDA enemyLowerXMSB,X
-        STA enemyUpperXMSB,X
+        STA spriteY+SPR_ENEMYUPPER,X
+        LDA spriteX+SPR_ENEMYLOWER,X
+        STA spriteX+SPR_ENEMYUPPER,X
+        LDA spriteXMSB+SPR_ENEMYLOWER,X
+        STA spriteXMSB+SPR_ENEMYUPPER,X
         PLA
         CMP #$01
         BNE CKE_NoSpawnPickup
@@ -55,18 +55,18 @@ CKE_CheckSpawnPickup
         LDA staticEnemyWpnType,Y
         TAY
         STA weaponPickupType
-        LDA enemyUpperY,X
+        LDA spriteY+SPR_ENEMYUPPER,X
         SEC 
         SBC #$0A
-        STA extraPickupY
-        LDA enemyUpperX,X
-        STA weaponPickupX
-        LDA enemyUpperXMSB,X
-        STA weaponPickupXMSB
+        STA spriteY+SPR_PICKUP
+        LDA spriteX+SPR_ENEMYUPPER,X
+        STA spriteX+SPR_PICKUP
+        LDA spriteXMSB+SPR_ENEMYUPPER,X
+        STA spriteXMSB+SPR_PICKUP
         LDA weaponPickupFrameTbl,Y
-        STA weaponPickupFrame
+        STA spriteFrame+SPR_PICKUP
         LDA weaponPickupColorTbl,Y
-        STA weaponPickupColor
+        STA spriteColor+SPR_PICKUP
         LDA #$00
         STA weaponPickupRestFlag
         LDA #$0B
@@ -78,9 +78,9 @@ CKE_NoSpawnPickup
         LSR
         TAY
         LDA enemyDeadUpperFrames,Y
-        STA enemyUpperFrame,X
+        STA spriteFrame+SPR_ENEMYUPPER,X
         LDA enemyDeadLowerFrames,Y
-        STA enemyLowerFrame,X
+        STA spriteFrame+SPR_ENEMYLOWER,X
 CKE_NoNewKill 
         LDA enemyTimer,X
         CMP #$60
@@ -90,15 +90,15 @@ CKE_NoNewKill
         LSR
         TAY
         LDA enemyDeadColorTbl,Y
-        STA enemyUpperColor,X
-        STA enemyLowerColor,X
+        STA spriteColor+SPR_ENEMYUPPER,X
+        STA spriteColor+SPR_ENEMYLOWER,X
         JMP CKE_Next
 
-CKE_Remove 
+CKE_Remove
         JSR RemoveEnemy
         JMP CKE_Next
 
-enemyDeadColorTbl 
+enemyDeadColorTbl
         .BYTE $01,$02
 
 enemyDeadLowerFrames

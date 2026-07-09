@@ -8,12 +8,12 @@ InitPlayer
         STA playerRightLimit
         LDA #$40
         STA spriteX
-        STA playerLowerX
+        STA spriteX+SPR_PLRLOWER
         LDA #$CD
         STA spriteY
         CLC
         ADC #$15
-        STA playerLowerY
+        STA spriteY+SPR_PLRLOWER
         LDA #$80
         STA playerRunSpeed
         JMP MP_NoClimbDown
