@@ -24,7 +24,12 @@ INFINITE_SHOTS_CHEAT = 0
 
 INVULNERABILITY_CHEAT = 0
 
-        ; Sprite index defines. There are 21 "virtual sprites" total used by the sprite multiplexer.
+        ; How many frames the enemies will wait in firing / throwing pose before actually spawning the bullet.
+        ; 5 is original. Affects all of riflemen, bazooka men and grenadiers
+
+ENEMY_AIM_TIME = 5
+
+        ; Sprite index defines. There are 21 "virtual sprites" total used by the sprite multiplexer
 
 SPR_PLRUPPER = 0    ; Player head + arms
 SPR_PLRLOWER = 1    ; Player legs

@@ -144,7 +144,7 @@ DEF_ResetFireFlag
         RTS
 
 DEF_CheckDelayFinish
-        CMP #$05
+        CMP #ENEMY_AIM_TIME
         BCS DEF_DoFire
         INC enemyFireFlag,X
         JMP DEF_Wait
