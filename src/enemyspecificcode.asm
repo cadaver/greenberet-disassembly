@@ -1,7 +1,3 @@
-    .if ILLEGAL_ENEMY_TYPE_CHECK = 0
-
-        ; Original code
-
 RunEnemyCustomCode
         LDY enemyType,X
         TYA
@@ -31,40 +27,6 @@ EnemyCodeType2
 
 EnemyCodeType3
         RTS
-
-    .else
-
-        ; Modified code with illegal type check added + code shortening to make the check fit in original code size
-
-RunEnemyCustomCode
-        LDY enemyType,X
-        CPY #$0A
-        BCS RECC_IllegalType
-        LDA enemyJumpTblLo,Y
-        STA enemyJumpLo
-        LDA enemyJumpTblHi,Y
-        STA enemyJumpHi
-enemyJumpLo   =*+$01
-enemyJumpHi   =*+$02
-RECC_Jump JMP $FFFF
-
-enemyJumpTblLo
-        .BYTE <EnemyCodeType0,<EnemyCodeType1,<EnemyCodeType6,<EnemyCodeType3,<EnemyCodeType4
-        .BYTE <EnemyCodeType5,<EnemyCodeType6,<EnemyCodeType7,<EnemyCodeType8,<EnemyCodeType9
-enemyJumpTblHi
-        .BYTE >EnemyCodeType0,>EnemyCodeType1,>EnemyCodeType6,>EnemyCodeType3,>EnemyCodeType4
-        .BYTE >EnemyCodeType5,>EnemyCodeType6,>EnemyCodeType7,>EnemyCodeType8,>EnemyCodeType9
-
-RECC_IllegalType
-        INC $D020
-        RTS
-
-EnemyCodeType0
-EnemyCodeType1
-EnemyCodeType3
-        RTS
-
-    .endif
 
 EnemyCodeType9 JSR UpdateParachute
         LDA parachuteActiveFlag

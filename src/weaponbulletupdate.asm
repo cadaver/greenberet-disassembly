@@ -140,7 +140,7 @@ CHGE_CheckGyroHit
         BEQ CHGE_EnemyOK
         JMP CGHE_NextEnemy
 
-CHGE_EnemyOK 
+CHGE_EnemyOK
         LDA bulletY,Y
         SEC
         SBC #$13
@@ -389,7 +389,7 @@ CheckBulletExploded
         BNE UpdateExplosion
         RTS 
 
-UpdateExplosion 
+UpdateExplosion
         DEC bulletTimer,X
         BNE UE_NoNewFrame
         LDA #$05
@@ -674,16 +674,16 @@ FEW_InitFlameCommon
         BPL FEW_FlamePieceLoop
         JMP PlayFlameSound
 
-RunEnemyBulletCode 
+RunEnemyBulletCode
         LDX #$05
-REBC_Loop 
+REBC_Loop
         LDA bulletActive,X
         BNE REBC_BulletActive
-REBC_Next 
+REBC_Next
         DEX
         CPX #$02
         BNE REBC_Loop
-        RTS 
+        RTS
 
 REBC_BulletActive
         LDA bulletType,X
@@ -695,20 +695,19 @@ REBC_BulletActive
         STA bulletCodeJumpHi
 bulletCodeJumpLo   =*+$01
 bulletCodeJumpHi   =*+$02
-CEBTP_Jump
-        JSR CEBTP_Jump
+REBC_Jump
+        JSR REBC_Jump
         JMP REBC_Next
 
 bulletCodeJumpTblHi   =*+$01
 bulletCodeJumpTblLo
-        .WORD BulletCodeType4,BulletCodeType1,BulletCodeType2,BulletCodeType3,BulletCodeType4
-        .WORD BulletCodeType6,BulletCodeType6,BulletCodeType7
+        .WORD BulletCodeType0,BulletCodeType1,BulletCodeType2,BulletCodeType3,BulletCodeType0,BulletCodeType6,BulletCodeType6,BulletCodeType7
 
 BulletCodeType7
         CPX fighterJetIndex
-        BEQ BulletCodeType4
+        BEQ BulletCodeType0
         LDA bulletY,X
-        BEQ BulletCodeType4
+        BEQ BulletCodeType0
         CLC
         ADC #$04
         PHA
@@ -728,24 +727,24 @@ BCT6_CheckY
         STA bulletY,X
         RTS
 
-BC_Remove 
+BC_Remove
         LDA #$01
         STA bulletY,X
         LDA #$00
         STA bulletActive,X
-BulletCodeType4 RTS
+BulletCodeType0 RTS
 
 BulletCodeType1 RTS
 
 BulletCodeType3 RTS
 
-BulletCodeType2 
+BulletCodeType2
         LDA bulletYDir,X
         BNE EnemyGrenadeArc
         JSR UG_CheckLanding
         RTS
 
-EnemyGrenadeArc 
+EnemyGrenadeArc
         LDY bulletJumpArcIndex,X
         LDA bulletYBase,X
         CLC

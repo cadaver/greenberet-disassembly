@@ -5,11 +5,6 @@
 
 GRENADE_HANG_FIX = 0
 
-        ; If nonzero, border will be flashed if enemy custom code with illegal type is attempted to be run.
-        ; Total code size is retained the same
-
-ILLEGAL_ENEMY_TYPE_CHECK = 0
-
         ; If nonzero, lives are not decremented
 
 INFINITE_LIVES_CHEAT = 0
