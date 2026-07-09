@@ -24,11 +24,11 @@ Stage4EndFight
         BPL Stage4NotDone
         JMP CompleteStage
 
-Stage4NotDone 
+Stage4NotDone
         JSR SortSprites
         JMP MainLoop
 
-Stage4NextEnemy 
+Stage4NextEnemy
         LDA endFightResetFlag
         BNE S4NE_NoReset
         JSR CheckEnemiesOnScreen
@@ -50,7 +50,7 @@ S4NE_NoReset
         TAY
         LDA finaleSpawnTypeTbl,Y
         STA spawnEnemyType
-        TYA 
+        TYA
         AND #$01
         TAY
         LDA enemyDirTbl,Y
@@ -74,10 +74,10 @@ Stage2EndFight
         LDA enemyActive
         BNE S2EF_NotDone
         LDX #$02
-S2EF_DogLoop 
+S2EF_DogLoop
         LDA dogActive,X
         BNE S2EF_NotDone
-        DEX 
+        DEX
         BPL S2EF_DogLoop
         LDA #$07
         JSR SwapGraphicsData
@@ -126,7 +126,7 @@ UDH_IsActive
         BCC UDH_Done
         JMP UDH_CommandDogsAnim
 
-UDH_OnLeft 
+UDH_OnLeft
         LDA playerCoarseX
         CMP enemyCoarseX
         BCS UDH_Done
@@ -215,7 +215,7 @@ CKD_Loop
 CKD_SetFrame
         LDA #$D0
         JSR DJ_SetFrameAndInit
-CKD_CheckRemove 
+CKD_CheckRemove
         JSR RemoveDeadDog
 CKD_Next 
         DEX
@@ -269,11 +269,11 @@ AD_DoAnimate
         CMP #$CC
         BCC AD_RightDone
         LDA #$C9
-AD_RightDone 
+AD_RightDone
         STA dogFrame,X
         JMP AD_Next
 
-AD_AnimateLeft 
+AD_AnimateLeft
         LDA dogFrame,X
         CLC
         ADC #$01
@@ -292,7 +292,7 @@ MD_Next DEX
         BPL MD_Loop
         RTS 
 
-MD_IsActive 
+MD_IsActive
         LDA dogDir,X
         CMP #$04
         BEQ MD_MoveLeft
@@ -390,7 +390,7 @@ SND_FoundFree
         STA dogX,X
         LDA #$CD
         STA dogFrame,X
-SND_Common 
+SND_Common
         LDA #$01
         STA enemyAuxTimer,X
         STA dogCoarseX,X
@@ -416,7 +416,7 @@ DogJump LDA dogJumping,X
         AND #$02
         BNE DJ_Done
         LDA #$CA
-DJ_SetFrameAndInit 
+DJ_SetFrameAndInit
         STA dogFrame,X
         INC dogJumping,X
         LDY #$11
@@ -467,7 +467,7 @@ CheckDogJumpDistance
 CDJD_Fail SEC
         RTS
 
-dogSpawnDelayTbl     
+dogSpawnDelayTbl
         .BYTE $14,$14,$19,$14,$14,$19,$14,$14,$19,$14,$14,$19,$14,$14,$19,$14
         .BYTE $14,$19
 
@@ -515,72 +515,72 @@ Stage3EndFight
         JSR AnimateGyrocopters
         JSR UpdateGyroFlight
         JSR Stage3EndFightCalls
-S3EF_FinishCommon 
+S3EF_FinishCommon
         JSR RunEnemyBulletCode
         JSR SortSprites
         JMP MainLoop
 
-S3EF_WaitForStart 
+S3EF_WaitForStart
         JSR StageEndFightCalls
         JSR AnimateEnemiesOnly
         JMP S3EF_FinishCommon
 
 CheckDestroyGyros
         LDX #$05
-CDH_Loop LDA enemyHit,X
-        BNE CDH_DoDestroy
-CDH_Next DEX 
-        BPL CDH_Loop
+CDG_Loop LDA enemyHit,X
+        BNE CDG_DoDestroy
+CDG_Next DEX
+        BPL CDG_Loop
         RTS
 
-CDH_DoDestroy 
+CDG_DoDestroy
         STX temp
         JSR DestroyGyrocopter
         LDX temp
-        JMP CDH_Next
+        JMP CDG_Next
 
 UpdateGyroGrenades
         LDX #$02
 UHG_Loop JSR CheckBulletExploded
         DEX
         BPL UHG_Loop
-        RTS 
+        RTS
 
 UpdateGyroFlight
         LDY #$01
-UHF_Loop 
+UGF_Loop
         LDA gyroYPathDir,Y
-        BNE UHF_YPathActive
+        BNE UGF_YPathActive
         LDA gyrosAliveFlag
-        BEQ UHF_DescendLow
+        BEQ UGF_DescendLow
         LDA gyroY,Y
         CMP #$58
-        BCS UHF_SetActive
-UHF_DescendLow 
+        BCS UGF_SetActive
+UGF_DescendLow
         LDA gyroY,Y
         CMP #$90
-        BCS UHF_SetActiveLow
+        BCS UGF_SetActiveLow
         LDA gyroY,Y
-        BEQ UHF_Next
+        BEQ UGF_Next
         CLC
         ADC #$02
         STA gyroY,Y
-UHF_Next 
-        JSR UHF_HorizMoveLogic
+UGF_Next
+        JSR UGF_HorizMoveLogic
         DEY
-        BPL UHF_Loop
-        RTS 
+        BPL UGF_Loop
+        RTS
 
-UHF_SetActive 
+UGF_SetActive
         LDA #$01
         STA gyroYPathDir,Y
         LDA #$58
         STA gyroBaseY,Y
         LDA #$00
         STA gyroYPathIndex,Y
-        JMP UHF_Next
+        JMP UGF_Next
 
-UHF_SetActiveLow 
+UGF_SetActiveLow
         LDA #$01
         STA gyroYPathDir,Y
         STA gyrosAliveFlag
@@ -588,98 +588,98 @@ UHF_SetActiveLow
         STA gyroBaseY,Y
         LDA #$00
         STA gyroYPathIndex,Y
-        JMP UHF_Next
+        JMP UGF_Next
 
-UHF_YPathActive 
+UGF_YPathActive 
         LDX gyroYPathIndex,Y
         LDA gyroYPathTbl,X
-        BMI UHF_GyroYPathEnd
+        BMI UGF_GyroYPathEnd
         CLC 
         ADC gyroBaseY,Y
         STA gyroY,Y
         LDA gyroYPathDir,Y
-        BMI UHF_GyroYPathReverse
+        BMI UGF_GyroYPathReverse
         INX 
         TXA
         STA gyroYPathIndex,Y
-        JMP UHF_Next
+        JMP UGF_Next
 
-UHF_GyroYPathEnd
+UGF_GyroYPathEnd
         STA gyroYPathDir,Y
-UHF_GyroYPathReverse
+UGF_GyroYPathReverse
         DEX
-        BMI UHF_GyroYPathWrap
+        BMI UGF_GyroYPathWrap
         TXA
         STA gyroYPathIndex,Y
-        JMP UHF_Next
+        JMP UGF_Next
 
-UHF_GyroYPathWrap
+UGF_GyroYPathWrap
         LDA #$01
         STA gyroYPathDir,Y
-        JMP UHF_Next
+        JMP UGF_Next
 
-UHF_HorizMoveLogic 
+UGF_HorizMoveLogic 
         LDA gyroBaseY,Y
         CMP #$58
-        BEQ UHF_HighGyroHorizMove
+        BEQ UGF_HighGyroHorizMove
         LDA gyroCoarseX,Y
         ADC #$14
         CMP playerCoarseX
-        BCC UHF_CheckHorizTurn
+        BCC UGF_CheckHorizTurn
         SEC
         SBC #$28
         CMP playerCoarseX
-        BCS UHF_CheckHorizTurn
-UHF_GyroXMove
+        BCS UGF_CheckHorizTurn
+UGF_GyroXMove
         LDA gyroXSpeed,Y
         CLC
         ADC gyroCoarseX,Y
         STA gyroCoarseX,Y
         RTS
 
-UHF_CheckHorizTurn 
+UGF_CheckHorizTurn 
         LDA gyroCoarseX,Y
         CMP playerCoarseX
-        BCC UHF_CheckTurnRight
+        BCC UGF_CheckTurnRight
         LDA gyroXSpeed,Y
-        BMI UHF_NoHorizTurn
+        BMI UGF_NoHorizTurn
         LDA #$FF
         STA gyroXSpeed,Y
         JSR SetGyroMidFrame
-UHF_NoHorizTurn 
-        JMP UHF_GyroXMove
+UGF_NoHorizTurn 
+        JMP UGF_GyroXMove
 
-UHF_CheckTurnRight
+UGF_CheckTurnRight
         LDA gyroXSpeed,Y
-        BPL UHF_NoHorizTurn
+        BPL UGF_NoHorizTurn
         LDA #$01
         STA gyroXSpeed,Y
         JSR SetGyroMidFrame
-        JMP UHF_GyroXMove
+        JMP UGF_GyroXMove
 
-UHF_HighGyroHorizMove
+UGF_HighGyroHorizMove
         LDA gyroCoarseX,Y
         CMP #$14
-        BCC UHF_HighGyroLeftEdge
+        BCC UGF_HighGyroLeftEdge
         CMP #$8C
-        BCS UHF_HighGyroRightEdge
-        JMP UHF_GyroXMove
+        BCS UGF_HighGyroRightEdge
+        JMP UGF_GyroXMove
 
-UHF_HighGyroLeftEdge 
+UGF_HighGyroLeftEdge 
         LDA gyroXSpeed,Y
-        BPL UHF_NoHorizTurn
+        BPL UGF_NoHorizTurn
         LDA #$01
         STA gyroXSpeed,Y
         JSR SetGyroMidFrame
-        JMP UHF_GyroXMove
+        JMP UGF_GyroXMove
 
-UHF_HighGyroRightEdge
+UGF_HighGyroRightEdge
         LDA gyroXSpeed,Y
-        BMI UHF_NoHorizTurn
+        BMI UGF_NoHorizTurn
         LDA #$FF
         STA gyroXSpeed,Y
         JSR SetGyroMidFrame
-        JMP UHF_GyroXMove
+        JMP UGF_GyroXMove
 
 gyroYPathTbl 
         .BYTE $00,$00,$01,$02,$03,$04,$06,$08,$0A,$0C,$0E,$10,$12,$14,$16,$18
@@ -690,7 +690,7 @@ SetGyroMidFrame
         TAX
         STY temp2
         LDY #$00
-SHMF_Loop 
+SGMF_Loop
         LDA gyroUpperMidFrameTbl,Y
         STA enemyUpperFrame,X
         LDA gyroLowerMidFrameTbl,Y
@@ -698,7 +698,7 @@ SHMF_Loop
         INX
         INY
         CPY #$03
-        BCC SHMF_Loop
+        BCC SGMF_Loop
         LDY temp2
         LDA #$06
         STA gyroAnimDelay,Y
@@ -707,17 +707,17 @@ SHMF_Loop
 ThrowGyroGrenade 
         INX
         LDA gyroXSpeed,Y
-        BPL THG_HasDir
+        BPL TGG_HasDir
         LDA #$04
         .BYTE $2C
-THG_HasDir 
+TGG_HasDir
         LDA #$08
         STA enemyHorizMove,X
         LDA #$08
         STA enemyType,X
         LDA gyroY,Y
-THG_GyroNotActive 
-        BEQ THG_Done
+TGG_GyroNotActive 
+        BEQ TGG_Done
         STX temp
         STY temp2
         JSR DEF_DoFire
@@ -726,26 +726,26 @@ THG_GyroNotActive
         LDA #$09
         STA enemyType,X
         DEX
-THG_Done 
+TGG_Done
         RTS
 
-AH_MovingRight 
+AG_MovingRight
         LDA #$00
-        BEQ AH_GetFrame
-AH_Done RTS 
+        BEQ AG_GetFrame
+AG_Done RTS
 
-DestroyGyrocopter 
+DestroyGyrocopter
         CPX #$03
-        BCC DH_NoIndexClamp
+        BCC DG_NoIndexClamp
         LDX #$03
         .BYTE $2C
-DH_NoIndexClamp 
+DG_NoIndexClamp
         LDX #$00
         TXA
-        CLC 
+        CLC
         ADC #$03
         STA tempStore
-DH_PieceLoop
+DG_PieceLoop
         LDA #$00
         STA enemyActive,X
         STA enemyHit,X
@@ -754,15 +754,15 @@ DH_PieceLoop
         STA enemyLowerY,X
         INX
         CPX tempStore
-        BNE DH_PieceLoop
+        BNE DG_PieceLoop
         DEC numAliveGyros
         LDA #$00
         STA gyrosAliveFlag
         LDA #$20
         STA gyroSpawnTimer
         TXA
-        LSR 
-        LSR 
+        LSR
+        LSR
         TAY
         LDA #$00
         STA gyroY,Y
@@ -775,32 +775,32 @@ AnimateGyrocopters
         LDX #$00
         LDA #$03
         STA gyroSprEndCmp
-AH_Loop LDA gyroAnimDelay,Y
-        BEQ AH_NoDelay
+AG_Loop LDA gyroAnimDelay,Y
+        BEQ AG_NoDelay
         SEC
         SBC #$01
         STA gyroAnimDelay,Y
         CPY #$01
-        BEQ AH_Done
+        BEQ AG_Done
         LDX #$03
-        JMP AH_MoveToNext
+        JMP AG_MoveToNext
 
-AH_NoDelay 
+AG_NoDelay
         LDA gyroAnimFrame,Y
-        CLC 
+        CLC
         ADC #$01
         AND #$03
         STA gyroAnimFrame,Y
         STA temp2
         LDA gyroXSpeed,Y
-        BPL AH_MovingRight
+        BPL AG_MovingRight
         LDA #$18
         CLC
-AH_GetFrame
+AG_GetFrame
         LDY temp2
         ADC gyroFrameBaseTbl,Y
         TAY
-AH_SpriteLoop
+AG_SpriteLoop
         LDA gyroUpperFrameTbl,Y
         STA enemyUpperFrame,X
         LDA gyroLowerFrameTbl,Y
@@ -809,18 +809,18 @@ AH_SpriteLoop
         INX
 gyroSprEndCmp   =*+$01
         CPX #$03
-        BNE AH_SpriteLoop
+        BNE AG_SpriteLoop
         CPX #$06
-        BEQ AH_Done2
-AH_MoveToNext
+        BEQ AG_Done2
+AG_MoveToNext
         LDA #$06
         STA gyroSprEndCmp
         LDY #$01
-        JMP AH_Loop
+        JMP AG_Loop
 
-AH_Done2 RTS
+AG_Done2 RTS
 
-gyroEnemyIndexTbl 
+gyroEnemyIndexTbl
         .BYTE $00,$03
 
 gyroAnimDelay
@@ -837,14 +837,14 @@ gyroLowerFrameTbl
         .BYTE $CF,$CE,$D1,$C9,$CA,$D4,$D3,$C5,$D7,$D6,$D5,$D9,$D3,$D8,$D7,$D6
         .BYTE $DC,$DA,$DB,$CC,$D7,$D6,$DD,$DA,$DB,$CC,$D7,$D6,$DC
 
-gyroUpperMidFrameTbl 
+gyroUpperMidFrameTbl
         .BYTE $CC,$DF,$CC
 
-gyroLowerMidFrameTbl 
+gyroLowerMidFrameTbl
         .BYTE $CC,$DE,$CC
 
 MultiplyGyroXCoords LDX #$0B
-MHXC_Loop 
+MGXC_Loop
         LDA enemyUpperX,X
         ASL
         STA enemyUpperX,X
@@ -852,17 +852,17 @@ MHXC_Loop
         ADC #$00
         STA enemyUpperXMSB,X
         DEX
-        BPL MHXC_Loop
+        BPL MGXC_Loop
         RTS
 
-UpdateGyroSprites 
+UpdateGyroSprites
         LDY numAliveGyros
-        BEQ UHS_NoGyrosActive
+        BEQ UGS_NoGyrosActive
         LDY #$02
         DEY
-UHS_Loop
+UGS_Loop
         LDA gyroY,Y
-        BEQ UHS_Next
+        BEQ UGS_Next
         STY tempStore
         TYA
         ASL
@@ -873,96 +873,106 @@ UHS_Loop
         ADC #$03
         PHA
         JSR TimerCheck
-        BCC UHS_NoGrenade
+        BCC UGS_NoGrenade
         JSR ThrowGyroGrenade
-UHS_NoGrenade 
+UGS_NoGrenade
         PLA
         STA tempStore
         LDA gyroCoarseX,Y
         SEC
         SBC #$0C
-UHS_SpriteLoop 
+UGS_SpriteLoop
         STA enemyUpperX,X
         STA enemyLowerX,X
         CLC
         ADC #$0C
         INX
         CPX tempStore
-        BNE UHS_SpriteLoop
+        BNE UGS_SpriteLoop
         TXA
         SEC
         SBC #$03
         TAX
-UHS_SpriteYLoop 
+UGS_SpriteYLoop 
         LDA enemyUpperX,X
         CMP #$AC
-        BCS UHS_ClipRight
+        BCS UGS_ClipRight
         LDA gyroY,Y
         STA enemyUpperY,X
         CLC
         ADC #$15
         STA enemyLowerY,X
-        JMP UHS_YDone
+        JMP UGS_YDone
 
-UHS_ClipRight 
+UGS_ClipRight 
         LDA #$00
         STA enemyUpperY,X
         STA enemyLowerY,X
-UHS_YDone 
+UGS_YDone 
         INX
         CPX tempStore
-        BNE UHS_SpriteYLoop
-UHS_Next
+        BNE UGS_SpriteYLoop
+UGS_Next
         DEY
-        BPL UHS_Loop
-UHS_NoGyrosActive
+        BPL UGS_Loop
+UGS_NoGyrosActive
         RTS
 
-SpawnGyrocopters 
+SpawnGyrocopters
         LDA endFightEnemiesLeft
-        BEQ SH_NoMoreGyros
+        BEQ SG_NoMoreGyros
         CMP #$03
-        BNE SH_InitDone
+        BNE SG_InitDone
         JSR CheckEnemiesOnScreen
-        BPL SH_Wait
+        BPL SG_Wait
         LDA #$00
         LDX #$05
-SH_InitLoop 
+SG_InitLoop 
         STA enemyDying,X
         STA enemyHit,X
         DEX
-        BPL SH_InitLoop
+        BPL SG_InitLoop
         STA gyroYPathDir
         LDY #$2F
         JSR PlaySong
         INC stageEndReached
-SH_InitDone 
+SG_InitDone
         LDA numAliveGyros
-        BEQ SH_FindFreeEnemy
+        BEQ SG_FindFreeEnemy
         CMP #$02
-        BEQ SH_Wait
+        BEQ SG_Wait
         DEC gyroSpawnTimer
-        BNE SH_Wait
-SH_FindFreeEnemy 
+        BNE SG_Wait
+SG_FindFreeEnemy
         LDX #$00
-SH_FindFreeLoop 
+SG_FindFreeLoop
         LDA enemyActive,X
-        BEQ SH_FreeFound
+        BEQ SG_FreeFound
         INX
         CPX #$06
-        BCC SH_FindFreeLoop
+        BCC SG_FindFreeLoop
         RTS
 
-SH_FreeFound 
+SG_FreeFound
         TXA
         LSR
         TAY
         JSR SpawnGyrocopter
-SH_Wait RTS
+SG_Wait RTS
 
-SH_NoMoreGyros 
+SG_NoMoreGyros
         LDA numAliveGyros
-        BNE SH_Wait
+        BNE SG_Wait
+
+    .if THIRD_STAGE_STACK_FIX > 0
+
+        ; We are in 1 subroutine call deep, so must pop off bytes to not leak on each playthrough
+        ; (which finally leads to sprite corruption)
+        PLA
+        PLA
+
+     .endif
+
         JMP CompleteStage
 
 SpawnGyrocopter LDA gyroXInitTbl,Y
@@ -975,9 +985,14 @@ SpawnGyrocopter LDA gyroXInitTbl,Y
         CLC 
         ADC #$03
         STA tempStore
-SH_SpriteLoop LDA #$09
+SG_SpriteLoop LDA #$09
         STA enemyActive,X
         STA enemyType,X
+
+    .if THIRD_STAGE_STACK_FIX = 0
+
+        ; Original code
+
         LDA #$00
         STA enemyDying,X
         LDA #$01
@@ -986,7 +1001,7 @@ SH_SpriteLoop LDA #$09
         STA enemyLowerColor,X
         INX
         CPX tempStore
-        BNE SH_SpriteLoop
+        BNE SG_SpriteLoop
         INC numAliveGyros
         DEC endFightEnemiesLeft
         LDA #$20
@@ -994,6 +1009,28 @@ SH_SpriteLoop LDA #$09
         LDA #$00
         STA gyroYPathDir,Y
         RTS
+
+    .else
+
+        ; Shortened code for the stack fix above
+
+        LDA #$01
+        STA enemyUpperColor,X
+        LDA #$06
+        STA enemyLowerColor,X
+        LDA #$00
+        STA enemyDying,X
+        INX
+        CPX tempStore
+        BNE SG_SpriteLoop
+        INC numAliveGyros
+        DEC endFightEnemiesLeft
+        STA gyroYPathDir,Y
+        LDA #$20
+        STA gyroSpawnTimer
+        RTS
+
+    .endif
 
 gyroXSpeedInitTbl .BYTE $01,$FF
 

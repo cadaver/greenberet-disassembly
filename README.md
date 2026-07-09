@@ -63,5 +63,10 @@ The original game has two bugs:
 - If a grenade explodes a mine that is only half-visible on the screen, the game will lock up.
 - After playing for a long time, the game starts to exhibit bugged behavior, such as explosions staying in place, or enemies running backwards.
 
-There is a define in src/defines.s to enable a fix for the first bug. If GRENADE_HANG_FIX is set to nonzero, the code size stays the same, but the flow of the grenade's
-"radius destroy" routine becomes different so that it no longer loops infinitely when encountering a half-visible mine.
+There are defines in src/defines.s to enable fixes for both bugs.
+
+If GRENADE_HANG_FIX is set to nonzero, the code size stays the same, but the flow of the grenade's "radius destroy" routine becomes different
+so that it no longer loops infinitely when encountering a half-visible mine.
+
+The second bug is caused by the third stage end fight leaking two bytes on the stack each time the fight is completed, as the fight completion 
+check occurs in a subroutine. If THIRD_STAGE_STACK_FIX is set to nonzero, the leak is averted.

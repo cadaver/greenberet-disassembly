@@ -1,9 +1,14 @@
         ; Game behavior / bugfixes
 
-        ; If nonzero, a grenade exploding a partially visible mine will no longer lock up the game in an endless loop,
-        ; but the game binary will also no longer be byte-identical
+        ; If nonzero, a grenade exploding a partially visible mine will no longer lock up the game in an endless loop
 
 GRENADE_HANG_FIX = 0
+
+        ; If nonzero, the third stage end fight will no longer leak 2 bytes on the stack. The leak would grow on each
+        ; subsequent playthrough and start to overwrite sprite frames (first the weapon pickup and bullets), leading
+        ; to glitched sprites such as explosions turning into flashing enemy running animations
+
+THIRD_STAGE_STACK_FIX = 0
 
         ; If nonzero, lives are not decremented
 
