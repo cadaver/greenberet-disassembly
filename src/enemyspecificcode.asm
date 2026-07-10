@@ -100,6 +100,8 @@ difficultyMod2   =*+$01
 TC_AtMax
         RTS
 
+        ; Common enemy firing routine
+
 DoEnemyFire
         CMP #$01
         BNE DEF_CheckDelayFinish
@@ -248,7 +250,7 @@ ECT4_PrepareFire
         BEQ ECT4_UpperFrameDone
         LDA mortarUpperFrame2Tbl,Y
         STA spriteFrame+SPR_ENEMYUPPER,X
-ECT4_UpperFrameDone 
+ECT4_UpperFrameDone
         LDA mortarLowerFrameTbl,Y
         STA spriteFrame+SPR_ENEMYLOWER,X
         LDA enemyDirTbl,Y
@@ -261,11 +263,11 @@ ECT4_WaitFireDelay
         CMP #$10
         BCS ECT4_FiringNow
         INC enemyAuxTimer,X
-ECT4_FireFail 
+ECT4_FireFail
         LDX temp
         RTS
 
-ECT4_FiringNow 
+ECT4_FiringNow
         STX temp
         LDX #$05
         JSR FFB_Loop
@@ -273,20 +275,20 @@ ECT4_FiringNow
         CPX #$03
         BCC ECT4_FireFail
         LDY #$02
-InitEnemyBullet 
+InitEnemyBullet
         STX bulletIndex
         LDX temp
         LDA enemyHorizMove,X
-        PHA 
+        PHA
         CPY #$05
         BNE IEB_NoOppositeDir
         EOR #$0C
-IEB_NoOppositeDir 
+IEB_NoOppositeDir
         AND #$04
         BEQ IEB_FiringRight
         LDA #$F0
         CLC
-IEB_FiringRight 
+IEB_FiringRight
         ADC #$0C
         STA bulletOffset
         PLA
@@ -296,7 +298,7 @@ IEB_FiringRight
         STA spriteColor+SPR_BULLET,X
         LDX temp
         LDA spriteY+SPR_ENEMYUPPER,X
-        CLC 
+        CLC
         ADC #$10
         LDX bulletIndex
         STA spriteY+SPR_BULLET,X
@@ -309,7 +311,7 @@ IEB_FiringRight
         ASL
         STA spriteX+SPR_BULLET,X
         LDA #$00
-        ROL 
+        ROL
         STA spriteXMSB+SPR_BULLET,X
         LDA bulletXDir,X
         CMP #$04
@@ -318,7 +320,7 @@ IEB_FiringRight
         STA spriteFrame+SPR_BULLET,X
         JMP InitBulletSpeed
 
-IEB_InitFrameLeft 
+IEB_InitFrameLeft
         LDA extraWpnLeftFrameTbl,Y
         STA spriteFrame+SPR_BULLET,X
 InitBulletSpeed
@@ -330,14 +332,14 @@ InitBulletSpeed
         BEQ InitGrenadeArc
         CPY #$05
         BEQ InitGrenadeArc
-        RTS 
+        RTS
 
 InitGrenadeArc
         LDY #$19
         TYA
         STA bulletJumpArcIndex,X
         LDA spriteY+SPR_BULLET,X
-        SEC 
+        SEC
         SBC jumpArcTbl,Y
         STA bulletBaseY,X
         LDA #$01
@@ -347,27 +349,27 @@ InitGrenadeArc
         LDX temp
         LDA #$00
         STA enemyAuxTimer,X
-        TXA 
-        PHA 
+        TXA
+        PHA
         TYA
-        PHA 
+        PHA
         JSR PlayBazookaSound
-        PLA 
-        TAY 
-        PLA 
+        PLA
+        TAY
+        PLA
         TAX
         RTS
 
 bulletXSpeedTbl
         .BYTE $04,$04,$01,$06,$02,$02,$01
 
-mortarUpperFrame1Tbl 
+mortarUpperFrame1Tbl
         .BYTE $14,$1D
 
 mortarLowerFrameTbl
         .BYTE $6E,$9B
 
-mortarUpperFrame2Tbl 
+mortarUpperFrame2Tbl
         .BYTE $2A,$79
 
 enemyDirTbl
@@ -387,12 +389,12 @@ enemyFireUpperFrTbl
 enemyFireLowerFrTbl
         .BYTE $BA,$BB,$96,$97,$31,$35
 
-throwAnimTbl 
+throwAnimTbl
         .BYTE $3F,$41
 
         ; Crawler
 
-EnemyCodeType7 
+EnemyCodeType7
         LDA enemyDying,X
         BNE ECT7_DeadOrIdle
         INC enemyCrawlTimer,X
@@ -409,7 +411,7 @@ EnemyCodeType7
         BCS ECT7_NoUpperMSB
         LDA #$00
         STA spriteXMSB+SPR_ENEMYUPPER,X
-ECT7_NoUpperMSB 
+ECT7_NoUpperMSB
         LDA spriteX+SPR_ENEMYLOWER,X
         SEC
         SBC #$01
@@ -417,30 +419,33 @@ ECT7_NoUpperMSB
         BCS ECT7_NoLowerMSB
         LDA #$00
         STA spriteXMSB+SPR_ENEMYLOWER,X
-ECT7_NoLowerMSB 
+ECT7_NoLowerMSB
         LDA #$5F
         STA spriteFrame+SPR_ENEMYUPPER,X
         LDA #$5E
         STA spriteFrame+SPR_ENEMYLOWER,X
-ECT7_Done 
+ECT7_Done
         RTS
 
-ECT7_DeadOrIdle 
+ECT7_DeadOrIdle
         LDA #$61
         STA spriteFrame+SPR_ENEMYUPPER,X
         LDA #$60
         STA spriteFrame+SPR_ENEMYLOWER,X
-        RTS 
+        RTS
+
+        ; Parachute extra sprites init and update subroutine. Enemy counters on the top platforms will be increased to
+        ; prevent enemies overloading the multiplexer, and existing enemies are made to run away.
 
 UpdateParachute
         LDA parachuteActiveFlag
         BNE UP_InitDone
         LDA platformEnemyCount+PLATFORM_TOP
-        CLC 
+        CLC
         ADC #$02
         STA platformEnemyCount+PLATFORM_TOP
         LDA platformEnemyCount+PLATFORM_MIDDLE
-        CLC 
+        CLC
         ADC #$02
         STA platformEnemyCount+PLATFORM_MIDDLE
         LDA numEnemies
@@ -450,13 +455,13 @@ UpdateParachute
         INC parachuteActiveFlag
         LDA #$00
         LDY #$04
-UP_PreventSpawnLoop 
+UP_PreventSpawnLoop
         STA spawnEnemyFlag,Y
-        DEY 
+        DEY
         BPL UP_PreventSpawnLoop
         JMP MakeEnemiesRunAway
 
-UP_InitDone 
+UP_InitDone
         LDA parachuteActiveFlag
         CMP #$02
         BEQ UP_ExtrasCreated
@@ -475,7 +480,7 @@ UP_FailCreateExtras
         STA spriteX+SPR_ENEMYLOWER,X
         RTS
 
-UP_ExtrasCreated 
+UP_ExtrasCreated
         LDX paraEnemyIndices
         LDA parachuteXSpeed
         BMI UP_NegSpeed
@@ -486,36 +491,36 @@ UP_PosSpdTargetLoop
         BCS UP_PosSpdTargetOK
         DEY
         BNE UP_PosSpdTargetLoop
-UP_PosSpdTargetOK 
+UP_PosSpdTargetOK
         LDA paraNewSpeedTbl,Y
         STA parachuteXSpeed
-UP_NegSpeed 
+UP_NegSpeed
         LDY #$03
         LDA parachuteXSpeed
         BPL UP_PosSpd
         LDA enemyCoarseX,X
         CMP #$5A
-UP_NegSpdNoTarget 
+UP_NegSpdNoTarget
         BCC UP_LoopParts
         LDA #$01
         STA parachuteYGlideFlag
         LDA #$FF
         STA parachuteXSpeed
         BMI UP_LoopParts
-UP_PosSpd 
+UP_PosSpd
         LDA #$00
         STA parachuteYGlideFlag
-UP_LoopParts 
+UP_LoopParts
         LDX paraEnemyIndices,Y
         LDA parachuteYGlideFlag
         BNE UP_MoveY
         LDA gameTimer
         AND #$03
         BNE UP_SkipYMove
-UP_MoveY 
+UP_MoveY
         INC spriteY+SPR_ENEMYUPPER,X
         INC spriteY+SPR_ENEMYLOWER,X
-UP_SkipYMove 
+UP_SkipYMove
         LDA spriteY+SPR_ENEMYUPPER,X
         CMP #$CE
         BCS CleanupParachute
@@ -523,9 +528,9 @@ UP_SkipYMove
         BNE UP_AllowLowerSprite
         LDA #$00
         STA spriteY+SPR_ENEMYLOWER,X
-UP_AllowLowerSprite 
+UP_AllowLowerSprite
         LDA spriteX+SPR_ENEMYUPPER,X
-        SEC 
+        SEC
         SBC parachuteXSpeed
         STA spriteX+SPR_ENEMYUPPER,X
         LDA parachuteXSpeed
@@ -535,13 +540,13 @@ UP_AllowLowerSprite
         STA spriteXMSB+SPR_ENEMYUPPER,X
         JMP UP_UpperMSBDone
 
-UP_UpperMSBPosSpd 
+UP_UpperMSBPosSpd
         LDA spriteXMSB+SPR_ENEMYUPPER,X
         SBC #$00
         STA spriteXMSB+SPR_ENEMYUPPER,X
-UP_UpperMSBDone 
+UP_UpperMSBDone
         LDA spriteX+SPR_ENEMYLOWER,X
-        SEC 
+        SEC
         SBC parachuteXSpeed
         STA spriteX+SPR_ENEMYLOWER,X
         LDA parachuteXSpeed
@@ -551,16 +556,19 @@ UP_UpperMSBDone
         STA spriteXMSB+SPR_ENEMYLOWER,X
         JMP UP_LowerMSBDone
 
-UP_LowerMSBPosSpd 
+UP_LowerMSBPosSpd
         LDA spriteXMSB+SPR_ENEMYLOWER,X
         SBC #$00
         STA spriteXMSB+SPR_ENEMYLOWER,X
-UP_LowerMSBDone 
+UP_LowerMSBDone
         DEY
         BPL UP_LoopParts
         RTS
 
-CleanupParachute 
+        ; Remove parachute extra sprites when killed or landed. Reduce the platform enemy counters so that enemies may 
+        ; appear again
+
+CleanupParachute
         LDA platformEnemyCount+PLATFORM_MIDDLE
         SEC
         SBC #$02
@@ -593,6 +601,8 @@ CP_Loop LDX paraEnemyIndices,Y
         STA parachuteActiveFlag
         RTS
 
+        ; Parachute extra sprite creation subroutine
+
 SpawnParachuteExtras
         STX paraEnemyIndices
         LDY #$00
@@ -613,7 +623,7 @@ SpawnParachuteExtras
         STA parachuteXSpeed
         RTS
 
-InitParachuteSprites 
+InitParachuteSprites
         LDA paraUpperYTbl,Y
         STA spriteY+SPR_ENEMYUPPER,X
         LDA paraLowerYTbl,Y
@@ -642,48 +652,48 @@ InitParachuteSprites
         STA enemyType,X
         RTS
 
-paraUpperYTbl 
+paraUpperYTbl
         .BYTE $67,$5F,$4A,$4A
 
-paraLowerYTbl 
+paraLowerYTbl
         .BYTE $7C,$4A,$4A,$5F
 
-paraUpperXTbl 
+paraUpperXTbl
         .BYTE $63,$5B,$67,$7F
 
 paraLowerXTbl
         .BYTE $63,$4F,$67,$73
 
-paraUpperFrameTbl 
+paraUpperFrameTbl
         .BYTE $84,$BF,$BD,$BE
 
-paraLowerFrameTbl 
+paraLowerFrameTbl
         .BYTE $86,$BC,$BD,$C0
 
 paraUpperColorTbl
         .BYTE $0D,$09,$08,$09
 
-paraLowerColorTbl 
+paraLowerColorTbl
         .BYTE $0D,$09,$08,$09
 
 paraTargetXTbl
         .BYTE $14,$3C,$50,$64,$80
 
-paraNewSpeedTbl 
+paraNewSpeedTbl
         .BYTE $FE,$01,$02,$03,$05
 
-paraEnemyIndices 
+paraEnemyIndices
         .BYTE $00
-paraEnemyIndex1 
+paraEnemyIndex1
         .BYTE $00
 paraEnemyIndex2
          .BYTE $00
 paraEnemyIndex3
         .BYTE $00
 
-CheckParachuteEnemy 
+CheckParachuteEnemy
         LDX #$05
-CPE_Loop 
+CPE_Loop
         LDA enemyType,X
         CMP #ENEMY_PARACHUTE
         BEQ CPE_Found
@@ -691,26 +701,26 @@ CPE_Loop
         BPL CPE_Loop
         RTS
 
-CPE_Found 
+CPE_Found
         JMP RunEnemyCustomCode
 
-MakeEnemiesRunAway 
+MakeEnemiesRunAway
         LDX #$05
-MERA_Loop 
+MERA_Loop
         LDA enemyFalling,X
         ORA enemyClimbing,X
         ORA enemyJumping,X
         BNE MERA_Skip
         LDA #$04
         STA enemyControls,X
-MERA_Skip 
+MERA_Skip
         DEX
         BPL MERA_Loop
         RTS
 
         ; Martial artist / dog handler
 
-EnemyCodeType5 
+EnemyCodeType5
         LDA enemyJumping,X
         ORA enemyFalling,X
         BNE ECT5_NoKarateJump
@@ -721,7 +731,7 @@ EnemyCodeType5
         BEQ ECT5_IsNotDogHandler
         JMP ECT5_NoKarateJump
 
-ECT5_IsNotDogHandler 
+ECT5_IsNotDogHandler
         LDA enemyCoarseX,X
         CMP playerCoarseX
         BCC ECT5_NoKarateJump
@@ -747,15 +757,15 @@ ECT5_EnemyCheckAt
         JSR UEP_InitJump
         RTS
 
-ECT5_EnemyCheckBelow 
+ECT5_EnemyCheckBelow
         LDA platformEnemyCount-1,Y
         CMP #$03
         BCS ECT5_NoKarateJump
         BCC ECT5_EnemyCheckAt
-ECT5_NoKarateJump 
+ECT5_NoKarateJump
         RTS
 
-ECT5_KarateJumpOK 
+ECT5_KarateJumpOK
         CPY playerPlatformHeight
         BNE ECT5_NoKarateJump
         LDA enemyControls,X
@@ -763,4 +773,4 @@ ECT5_KarateJumpOK
         STA enemyControls,X
         LDA #$00
         STA enemyFalling,X
-        RTS 
+        RTS
