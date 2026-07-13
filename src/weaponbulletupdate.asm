@@ -43,9 +43,9 @@ UpdateBullets
     .endif
 
         BNE UB_ShotsNotExhausted
-        LDA #$00
+        LDA #WEAPON_NONE
         STA activeExtraWeapon
-UB_ShotsNotExhausted 
+UB_ShotsNotExhausted
         JSR FormatWeaponShots
 UB_NoFireExtraWeapon 
         JSR ScrollBullets
@@ -110,7 +110,7 @@ CGHE_Loop
 CGHE_Next 
         DEY
         BPL CGHE_Loop
-        RTS 
+        RTS
 
 CGHE_IsBazooka 
         LDX #$05
@@ -390,10 +390,10 @@ EG_NotExplodedYet
 EG_IsEnemyGrenade 
         RTS
 
-CheckBulletExploded 
+CheckBulletExploded
         LDA bulletExploded,X
         BNE UpdateExplosion
-        RTS 
+        RTS
 
 UpdateExplosion
         DEC bulletTimer,X
@@ -471,7 +471,7 @@ CGAK_BoundsFail
         CLC
         RTS
 
-UpdateFlameThrower 
+UpdateFlameThrower
         LDA flameDetachedTimer
         BEQ UFT_NotDetached
         RTS
@@ -494,30 +494,30 @@ UFT_FlamePieceActive
         ADC #$05
         JMP UFT_StoreY
 
-UFT_PlayerStanding 
+UFT_PlayerStanding
         LDA spriteY
-        CLC 
+        CLC
         ADC #$0A
 UFT_StoreY
         STA spriteY+SPR_BULLET,X
-        DEX 
+        DEX
         BPL UFT_FlameLoop
         LDA bulletCoarseX
         SEC
         SBC bulletCoarseX+2
         BMI UFT_NegXDistance
-UFT_XDistanceCheck 
+UFT_XDistanceCheck
         CMP #$14
         BCS UFT_FlameWasDetached
         RTS
 
-UFT_NegXDistance 
+UFT_NegXDistance
         EOR #$FF
-        CLC 
+        CLC
         ADC #$01
         JMP UFT_XDistanceCheck
 
-UFT_FlameWasDetached 
+UFT_FlameWasDetached
         LDA #$08
         STA bulletXSpeed+2
         LDA #$07
@@ -527,7 +527,7 @@ UFT_FlameWasDetached
         STA flameDetachedTimer
         RTS
 
-CheckRemoveBullets 
+CheckRemoveBullets
         LDX #$05
 CRB_Loop LDA bulletActive,X
         BEQ CRB_Next
@@ -536,11 +536,11 @@ CRB_Loop LDA bulletActive,X
         BCS CRB_Remove
         CMP #$08
         BCC CRB_Remove
-CRB_Next DEX 
+CRB_Next DEX
         BPL CRB_Loop
         RTS
 
-CRB_Remove 
+CRB_Remove
         LDA #$00
         STA bulletActive,X
         STA spriteY+SPR_BULLET,X
@@ -550,7 +550,7 @@ CRB_Remove
         BEQ CRB_RemoveFlame
         JMP CRB_Next
 
-CRB_RemoveFlame 
+CRB_RemoveFlame
         CPX #$03
         BCS CRB_Next
         LDA #$08
@@ -559,40 +559,40 @@ CRB_RemoveFlame
         STA bulletXSpeed
         JMP CRB_Next
 
-FindFreeBullet 
+FindFreeBullet
         LDX #$02
-FFB_Loop 
+FFB_Loop
         LDA bulletActive,X
         BEQ FFB_Found
         DEX
         BPL FFB_Loop
-        SEC 
-        RTS 
+        SEC
+        RTS
 
-FFB_Found 
+FFB_Found
         CLC
         RTS
 
 FireExtraWeapon
         LDY collectedExtraWeapon
-        DEY 
+        DEY
         CPY #$03
         BNE FEW_OKTOFire
         CPX #$02
         BEQ FEW_OKTOFire
         RTS
 
-FEW_OKTOFire 
+FEW_OKTOFire
         LDA playerFacingDir
-        PHA 
+        PHA
         AND #$04
         BEQ FEW_FireRight
         LDA #$E0
         CLC
-FEW_FireRight 
+FEW_FireRight
         ADC #$10
         STA bulletOffset
-        PLA 
+        PLA
         STA bulletXDir,X
         LDA extraWpnColorTbl,Y
         STA spriteColor+SPR_BULLET,X
@@ -601,7 +601,7 @@ FEW_FireRight
         ADC #$0A
         STA spriteY+SPR_BULLET,X
         LDA spriteX
-        CLC 
+        CLC
         ADC bulletOffset
         STA spriteX+SPR_BULLET,X
         LDA #$00
@@ -614,10 +614,10 @@ FEW_FireRight
         STA spriteFrame+SPR_BULLET,X
         JMP FEW_InitCommon
 
-FEW_UseLeftFrame 
+FEW_UseLeftFrame
         LDA extraWpnLeftFrameTbl,Y
         STA spriteFrame+SPR_BULLET,X
-FEW_InitCommon 
+FEW_InitCommon
         LDA extraWpnSpeedTbl,Y
         STA bulletXSpeed,X
         LDA #$01
@@ -628,19 +628,19 @@ FEW_InitCommon
         BEQ FEW_InitGrenade
         RTS
 
-FEW_InitGrenade 
+FEW_InitGrenade
         LDY #$12
-        TYA 
+        TYA
         STA bulletJumpArcIndex,X
         LDA spriteY+SPR_BULLET,X
-        SEC 
+        SEC
         SBC jumpArcTbl,Y
         STA bulletBaseY,X
         LDA #$01
         STA bulletYDir,X
-        RTS 
+        RTS
 
-FEW_InitFlame 
+FEW_InitFlame
         DEX
 FEW_FlamePieceLoop
         LDA playerFacingDir
@@ -667,7 +667,7 @@ FEW_InitFlameRight
         STA spriteXMSB+SPR_BULLET,X
 FEW_InitFlameCommon
         LDA spriteFrame+SPR_BULLET+1,X
-        CLC 
+        CLC
         ADC #$01
         STA spriteFrame+SPR_BULLET,X
         LDA bulletXSpeed+1,X
@@ -765,18 +765,18 @@ EnemyGrenadeArc
         STA bulletYDir,X
         RTS
 
-EGA_DecSpeed 
+EGA_DecSpeed
         DEY
         BPL EGA_StoreNewSpeed
         LDA #$80
         STA bulletYDir,X
         INY
-EGA_StoreNewSpeed 
+EGA_StoreNewSpeed
         TYA
         STA bulletJumpArcIndex,X
-        RTS 
+        RTS
 
-extraWpnColorTbl 
+extraWpnColorTbl
         .BYTE $07,$0F,$05,$07,$05,$07
 
 extraWpnSpeedTbl

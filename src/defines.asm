@@ -69,6 +69,14 @@ PLATFORM_GROUND  = 0
 PLATFORM_MIDDLE = 1
 PLATFORM_TOP = 2
 
+        ; Player extra weapons
+
+WEAPON_NONE = 0
+WEAPON_UNUSED = 1
+WEAPON_BAZOOKA = 2
+WEAPON_GRENADE = 3
+WEAPON_FLAMETHROWER = 4
+
         ; Zeropage variables
 
 irqCounter = $02

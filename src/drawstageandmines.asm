@@ -202,7 +202,7 @@ CDM_BulletActive
         LDA spriteY+SPR_BULLET,X
         CMP #$DE
         BCC CDM_Next
-        CPY #$03
+        CPY #WEAPON_GRENADE
         BEQ CDM_GrenadeAreaDestroy
         LDA bulletCoarseX,X
         SEC
