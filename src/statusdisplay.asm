@@ -1,4 +1,4 @@
-        ; Format game state information for showing on the top of the screen status display. Score accumulation is also
+        ; Format game state information and print to the top of the screen status display. Score accumulation is also
         ; handled here. The data for the prison wall background is also contained here before the status screen memory
         ; and before other code.
 
@@ -7,18 +7,22 @@
 wpnShotColors
          .BYTE $00,$00,$09,$09,$0D,$0D,$0F,$0F
 
-FormatLives 
+        ; Print the lives counter. Zero lives are shown as a blank character. Called from the main loop.
+
+FormatLives
         LDA lives
         BEQ FL_ZeroLives
         CLC
         ADC #$30
         .BYTE $2C
-FL_ZeroLives 
+FL_ZeroLives
         LDA #$20
         STA statusScreen+$8
-        RTS 
+        RTS
 
-FormatScore 
+        ; Print the BCD format score counter. Called from the main loop.
+
+FormatScore
         LDX #$02
         LDY #$00
 FS_Loop LDA score,X
@@ -40,9 +44,11 @@ FS_Loop LDA score,X
         BPL FS_Loop
         LDA #$30
         STA statusScreen+$033,Y
-        RTS 
+        RTS
 
-FormatHighScore 
+        ; Print the BCD format high score. Called from the main loop.
+
+FormatHighScore
         LDX #$02
         LDY #$00
 FHS_Loop    
@@ -67,7 +73,9 @@ FHS_Loop
         STA statusScreen+$03D,Y
         RTS 
 
-AddAccumulatedScore 
+        ; Add accumulated enemy kill score to the player's score, using BCD arithmetics. Called from the main loop.
+
+AddAccumulatedScore
         SED
         LDA scoreAdd
         CLC 
@@ -86,9 +94,11 @@ AddAccumulatedScore
         CLD
         RTS
 
-CheckNewHighScore 
+        ; Check for reaching a new high score. Called from the main loop.
+        
+CheckNewHighScore
         LDX #$02
-CNHS_CheckLoop 
+CNHS_CheckLoop
         LDA score,X
         CMP highScore,X
         BCC CNHS_Done

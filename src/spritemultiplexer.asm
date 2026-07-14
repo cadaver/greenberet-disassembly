@@ -1,15 +1,14 @@
-        ; Copy sprites from the main program for use by the sprite multiplexer, followed by the actual multiplexer IRQ
-        ; handler code, which sets hardware sprite values in a top-to-bottom sort order. The handler chains into more
-        ; IRQs until all sprites have been displayed.
+        ; Copy sprites from the main program for use by the sprite multiplexer IRQs. Called from the main loop.
+
+CopySpritesToIrq
+        LDA sortSprNumReorders
+        BEQ CSTI_NoNewOrder
 
         ; If the sprite order is unchanged, it will not be copied again. Note also that sprite colors and frames are
         ; not double-buffered similarly as positions, therefore the main program could theoretically update them again
         ; while the IRQs use them for displaying, leading into the new animation frames and colors becoming visible one
         ; frame too early.
 
-CopySpritesToIrq
-        LDA sortSprNumReorders
-        BEQ CSTI_NoNewOrder
         LDX #$14
 CSTI_WithOrderLoop
         LDA spriteY,X
@@ -24,18 +23,21 @@ CSTI_WithOrderLoop
         BPL CSTI_WithOrderLoop
         RTS
 
-CSTI_NoNewOrder 
+CSTI_NoNewOrder
         LDX #$14
-CSTI_NoNewOrderLoop 
+CSTI_NoNewOrderLoop
         LDA spriteY,X
         STA irqSpriteY,X
         LDA spriteX,X
         STA irqSpriteX,X
         LDA spriteXMSB,X
         STA irqSpriteXMSB,X
-        DEX 
+        DEX
         BPL CSTI_NoNewOrderLoop
         RTS
+
+        ; Multiplexer IRQ handler code. Sets hardware sprite values in a top-to-bottom sort order. The handler chains
+        ; into more IRQs until all sprites have been displayed.
 
 SpriteDisplayIrq 
         LDA sprIrqYCheck

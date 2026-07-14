@@ -69,7 +69,7 @@ truckFrameTbl
 truckColorTbl
         .BYTE $0B,$0B,$09,$0B,$09,$09,$0B,$09,$09
 
-TA_MoveTruck 
+TA_MoveTruck
         JSR TA_AnimateTruck
         LDA spriteX+SPR_ENEMYUPPER
         CLC
@@ -82,7 +82,7 @@ TA_MoveTruck
         STA spriteXMSB+SPR_ENEMYUPPER
         STA spriteXMSB+SPR_ENEMYUPPER+3
         STA spriteXMSB+SPR_ENEMYLOWER
-TA_NoMSB 
+TA_NoMSB
         LDA enemyCoarseX
         CMP #$0A
         BCC TA_Done
@@ -97,7 +97,7 @@ TA_NoMSB
         STA spriteXMSB+SPR_ENEMYUPPER+1
         STA spriteXMSB+SPR_ENEMYUPPER+4
         STA spriteXMSB+SPR_ENEMYLOWER+1
-TA_NoMSB2 
+TA_NoMSB2
         LDA dogCoarseX
         CMP #$0A
         BCC TA_Done
@@ -112,7 +112,7 @@ TA_NoMSB2
         STA spriteXMSB+SPR_ENEMYUPPER+2
         STA spriteXMSB+SPR_ENEMYUPPER+5
         STA spriteXMSB+SPR_ENEMYLOWER+2
-TA_NoMSB3 
+TA_NoMSB3
         LDA truckCoarseX
         CMP #$32
         BCC TA_Done
@@ -128,28 +128,30 @@ TA_NoMSB3
         STA platformEnemyCount
         LDA #$00
         LDY #$08
-TA_RemoveTruckLoop 
+TA_RemoveTruckLoop
         STA spriteY+SPR_ENEMYUPPER,Y
         DEY
         BPL TA_RemoveTruckLoop
 TA_Done RTS
 
-TA_UseSpeed4 
+TA_UseSpeed4
         LDA #$04
         STA firstStageEndCounter
-        RTS 
+        RTS
 
-TA_UseSpeed3 
+TA_UseSpeed3
         LDA #$03
         STA firstStageEndCounter
         RTS
 
-TA_UseSpeed2 
+TA_UseSpeed2
         LDA #$02
         STA firstStageEndCounter
         RTS
 
-UpdateEnemyTimers 
+        ; Update enemy waiting timers. Called from the main loop.
+
+UpdateEnemyTimers
         LDX #$05
 UET_Loop
         LDA enemyTimerActive,X
@@ -163,7 +165,7 @@ UET_Loop
         LDY enemyPlatformHeight,X
         LDA platformYTbl,Y
         STA spriteY+SPR_ENEMYUPPER,X
-        CLC 
+        CLC
         ADC #$15
         STA spriteY+SPR_ENEMYLOWER,X
         LDA spriteX+SPR_ENEMYUPPER,X
@@ -172,7 +174,7 @@ UET_Loop
         STA spriteXMSB+SPR_ENEMYLOWER,X
         LDA #$03
         STA enemyLastControls,X
-UET_Next 
+UET_Next
         DEX
         BPL UET_Loop
         RTS

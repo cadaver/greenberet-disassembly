@@ -4,6 +4,8 @@
         ; enemy jumps all use a lookup table for the vertical motion arc instead of affecting speed by gravity and
         ; then adding to position.
 
+        ; Flash all bullets yellow and red. Called from the end of UpdateBullets.
+
 FlashBullets
         LDA gameTimer
         AND #$04
@@ -20,9 +22,11 @@ FB_Loop STA spriteColor+SPR_BULLET,X
 colorFlashTbl
         .BYTE $07,$02
 
+        ; Call several bullet- and extra weapon-related subroutines. Called from the main loop.
+
 UpdateBullets
         JSR CheckRemoveBullets
-        JSR CheckGrenadeHitEnemy
+        JSR CheckBulletHitEnemy
         JSR CheckDestroyMines
         JSR CheckFireExtraWeapon
         BEQ UB_NoFireExtraWeapon
@@ -70,7 +74,7 @@ UB_XMoveNext
         STA spriteY+SPR_BULLET+1
         LDA #$06
         STA bulletXSpeed+2
-UB_NoFlameThrower 
+UB_NoFlameThrower
         JSR FlashBullets
         RTS 
 
@@ -96,36 +100,39 @@ UB_XMoveLeft
         BCS UB_NoMSBClear
         LDA #$00
         STA spriteXMSB+SPR_BULLET,X
-UB_NoMSBClear 
+UB_NoMSBClear
         JMP UB_XMoveNext
 
-CheckGrenadeHitEnemy
+        ; Check player bullets other than grenades hitting enemies. Grenades explode on ground and cause area damage
+        ; instead.
+
+CheckBulletHitEnemy
         LDY #$02
-CGHE_Loop 
+CBHE_Loop
         LDA bulletActive,Y
-        BEQ CGHE_Next
+        BEQ CBHE_Next
         LDA collectedExtraWeapon
-        CMP #$03
-        BNE CGHE_IsBazooka
-CGHE_Next 
+        CMP #WEAPON_GRENADE
+        BNE CBHE_NotGrenade
+CBHE_Next
         DEY
-        BPL CGHE_Loop
+        BPL CBHE_Loop
         RTS
 
-CGHE_IsBazooka 
+CBHE_NotGrenade
         LDX #$05
         STY temp2
-CGHE_EnemyLoop 
+CBHE_EnemyLoop
         LDA enemyActive,X
-        BNE CGHE_EnemyActive
+        BNE CBHE_EnemyActive
         LDA stage
         CMP #$01
-        BNE CGHE_NextEnemy
+        BNE CBHE_NextEnemy
         CPX #$04
-        BCS CGHE_NextEnemy
+        BCS CBHE_NextEnemy
         LDA dogActive-1,X ; Use standard enemy indexing, dog update code offsets by one
-        BEQ CGHE_NextEnemy
-CGHE_EnemyActive 
+        BEQ CBHE_NextEnemy
+CBHE_EnemyActive
         LDA enemyType,X
         CMP #ENEMY_PARACHUTE
         BNE CHGE_EnemyOK
@@ -133,18 +140,18 @@ CGHE_EnemyActive
         BNE CHGE_CheckGyroHit
         CPX paraEnemyIndices
         BEQ CHGE_EnemyOK
-CGHE_NextEnemy 
+CBHE_NextEnemy
         LDY temp2
         DEX
-        BPL CGHE_EnemyLoop
-        JMP CGHE_Next
+        BPL CBHE_EnemyLoop
+        JMP CBHE_Next
 
 CHGE_CheckGyroHit
         CPX #$01
         BEQ CHGE_EnemyOK
         CPX #$04
         BEQ CHGE_EnemyOK
-        JMP CGHE_NextEnemy
+        JMP CBHE_NextEnemy
 
 CHGE_EnemyOK
         LDA spriteY+SPR_BULLET,Y
@@ -154,7 +161,7 @@ CHGE_EnemyOK
         LDA bulletCoarseX,Y
         STA playerHitCheckX
         LDA enemyDying,X
-        BNE CGHE_NextEnemy
+        BNE CBHE_NextEnemy
         LDY enemyRunAnimFrame,X
         LDA enemyCoarseX,X
         CLC
@@ -166,56 +173,58 @@ CHGE_EnemyOK
         STA enemyTouchBoundLow
         LDA playerHitCheckX
         CMP enemyTouchBoundHigh
-        BCS CGHE_Done
+        BCS CBHE_Done
         CMP enemyTouchBoundLow
-        BCC CGHE_Done
+        BCC CBHE_Done
         LDA spriteY+SPR_ENEMYUPPER,X
         CLC
         ADC #$10
         STA enemyTouchBoundHigh
         LDA spriteY+SPR_ENEMYUPPER,X
-        SEC 
+        SEC
         SBC #$10
         STA enemyTouchBoundLow
         LDA playerHitCheckY
         CMP enemyTouchBoundHigh
-        BCS CGHE_Done
+        BCS CBHE_Done
         CMP enemyTouchBoundLow
-        BCC CGHE_Done
+        BCC CBHE_Done
         LDA enemyActive,X
-        BNE CGHE_IsHumanEnemy
+        BNE CBHE_IsHumanEnemy
         LDA #$80
         STA dogHit-1,X ; Use standard enemy indexing, dog update code offsets by one
-        JMP CGHE_SkipEnemyHit
+        JMP CBHE_SkipEnemyHit
 
-CGHE_IsHumanEnemy 
+CBHE_IsHumanEnemy
         LDA #$80
         STA enemyHit,X
-CGHE_SkipEnemyHit 
+CBHE_SkipEnemyHit
         STX temp
         STY tempStoreY2
         LDA enemyType,X
         CMP #ENEMY_PARACHUTE
-        BNE CGHE_NoParachuteHit
+        BNE CBHE_NoParachuteHit
         LDA numAliveGyros
-        BNE CGHE_NoParachuteHit
+        BNE CBHE_NoParachuteHit
         JSR CleanupParachute
         JSR PlayEnemyKillSound
-CGHE_NoParachuteHit
+CBHE_NoParachuteHit
         LDX temp
         LDY tempStoreY2
         LDA numAliveGyros
-        BEQ CGHE_Done
+        BEQ CBHE_Done
         STX temp
         LDX temp2
         JSR ExplodeGrenade
         LDX temp
         JSR DestroyGyrocopter
         LDX temp
-CGHE_Done 
-        JMP CGHE_NextEnemy
+CBHE_Done
+        JMP CBHE_NextEnemy
 
-CheckFireExtraWeapon 
+        ; Check for firing the player's extra weapon.
+
+CheckFireExtraWeapon
         LDA collectedExtraWeapon
         BEQ CFEW_NoFire
         LDX playerClimbingCopy
@@ -232,11 +241,13 @@ CheckFireExtraWeapon
 CFEW_NoFire
         RTS
 
-CFEW_IsClimbing 
+CFEW_IsClimbing
         LDA #$00
         RTS
 
-UpdateExtraWeapon 
+        ; Update player's bullet behavior based on the currently active extra weapon.
+        
+UpdateExtraWeapon
         LDY collectedExtraWeapon
         BEQ UEW_NoWeapon
         DEY
@@ -252,10 +263,10 @@ extraWeaponJumpHi   =*+$02
 UEW_Jump JMP UEW_Jump
 
 extraWeaponJumpTblHi   =*+$01
-extraWeaponJumpTblLo 
+extraWeaponJumpTblLo
         .WORD UpdateUnusedWeapon, UpdateBazooka, UpdateGrenade, UpdateFlameThrower
 
-UEW_NoWeapon 
+UEW_NoWeapon
         RTS
 
 UpdateUnusedWeapon
@@ -680,6 +691,8 @@ FEW_InitFlameCommon
         BPL FEW_FlamePieceLoop
         JMP PlayFlameSound
 
+        ; Run type-specific update code for enemy bullets. Called from the main loop.
+
 RunEnemyBulletCode
         LDX #$05
 REBC_Loop
@@ -709,6 +722,8 @@ bulletCodeJumpTblHi   =*+$01
 bulletCodeJumpTblLo
         .WORD BulletCodeType0,BulletCodeType1,BulletCodeType2,BulletCodeType3,BulletCodeType0,BulletCodeType6,BulletCodeType6,BulletCodeType7
 
+        ; Fighter jet bomb, follows player
+
 BulletCodeType7
         CPX fighterJetIndex
         BEQ BulletCodeType0
@@ -723,6 +738,8 @@ BulletCodeType7
         STA spriteX+SPR_BULLET,X
         PLA
         JMP BCT6_CheckY
+
+        ; Parachutist's dropped projectile
 
 BulletCodeType6 LDA spriteY+SPR_BULLET,X
         CLC
@@ -743,6 +760,8 @@ BulletCodeType0 RTS
 BulletCodeType1 RTS
 
 BulletCodeType3 RTS
+
+        ; Enemy grenade
 
 BulletCodeType2
         LDA bulletYDir,X

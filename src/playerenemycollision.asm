@@ -166,10 +166,10 @@ CKC_DogBoundsHit
 CKC_DogBoundsDone 
         RTS
 
-        ; Check for active and alive enemies touching the player fatally. Gyrocopters are not fatal to touch.
-        ; The KillPlayer routine will also be called from enemy bullet collision. Note that it halts the main loop
-        ; immediately, plays the death jingle and goes to InitNextLife which waits for it to end and then restarts
-        ; if there are lives remaining.
+        ; Check for active and alive enemies touching the player fatally, called from the main loop. Gyrocopters are not
+        ; fatal to touch. The KillPlayer routine will also be called from enemy bullet collision. Note that it halts the
+        ; main loop immediately, plays the death jingle and goes to InitNextLife which waits for it to end and then 
+        ; restarts if there are lives remaining.
 
 CheckEnemyToPlayer
         LDX #$05

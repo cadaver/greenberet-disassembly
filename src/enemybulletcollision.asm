@@ -110,14 +110,16 @@ victoryText
         .BYTE $02,$2F,$02,$2F,$02,$32,$02,$2F,$03,$28,$04,$28,$08,$28,$03,$28
         .BYTE $02,$28,$02,$28,$02,$88,$10,$C4,$66,$FD
 
+        ; Check for player reaching the score for next extra life. Called from the main loop.
+
 CheckNextExtraLife LDX #$02
 CNEL_Loop LDA score,X
         CMP nextExtraLifeScore,X
         BCC CNEL_NoNext
         BNE CNEL_HasNext
-        DEX 
+        DEX
         BPL CNEL_Loop
-CNEL_HasNext SED 
+CNEL_HasNext SED
         LDA #$70
         CLC
         ADC nextExtraLifeScore+1

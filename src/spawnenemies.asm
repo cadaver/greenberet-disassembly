@@ -4,6 +4,8 @@
         ; allowed on each level. The spawn routines also check the screen chars under the spawn positions to avoid
         ; spawning enemies mid-air.
 
+        ; Set next enemy "spawn slot" active. Called from the main loop.
+
 SetEnemyToSpawn
         LDX #$04
 SETS_Loop
@@ -55,7 +57,9 @@ enemySpawnDirTbl
         .BYTE $04,$04,$08,$04,$04,$04,$08,$04,$04,$08,$04,$04,$08,$08,$04,$08
         .BYTE $04,$08,$04,$08
 
-TrySpawnStaticEnemy 
+        ; Try to spawn a pre-placed enemy. Called from the main loop.
+
+TrySpawnStaticEnemy
         JSR FindNextStaticEnemy
         LDA numEnemies
         CMP #$06
@@ -272,6 +276,8 @@ staticLowerXOffset
 staticEnemyIndex
         .BYTE $00
 
+        ; Try to spawn a random enemy to the screen edges during the stage. Called from the main loop.
+        
 TrySpawnEnemy
         JSR FindNextSpawnType
         BCC TSE_Fail

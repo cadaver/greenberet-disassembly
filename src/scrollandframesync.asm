@@ -1,5 +1,6 @@
-        ; Scrolling routine. Scrolling is called when the player is at the motion limit on the screen right side.
-        ; Reaching the stage end and activating the warning siren is also checked here.
+        ; Check for scrolling the screen. Called from the main loop. If player is running right while at the right edge
+        ; motion limit, the screen needs to scroll. routine. Reaching the stage end and activating the warning siren is 
+        ; also checked here.
 
 CheckScroll
         LDY stage
@@ -63,6 +64,12 @@ CS_WarningSiren
         STA stageEndReached
 CS_WarningSirenDone
         RTS
+
+        ; Scroll the screen when necessary. Called from the main loop. Note that the screen is not double-buffered, but
+        ; instead the screen shift is split in upper and lower parts, while "racing the raster." The color RAM is also
+        ; scrolled at the same time, but not every color RAM row is updated, only those which have changing content.
+        ; Finally the "new column draw" flag is set, so that new stage data is drawn to the right edge column on the
+        ; next frame.
 
 ScrollScreen
         LDA screenShiftFlag
@@ -184,7 +191,7 @@ statusPanelText
         .BYTE $54,$41,$47,$45,$20,$31,$20,$FF
 
         ; Update the music part of the playroutine and wait for the IRQ handler to be ready with the previous frame
-        ; update, after which a new frame can be triggered.
+        ; update, after which a new frame can be triggered. Called from the main loop.
 
 UpdateMusicWaitFrame
         JSR UpdateMusicChannel3

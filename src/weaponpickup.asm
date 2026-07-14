@@ -1,6 +1,6 @@
-        ; Handle moving and collecting the weapon pickup. When collected, it will give the player the associated extra
-        ; weapon and initialize the shot counter. When the screen scrolls, the pickup sprite is moved manually along
-        ; with the scrolling, as otherwise it would appear to float in place.
+        ; Handle moving and collecting the weapon pickup. Called from the main loop. When collected, it will give the
+        ; player the associated extra weapon and initialize the shot counter. When the screen scrolls, the pickup 
+        ; sprite is moved manually along with the scrolling, as otherwise it would appear to float in place.
 
 UpdateWeaponPickup
         LDA weaponPickupType

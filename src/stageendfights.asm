@@ -1,7 +1,7 @@
-        ; Handling of the stage-specific end fights using a jump table. Each of them calls CompleteStage when the fight
-        ; is over (typically, all enemies to spawn are exhausted.) The third stage completion has a stack leak bug which
-        ; causes sprite corruption after completing the game several times. See defines.asm for the define that enables
-        ; the fix.
+        ; Handling of the stage-specific end fights using a jump table. Called from the main loop.
+        ; Each of them calls CompleteStage when the fight is over (typically, all enemies to spawn are exhausted.) The
+        ; third stage completion has a stack leak bug which causes sprite corruption after completing the game several 
+        ; times. See defines.asm for the define that enables the fix.
 
 UpdateStageEndFight
         LDA stage
@@ -16,6 +16,8 @@ UpdateStageEndFight
 stageEndJumpTblHi   =*+$01
 stageEndJumpTblLo 
         .WORD Stage1EndFight-1,Stage2EndFight-1,Stage3EndFight-1,Stage4EndFight-1
+
+        ; Stage 4. Spawned enemies from both left and right.
 
 Stage4EndFight
         JSR Stage4NextEnemy
@@ -66,6 +68,8 @@ S4NE_Done
 
 finaleSpawnTypeTbl
         .BYTE ENEMY_PRISONGUARD,ENEMY_BAZOOKA,ENEMY_MARTIALARTIST,ENEMY_GRENADIER
+
+        ; Stage 2. Dog handlers and waves of 3 dogs from both left and right.
 
 Stage2EndFight
         JSR InitDogFight
@@ -295,14 +299,14 @@ MD_Loop LDA dogActive,X
         BNE MD_IsActive
 MD_Next DEX
         BPL MD_Loop
-        RTS 
+        RTS
 
 MD_IsActive
         LDA dogDir,X
         CMP #$04
         BEQ MD_MoveLeft
         LDA spriteX+SPR_ENEMYDOG,X
-        CLC 
+        CLC
         ADC #$04
         STA spriteX+SPR_ENEMYDOG,X
         LDA spriteXMSB+SPR_ENEMYDOG,X
@@ -316,7 +320,7 @@ MD_RightNoMSB
         JSR DogJump
         JMP MD_Next
 
-MD_MoveLeft 
+MD_MoveLeft
         LDA spriteX+SPR_ENEMYDOG,X
         SEC
         SBC #$04
@@ -332,10 +336,10 @@ MD_LeftHasMSB
         LDA dogJumping,X
         BEQ MD_NextJump
         JSR DJ_AlreadyJumping
-MD_NextJump 
+MD_NextJump
         JMP MD_Next
 
-MD_RemoveOffScreen 
+MD_RemoveOffScreen
         LDA #$00
         STA dogActive,X
         STA dogJumping,X
@@ -348,32 +352,32 @@ MD_RemoveOffScreen
         STA dogCoarseX,X
         JMP MD_Next
 
-SpawnNewDogs 
+SpawnNewDogs
         LDA endFightEnemiesLeft
         BPL SND_HasDogsLeft
-        RTS 
+        RTS
 
-SND_HasDogsLeft 
+SND_HasDogsLeft
         LDA dogSpawnTimer
         BEQ SpawnNewDog
         DEC dogSpawnTimer
         RTS
 
-SpawnNewDog 
+SpawnNewDog
         LDY endFightEnemiesLeft
         LDA dogSpawnDirTbl,Y
         STA staticEnemyType
         LDA dogSpawnColorTbl,Y
         STA staticInitFlags
         LDX #$02
-SND_FindFreeLoop 
+SND_FindFreeLoop
         LDA dogActive,X
         BEQ SND_FoundFree
         DEX
         BPL SND_FindFreeLoop
         RTS
 
-SND_FoundFree 
+SND_FoundFree
         DEY
         STY endFightEnemiesLeft
         LDA dogSpawnDelayTbl,Y
@@ -402,7 +406,7 @@ SND_Common
         JSR PlayDogBarkSound
         RTS
 
-SND_SpawnOnLeft 
+SND_SpawnOnLeft
         LDA #$00
         STA spriteXMSB+SPR_ENEMYDOG,X
         LDA #$10
@@ -429,28 +433,28 @@ DJ_SetFrameAndInit
         SEC
         SBC jumpArcTbl,Y
         STA dogBaseY,X
-        TYA 
+        TYA
         STA dogJumpArcIndex,X
-DJ_AlreadyJumping 
+DJ_AlreadyJumping
         LDY dogJumpArcIndex,X
         LDA dogBaseY,X
-        CLC 
+        CLC
         ADC jumpArcTbl,Y
         STA spriteY+SPR_ENEMYDOG,X
         LDA dogJumping,X
         BPL DJ_Fall
         INY
-        TYA 
+        TYA
         STA dogJumpArcIndex,X
         CPY #$12
         BNE DJ_FallDone
         LDA #$00
         STA dogJumping,X
-DJ_FallDone 
+DJ_FallDone
         RTS
 
 DJ_Fall DEY
-        TYA 
+        TYA
         STA dogJumpArcIndex,X
         BPL DJ_FallDone
         LDA #$80
@@ -458,7 +462,7 @@ DJ_Fall DEY
         INC dogJumpArcIndex,X
         RTS
 
-CheckDogJumpDistance 
+CheckDogJumpDistance
         LDA dogCoarseX,X
         CMP playerCoarseX
         BCS DJ_Done
@@ -476,15 +480,17 @@ dogSpawnDelayTbl
         .BYTE $14,$14,$19,$14,$14,$19,$14,$14,$19,$14,$14,$19,$14,$14,$19,$14
         .BYTE $14,$19
 
-dogSpawnDirTbl 
+dogSpawnDirTbl
         .BYTE $04,$04,$04,$08,$08,$08,$04,$04,$04,$08,$08,$08,$04,$04,$04,$08
         .BYTE $08,$08
 
-dogSpawnColorTbl 
+dogSpawnColorTbl
         .BYTE $09,$09,$09,$08,$08,$08,$09,$09,$09,$08,$08,$08,$09,$09,$09,$08
         .BYTE $08,$08
 
-StageEndFightCalls 
+        ; Common subroutine calls during end fights.
+
+StageEndFightCalls
         JSR SetCoarseXCoords
         JSR PlayerWorldCollision
         JSR CheckEnemiesRunAway
@@ -494,12 +500,12 @@ StageEndFightCalls
         JSR UpdateBullets
         JMP UpdateExtraWeapon
 
-AnimateEnemiesOnly 
+AnimateEnemiesOnly
         JSR AnimateEnemies
         JSR EnemyWorldCollision
         JMP UpdateEnemies
 
-Stage3EndFightCalls 
+Stage3EndFightCalls
         JSR SetCoarseXCoords
         JSR PlayerWorldCollision
         JSR CheckEnemiesRunAway
@@ -511,7 +517,9 @@ Stage3EndFightCalls
 a1020   =*+$02
         JMP UpdateExtraWeapon
 
-Stage3EndFight 
+         ; Stage 3. Three gyrocopters, with 2 active at the same time.
+
+Stage3EndFight
         JSR SpawnGyrocopters
         LDA stageEndReached
         BEQ S3EF_WaitForStart
@@ -1046,12 +1054,15 @@ gyroYInitTbl .BYTE $46,$46
 S1EF_WaitBegin 
         JMP Main_NoStageEndFight
 
-Stage1EndFight 
+        ; Stage 1. An indestructible truck which drives past the screen right edge, after which waves of enemies are
+        ; spawned from the right.
+
+Stage1EndFight
         LDA stageEndReached
         BNE S1EF_Started
         JSR CheckEnemiesOnScreen
         BPL S1EF_WaitBegin
-S1EF_Started 
+S1EF_Started
         JSR TruckAnimation
         JSR StageEndFightCalls
         LDA stageEndReached
@@ -1066,11 +1077,13 @@ S1EF_Started
         JSR WaitSongToEnd
         JMP CompleteStage
 
-S1EF_NotFinished 
+S1EF_NotFinished
         JSR SortSprites
         JMP MainLoop
 
-CheckStartEndFight 
+        ; Check for starting the end fight. Called from the main loop.
+        
+CheckStartEndFight
         LDA playerRightLimit
         CMP #$E0
         BNE CSEF_Fail

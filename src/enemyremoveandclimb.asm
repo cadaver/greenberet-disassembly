@@ -1,4 +1,4 @@
-        ; Handle enemies running away from the screen and being removed from the game, and enemy climbing logic.
+        ; Handle enemies running away from the screen and being removed from the game. Called from the main loop.
 
 CheckEnemiesRunAway
         LDX #$05
@@ -32,7 +32,9 @@ CERA_CheckLeft
         JSR RemoveEnemy
         JMP CERA_NoRemove
 
-RemoveEnemy 
+        ; Enemy removal subroutine.
+
+RemoveEnemy
         LDA #$00
         STA spriteY+SPR_ENEMYUPPER,X
         STA spriteY+SPR_ENEMYLOWER,X
@@ -81,6 +83,8 @@ RE_NotJumping
         LDA #PLATFORM_GROUND
         STA enemyJumpPlatformHeight,X
 RE_Done RTS
+
+        ; Update enemy climbing. Called from the end of the enemy update routine.
 
 UpdateEnemyClimb
         LDA enemyControls,X

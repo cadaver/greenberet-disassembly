@@ -1,5 +1,5 @@
         ; IRQ initialization and the main IRQ handler, which jumps off to the bottom screen, scroll split and sprite
-        ; multiplexer sub-handlers. It is followed by the sprite sorting routine called by the main loop.
+        ; multiplexer sub-handlers.
 
 InitIrq SEI
         LDA #<IrqHandler
@@ -45,6 +45,8 @@ ExitIrq PLA
         TAY 
         PLA
         RTI 
+
+        ; Sort sprites for sprite multiplexing and reset the scroll speed for new frame. Called by the main loop.
 
 SortSprites LDA #$00
         STA sortSprNumReorders

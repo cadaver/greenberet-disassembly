@@ -691,6 +691,8 @@ paraEnemyIndex2
 paraEnemyIndex3
         .BYTE $00
 
+        ; Check for parachute enemy and run its custom code. Called from the main loop.
+        
 CheckParachuteEnemy
         LDX #$05
 CPE_Loop

@@ -3,8 +3,10 @@
         ; This is used both for AI logic and to avoid overloading the sprite multiplexer. Additionally, the sprite X
         ; coordinates are converted to half-resolution (8-bit only) coarse coordinates for faster hitbox collisions.
         ; Only the chars $c8-$ff are solid for platforms and ladders, the rest are ignored (backdrops). Both the
-        ; player and enemy logic use the joystick direction bits (1 = up, 2 = down, 4 = left, 8 = right) for movement 
+        ; player and enemy logic use the joystick direction bits (1 = up, 2 = down, 4 = left, 8 = right) for movement
         ; logic and state bookkeeping.
+
+        ; Find player's platform height to guide enemy pathing. Called from the main loop.
 
 FindPlayerPlatform
         LDX #$02
@@ -18,6 +20,9 @@ FPP_Loop
 
 FPP_Found STX playerPlatformHeight
         RTS
+
+        ; Find enemies' platform heights and update the platform counts as necessary. Update is skipped when an enemy
+        ; climbs, waits or jumps / falls. Called from the main loop.
 
 UpdatePlatformCounts
         LDX #$05
@@ -86,7 +91,9 @@ UPC_DecBottom
         DEC platformEnemyCount
         JMP UPC_ResetJump
 
-ScrollEnemies 
+        ; Move enemies along with the scrolling. Called from the main loop.
+
+ScrollEnemies
         LDA lastScrollSpeed
         BNE SE_HasScrolling
         RTS
@@ -94,7 +101,7 @@ ScrollEnemies
 platformYTbl
         .BYTE $CD,$9D,$6D
 
-SE_HasScrolling 
+SE_HasScrolling
         LDX #$05
 SE_Loop LDA enemyActive,X
         BNE SE_ScrollEnemy
@@ -102,7 +109,7 @@ SE_Loop LDA enemyActive,X
         BPL SE_Loop
         RTS
 
-SE_ScrollEnemy 
+SE_ScrollEnemy
         LDA spriteX+SPR_ENEMYUPPER,X
         SEC
         SBC lastScrollSpeed
@@ -110,7 +117,7 @@ SE_ScrollEnemy
         BCS SE_NoUpperMSBClear
         LDA #$00
         STA spriteXMSB+SPR_ENEMYUPPER,X
-SE_NoUpperMSBClear 
+SE_NoUpperMSBClear
         LDA spriteX+SPR_ENEMYLOWER,X
         SEC
         SBC lastScrollSpeed
@@ -118,17 +125,19 @@ SE_NoUpperMSBClear
         BCS SE_NoLowerMSBClear
         LDA #$00
         STA spriteXMSB+SPR_ENEMYLOWER,X
-SE_NoLowerMSBClear 
+SE_NoLowerMSBClear
         DEX
         BPL SE_Loop
         RTS
 
-ScrollBullets 
+        ; Move bullets along with the scrolling. Called from the UpdateBullets routine.
+
+ScrollBullets
         LDA lastScrollSpeed
         BNE SB_HasScrolling
         RTS
 
-SB_HasScrolling 
+SB_HasScrolling
         LDX #$05
 SB_Loop LDA bulletActive,X
         BNE SB_ScrollBullet
@@ -136,7 +145,7 @@ SB_Loop LDA bulletActive,X
         BPL SB_Loop
         RTS
 
-SB_ScrollBullet 
+SB_ScrollBullet
         LDA spriteX+SPR_BULLET,X
         SEC
         SBC lastScrollSpeed
@@ -149,29 +158,31 @@ SB_NoMSBClear
         BPL SB_Loop
         RTS
 
-UpdateEnemyPathing 
+        ; Update enemy pathfinding decisions. Called from the main loop.
+
+UpdateEnemyPathing
         LDX #$05
-UEP_Loop 
+UEP_Loop
         LDA enemyActive,X
         BNE UEP_EnemyActive
-UEP_Next 
+UEP_Next
         DEX
         BPL UEP_Loop
         RTS
 
-UEP_EnemyActive 
+UEP_EnemyActive
         LDA enemyTimerActive,X
         BNE UEP_Next
         LDA enemyType,X
         BNE UEP_TypeCheck
         JMP UEP_Next
 
-UEP_TypeCheck 
+UEP_TypeCheck
         CMP #$05
         BNE UEP_TypeOK
         JMP UEP_Next
 
-UEP_TypeOK 
+UEP_TypeOK
         LDA enemyClimbing,X
         BNE UEP_Next
         LDA enemyJumpPlatformHeight,X
@@ -284,7 +295,7 @@ UEP_NoLongLadderUp
         STA platformEnemyCount,Y
         JMP UEP_InitClimb
 
-UEP_InitJump 
+UEP_InitJump
         LDA enemyPlatformHeight,X
         CMP #PLATFORM_MIDDLE
         BNE UEP_InitJumpNotMid
@@ -295,11 +306,13 @@ UEP_InitJumpCommon
         JSR InitEnemyJump
         RTS
 
-UEP_InitJumpNotMid 
+UEP_InitJumpNotMid
         INC platformEnemyCount+PLATFORM_MIDDLE
         LDA #PLATFORM_TOP
         STA enemyJumpPlatformHeight,X
         JMP UEP_InitJumpCommon
+
+        ; Find first used sprite index as a start point for the sprite display IRQ handler. Called from the main loop.
 
 FindFirstSprite
         LDX #$14
@@ -312,7 +325,7 @@ FFS_Loop LDY spriteOrder,X
 FFS_Found STX sprIrqIndex
         RTS
 
-AP_KnifeAnim 
+AP_KnifeAnim
         DEC playerKnifeTimer
         BNE AP_KnifeAnimDone
         LDA playerJumping
@@ -322,7 +335,7 @@ AP_KnifeAnim
         ORA #$01
         JMP AP_SetAnim
 
-InitEnemyJump 
+InitEnemyJump
         LDY enemyType,X
         LDA enemyCanJumpTbl,Y
         BEQ IEJ_Fail
@@ -331,7 +344,7 @@ InitEnemyJump
         STA enemyControls,X
         LDA #$00
         STA enemyFalling,X
-IEJ_Fail 
+IEJ_Fail
         RTS
 
 enemyCanJumpTbl 
@@ -339,6 +352,8 @@ enemyCanJumpTbl
 
 AP_KnifeAnimDone
         RTS
+
+        ; Update animations for player. Called from IrqUpdatePlayer routine.
 
 AnimatePlayer
         LDA playerKnifeTimer
@@ -476,6 +491,8 @@ playerAnimTypeTbl
         .BYTE $00,$05,$05,$00,$00,$08,$0F,$00,$0A,$17,$11,$00,$00,$00,$00,$1D
         .BYTE $00,$00,$00,$00,$13,$00,$19,$00,$15,$00,$1B,$00,$00,$00,$00,$00
 
+        ; Update enemy animations. Called from the main loop.
+
 AnimateEnemies
         LDX #$05
 AE_Loop LDA enemyActive,X
@@ -569,6 +586,8 @@ enemyFirstFrameIndex
 perTypeAnimTblOffset 
         .BYTE $10,$00,$30,$30,$00,$20,$40,$00,$00,$00
 
+        ; Check chars under and at the player character. Called from the main loop.
+
 PlayerWorldCollision
         LDA spriteY+SPR_PLRLOWER
         SEC
@@ -607,17 +626,19 @@ playerYAdjust   =*+$01
         STA charBelowPlayer
         RTS
 
+        ; Check chars under and at the enemies. Called from the main loop.
+
 EnemyWorldCollision
         LDX #$05
 EWC_Loop
         LDA enemyActive,X
         BNE EWC_EnemyActive
-EWC_Next 
+EWC_Next
         DEX
         BPL EWC_Loop
         RTS
 
-EWC_EnemyActive 
+EWC_EnemyActive
         LDA enemyTimerActive,X
         BNE EWC_Next
         LDA spriteY+SPR_ENEMYUPPER,X
@@ -642,7 +663,7 @@ EWC_EnemyActive
         SBC #$0A
         BCS EWC_NoLeftUnderflow
         INY
-EWC_NoLeftUnderflow 
+EWC_NoLeftUnderflow
         SEC
         SBC lastScrollX
         BCC EWC_XPosDone
@@ -650,12 +671,12 @@ EWC_NoLeftUnderflow
         BEQ EWC_AddXPosMSB
         CLC
         BCC EWC_XPosDone
-EWC_AddXPosMSB 
+EWC_AddXPosMSB
         PHA
         LDA spriteXMSB+SPR_ENEMYUPPER,X
         LSR
         PLA
-EWC_XPosDone 
+EWC_XPosDone
         ROR
         LSR
         LSR
@@ -663,10 +684,10 @@ EWC_XPosDone
         CPY #$28
         BCC EWC_NoRightOverflow
         LDY #$27
-EWC_NoRightOverflow 
+EWC_NoRightOverflow
         LDA (screenPtrLo),Y
         STA charAtEnemy,X
-        TYA 
+        TYA
         CLC
         ADC #$28
         TAY
@@ -681,7 +702,7 @@ EWC_NoRightOverflow
         TAY
         LDA charTypeTbl,Y
         STA charTypeBelowEnemy,X
-EWC_NoCharBelow 
+EWC_NoCharBelow
         LDA charAtEnemy,X
         CMP #$C8
         BCC EWC_NoCharAt
@@ -689,7 +710,7 @@ EWC_NoCharBelow
         TAY
         LDA charTypeTbl,Y
         STA charTypeAtEnemy,X
-EWC_NoCharAt 
+EWC_NoCharAt
         LDA stageEndReached
         BEQ EWC_NoStageEnd
         LDA charBelowEnemy,X
@@ -698,7 +719,7 @@ EWC_NoCharAt
 EWC_JumpToNext
         JMP EWC_Next
 
-EWC_NoStageEnd 
+EWC_NoStageEnd
         LDA enemyJumpPlatformHeight,X
         ORA enemyJumping,X
         BNE EWC_NoJump
@@ -737,7 +758,8 @@ EWC_TurnAtEdge
 enemyYAdjust
         .BYTE $15,$15,$15,$15,$15,$15
 
-        ; Calculate coarse X coords (8 bit only, half resolution) for the enemies and player for faster hitbox collision checks.
+        ; Calculate coarse X coords (8 bit only, half resolution) for the enemies, bullets, weapon pickup and player for
+        ; faster hitbox collision checks. Called from the main loop.
 
 SetCoarseXCoords
         LDX #$13
@@ -752,6 +774,8 @@ SCXC_Loop LDA spriteXMSB+SPR_ENEMYUPPER,X
         LSR
         STA playerCoarseX
         RTS
+
+        ; Read joystick controls and check for up and fire button press rising edge. Called from IrqUpdatePlayer routine.
 
 ReadControls
         LDA $DC00
@@ -771,7 +795,7 @@ RC_HoldingFire
         LDA joystickBits
         AND #$0F
         STA playerControls
-RC_NoFireHeldDown 
+RC_NoFireHeldDown
         LDA playerControls
         AND #$01
         CMP playerLastUp
@@ -779,7 +803,7 @@ RC_NoFireHeldDown
         STA playerLastUp
         LDA #$00
         STA playerJumpInhibit
-RC_HoldingUp 
+RC_HoldingUp
         LDA #$00
         STA charTypeBelowPlayer
         STA charTypeAtPlayer
@@ -791,7 +815,7 @@ RC_HoldingUp
         TAX
         LDA charTypeTbl,X
         STA charTypeBelowPlayer
-RC_NoSolidCharAt 
+RC_NoSolidCharAt
         LDA charAtPlayer
         CMP #$C8
         BCC RC_NoSolidCharBelow
@@ -808,7 +832,7 @@ charTypeTbl
         .BYTE $03,$0C,$03,$0C,$03,$03,$0E,$0E,$0C,$03,$03,$0E,$0E,$03,$0C,$0C
         .BYTE $0E,$03,$0C,$0C,$0C,$0C,$0C,$0C
 
-MP_Falling 
+MP_Falling
         LDA playerFalling
         BEQ MP_InitFall
         STA plrFallSpeedSubPixel
@@ -831,14 +855,14 @@ MP_Falling
         STA playerJumpInhibit
         RTS
 
-MP_InitFall 
+MP_InitFall
         LDA #$01
         STA playerFalling
         LDA #$80
         STA plrFallSpeedSubPixel
         LDA #$00
         STA playerRunSpeed
-MP_NoLanding 
+MP_NoLanding
         LDA plrFallSpeedSubPixel
         CLC
         ADC playerYSubPixel
@@ -846,21 +870,23 @@ MP_NoLanding
         LDA spriteY
         ADC #$04
         STA spriteY
-        CLC 
+        CLC
         ADC #$15
         STA spriteY+SPR_PLRLOWER
         LDA playerFacingDir
-        TAY 
+        TAY
         JMP MP_CheckMoveRight
 
 MP_NoMove
         RTS
 
+        ; Perform player movement according to controls. Called from IrqUpdatePlayer routine.
+
 MovePlayer
         LDA playerFalling
         BEQ MP_NotFalling
         BNE MP_Falling
-MP_NotFalling 
+MP_NotFalling
         LDA playerControls
         BNE MP_HasMovement
         LDA playerJumping
@@ -873,7 +899,7 @@ MP_NotFalling
 MP_IsJumping
         JMP MP_HandleJump
 
-MP_HasMovement 
+MP_HasMovement
         LDY playerJumping
         BNE MP_IsJumping
         LDY charBelowPlayer
@@ -881,17 +907,17 @@ MP_HasMovement
         BCS MP_HasCharBelow
         JMP MP_Falling
 
-MP_HasCharBelow 
+MP_HasCharBelow
         AND #$13
         BEQ MP_NoLadderOrAttack
         JMP MP_CanClimbOrAttack
 
-MP_NoLadderOrAttack 
+MP_NoLadderOrAttack
         LDA playerKnifeTimer
         BNE MP_NoMove
         LDA playerControls
         AND charTypeBelowPlayer
-        TAY 
+        TAY
 MP_CheckMoveRight AND #$08
         BEQ MP_NoMoveRight
         LDA spriteX
@@ -899,17 +925,17 @@ playerRightLimit   =*+$01
         CMP #$88
         BCS MP_CheckScroll
         LDA playerRunSpeed
-        CLC 
+        CLC
         ADC playerRunSubPixel
         STA playerRunSubPixel
         BCC MP_MoveRight
         JSR MP_MoveRight
-MP_MoveRight 
+MP_MoveRight
         INC spriteX
         INC spriteX+SPR_PLRLOWER
         JMP MP_ExitLadderRight
 
-MP_NoMoveRight 
+MP_NoMoveRight
         TYA
         AND #$04
         BEQ MP_IsJumping
@@ -922,7 +948,7 @@ MP_NoMoveRight
         STA playerRunSubPixel
         BCC MP_MoveLeft
         JSR MP_MoveLeft
-MP_MoveLeft 
+MP_MoveLeft
         DEC spriteX
         DEC spriteX+SPR_PLRLOWER
         LDA #$00
@@ -930,17 +956,17 @@ MP_MoveLeft
         STA playerClimbingCopy
         LDA #$04
         STA playerFacingDir
-        RTS 
+        RTS
 
-MP_CheckScroll 
+MP_CheckScroll
         JSR CheckScroll
-MP_ExitLadderRight 
+MP_ExitLadderRight
         LDA #$00
         STA playerClimbing
         STA playerClimbingCopy
         LDA #$08
         STA playerFacingDir
-        RTS 
+        RTS
 
 MP_HasFirePress
         LDA playerClimbingCopy
@@ -958,12 +984,12 @@ MP_HasFirePress
         BNE MP_KnifeProneTurn
         LDA playerFacingDir
         ORA #$12
-        PHA 
+        PHA
         JSR CheckKnifeCollisions
         PLA
         JMP AP_SetAnim
 
-MP_KnifeProneTurn 
+MP_KnifeProneTurn
         LDA playerControls
         AND #$0C
         STA playerFacingDir
@@ -974,39 +1000,39 @@ MP_KnifeProneTurn
         PLA
         JMP AP_SetAnim
 
-MP_KnifeNoProne 
+MP_KnifeNoProne
         LDA playerJumping
         ORA playerFalling
         BNE MP_KnifeAirborne
         LDA playerControls
         AND #$0C
         BNE MP_KnifeOnGroundTurn
-MP_KnifeAirborne 
+MP_KnifeAirborne
         LDA playerFacingDir
         ORA #$10
         PHA
         JSR CheckKnifeCollisions
-        PLA 
+        PLA
         JMP AP_SetAnim
 
-MP_KnifeOnGroundTurn 
+MP_KnifeOnGroundTurn
         LDA playerControls
         AND #$1C
-        PHA 
+        PHA
         JSR CheckKnifeCollisions
-        PLA 
+        PLA
         JMP AP_SetAnim
 
-MP_HandleJump 
+MP_HandleJump
         LDA playerJumping
         BNE MP_JumpCheckLadder
         RTS
 
-MP_CanClimbOrAttack 
+MP_CanClimbOrAttack
         LDA playerControls
         AND #$10
         BNE MP_HasFirePress
-MP_NoKnifeAttack 
+MP_NoKnifeAttack
         LDA playerJumping
         BNE MP_JumpCheckLadder
         LDA charTypeAtPlayer
@@ -1016,7 +1042,7 @@ MP_NoKnifeAttack
         BEQ MP_NoInitClimb
         JMP MP_PlayerClimbing
 
-MP_NoLadderAbove 
+MP_NoLadderAbove
         LDA charTypeBelowPlayer
         AND #$03
         BEQ MP_NoInitClimb
@@ -1024,18 +1050,18 @@ MP_NoLadderAbove
         BEQ MP_NoInitClimb
         JMP MP_PlayerClimbing
 
-MP_NoInitClimb 
+MP_NoInitClimb
         LDA playerClimbing
         BEQ MP_NotClimbing
         JMP MP_PlayerClimbing
 
-MP_NotClimbing 
+MP_NotClimbing
         LDA playerControls
         AND #$01
         BNE MP_HasUpPress
         RTS
 
-MP_HasUpPress 
+MP_HasUpPress
         LDA playerJumpInhibit
         BEQ MP_OKToJump
         JMP MP_NoLadderOrAttack
@@ -1056,22 +1082,22 @@ MP_JumpNoTurn
         LDY #$14
         STY playerJumpArcIndex
         LDA spriteY+SPR_PLRLOWER
-        SEC 
+        SEC
         SBC jumpArcTbl,Y
         STA playerBaseY
-MP_JumpCheckLadder 
+MP_JumpCheckLadder
         LDA charTypeAtPlayer
         AND #$03
         BEQ MP_JumpNoLadder
         AND playerControls
         BNE MP_GrabLadder
-MP_JumpNoLadder 
+MP_JumpNoLadder
         LDY playerJumpArcIndex
         LDA playerBaseY
-        CLC 
+        CLC
         ADC jumpArcTbl,Y
         STA spriteY+SPR_PLRLOWER
-        SEC 
+        SEC
         SBC #$15
         STA spriteY
         LDA playerJumping
@@ -1092,15 +1118,15 @@ MP_DecJumpArc
         LDA #$80
         STA playerJumping
         INY
-MP_JumpArcNotDone     
+MP_JumpArcNotDone
         STY playerJumpArcIndex
-MP_CheckJumpAttack 
+MP_CheckJumpAttack
         LDA playerControls
         AND #$10
         BEQ MP_NoJumpAttack
         JMP MP_HasFirePress
 
-MP_NoJumpAttack     
+MP_NoJumpAttack
         LDA playerJumpControls
         AND #$0C
         BEQ MP_JumpNoHoriz
@@ -1110,9 +1136,9 @@ MP_NoJumpAttack
 MP_JumpNoHoriz
         RTS
 
-MP_GrabLadder 
+MP_GrabLadder
         LDA spriteY
-        SEC 
+        SEC
         SBC #$04
         AND #$F8
         ORA #$05
@@ -1120,14 +1146,14 @@ MP_GrabLadder
         CLC
         ADC #$15
         STA spriteY+SPR_PLRLOWER
-MP_PlayerClimbing 
+MP_PlayerClimbing
         LDA playerControls
         AND #$03
         TAY
         AND charTypeAtPlayer
         AND #$01
         BEQ MP_NoClimbUp
-MP_ClimbUp 
+MP_ClimbUp
         DEC spriteY
         DEC spriteY+SPR_PLRLOWER
         DEC spriteY
@@ -1137,13 +1163,13 @@ MP_ClimbUp
         LDA #$01
         STA playerClimbing
         STA playerClimbingCopy
-        RTS 
+        RTS
 
-MP_NoClimbUp 
+MP_NoClimbUp
         LDA charTypeAtPlayer
         AND #$01
         BNE MP_CheckClimbDown
-        TYA 
+        TYA
         AND #$01
         BEQ MP_CheckClimbDown
         LDA playerYAdjust
@@ -1170,12 +1196,12 @@ MP_CheckClimbDown
         LDA #$01
         STA playerClimbingCopy
         STA playerClimbing
-MP_NoClimbDown 
+MP_NoClimbDown
         LDA #$2A
         STA playerYAdjust
         RTS
 
-MP_AtLadderTop 
+MP_AtLadderTop
         LDA #$2A
         STA playerYAdjust
         LDA #$01
@@ -1183,23 +1209,25 @@ MP_AtLadderTop
         STA playerJumpInhibit
         JMP MP_NoLadderOrAttack
 
-jumpArcTbl 
+jumpArcTbl
         .BYTE $00,$00,$01,$01,$02,$03,$04,$05,$06,$07,$09,$0B,$0D,$0F,$11,$13
         .BYTE $15,$17,$19,$1B,$1E,$21,$24,$28,$2C,$30,$34,$38,$3C,$3C,$3C,$3C
+
+        ; Update enemy motion and special behavior including firing. Called from the main loop.
 
 UpdateEnemies
         LDX #$05
 UE_Loop LDA enemyActive,X
         BNE UE_EnemyActive
-UE_Next DEX 
+UE_Next DEX
         BPL UE_Loop
-        RTS 
+        RTS
 
-UE_EnemyActive 
+UE_EnemyActive
         LDA enemyTimerActive,X
         BEQ UE_TimerNotActive
         LDA enemyType,X
-        CMP #ENEMY_PARACHUTE
+        CMP #ENEMY_PARACHUTE ; For parachutist, the custom code is not run in this loop, but in CheckParachuteEnemy.
         BEQ UE_Next
         JSR RunEnemyCustomCode
         JMP UE_Next
@@ -1305,12 +1333,12 @@ UE_NoLanding
 
 UE_Done RTS
 
-UE_HorizMovement 
+UE_HorizMovement
         TAY
         AND #$08
         BEQ UE_HorizMovementLeft
         LDA enemyRunSpeed,X
-        CLC 
+        CLC
         ADC enemyRunSubPixel,X
         STA enemyRunSubPixel,X
         BCC UE_MoveRight
@@ -1322,12 +1350,12 @@ UE_MoveRight
         LDA #$01
         STA spriteXMSB+SPR_ENEMYUPPER,X
         STA spriteXMSB+SPR_ENEMYLOWER,X
-UE_RightNoMSB 
+UE_RightNoMSB
         LDA #$08
         STA enemyHorizMove,X
         LDA #$00
         STA enemyClimbingCopy,X
-        RTS 
+        RTS
 
 UE_HorizMovementLeft
         TYA
@@ -1345,7 +1373,7 @@ UE_MoveLeft
         LDA #$00
         STA spriteXMSB+SPR_ENEMYUPPER,X
         STA spriteXMSB+SPR_ENEMYLOWER,X
-UE_LeftNoMSB 
+UE_LeftNoMSB
         DEC spriteX+SPR_ENEMYUPPER,X
         DEC spriteX+SPR_ENEMYLOWER,X
         LDA #$04
@@ -1354,7 +1382,7 @@ UE_LeftNoMSB
         STA enemyClimbingCopy,X
         RTS
 
-UE_NoHorizMove 
+UE_NoHorizMove
         JSR UpdateEnemyClimb
         JMP UE_Next
 
@@ -1371,7 +1399,7 @@ UE_CheckJumpOrClimb
         BEQ UE_NoLadderBelow
         JMP UE_NoHorizMove
 
-UE_NoLadderAt 
+UE_NoLadderAt
         LDA charTypeBelowEnemy,X
         AND #$03
         BEQ UE_NoLadderBelow
@@ -1379,19 +1407,19 @@ UE_NoLadderAt
         BEQ UE_NoLadderBelow
         JMP UpdateEnemyClimb
 
-UE_NoLadderBelow 
+UE_NoLadderBelow
         LDA enemyClimbingCopy,X
         BEQ UE_NotClimbing
-UE_EnemyGrabLadder 
+UE_EnemyGrabLadder
         JMP UE_NoHorizMove
 
-UE_NotClimbing 
+UE_NotClimbing
         LDA enemyControls,X
         AND #$01
         BNE UE_InitJumpArc
         JMP UE_Next
 
-UE_InitJumpArc 
+UE_InitJumpArc
         LDA #$01
         STA enemyJumping,X
         LDA enemyControls,X
@@ -1404,7 +1432,7 @@ UE_InitJumpArc
         TYA
         STA enemyJumpArcIndex,X
         LDA spriteY+SPR_ENEMYLOWER,X
-        SEC 
+        SEC
         SBC jumpArcTbl,Y
         STA enemyBaseY,X
 UE_UpdateJumpArc
@@ -1416,13 +1444,13 @@ UE_UpdateJumpArc
         BEQ UE_JumpNoLadder
         AND enemyControls,X
         BNE UE_EnemyGrabLadder
-UE_JumpNoLadder 
+UE_JumpNoLadder
         LDY enemyJumpArcIndex,X
         LDA enemyBaseY,X
-        CLC 
+        CLC
         ADC jumpArcTbl,Y
         STA spriteY+SPR_ENEMYLOWER,X
-        SEC 
+        SEC
         SBC #$15
         STA spriteY+SPR_ENEMYUPPER,X
         LDA enemyJumping,X
@@ -1438,7 +1466,7 @@ UE_JumpNoLadder
         STA enemyFalling,X
         JMP UE_CheckJumpHorizMove
 
-UE_DecJumpArc 
+UE_DecJumpArc
         DEY
         BPL UE_JumpArcNotDone
         LDA #$80
@@ -1453,6 +1481,5 @@ UE_CheckJumpHorizMove
         BEQ UE_NoJumpHorizMove
         TAY
         JSR UE_HorizMovement
-UE_NoJumpHorizMove 
+UE_NoJumpHorizMove
         JMP UE_Next
-

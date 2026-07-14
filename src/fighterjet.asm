@@ -1,6 +1,7 @@
-        ; Update the fighter jet if active, and check for spawning it (idle timer) if not active. The idle timer is
-        ; decreased during the scrolling update. The fighter is only spawned when there are at least 2 enemy bullet
-        ; slots free (one for the jet; it is also a bullet in sprite usage terms, and one for the bomb)
+        ; Update the fighter jet if active, and check for spawning it (idle timer) if not active. Called from the main
+        ; loop. The idle timer is decreased during the scrolling update. The fighter is only spawned when there are at
+        ; least 2 enemy bullet slots free; one for the jet (it is also a bullet in sprite usage terms), and one for the
+        ; bomb.
 
 UpdateFighterJet
         LDA fighterJetIndex
@@ -46,6 +47,8 @@ FindJetOrBomb LDA bulletType+3,X
         BNE FindJetOrBomb
         RTS
 
+        ; Move already spawned fighter jet.
+
 MoveFighterJet
         LDX fighterJetIndex
         LDA bulletCoarseX,X
@@ -73,6 +76,8 @@ MFJ_FlyAway
         LDA #$00
         STA idleTimer
         RTS
+
+        ; Drop bomb when close to the player.
 
 CheckDropBomb
         LDA playerCoarseX
@@ -108,6 +113,8 @@ CDB_Check
         STA spriteY+SPR_BULLET,Y
         RTS
 
+        ; Initialize the fighter jet sprite position & animation.
+
 DoSpawnFighterJet
         LDA #BULLET_BOMB
         STA bulletType+3,X
@@ -132,7 +139,7 @@ DoSpawnFighterJet
         LDA bulletActive+3+1,X
         BEQ DSFJ_BombSlotOK
         INX
-DSFJ_BombSlotOK 
+DSFJ_BombSlotOK
         INX
         LDA #BULLET_BOMB
         STA bulletType+3,X

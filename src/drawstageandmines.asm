@@ -1,8 +1,4 @@
-        ; Drawing new stage graphics, as well as mines to the bottom of the screen, and mine collision handling. When a
-        ; player-thrown grenade tries to destroy a partially visible mine, the game would lock up. Partial mines cannot
-        ; be destroyed, because the rightmost char is yet to scroll onto the screen, and it would cause a visible error.
-        ; See defines.asm for the define that enables the fix.
-
+        ; Draw new stage graphics, as well as mines to the bottom of the screen. Called from the main loop.
         ; Drawing the new graphics uses the (zeropage,x) addressing mode, using a screen memory and color memory pointer
         ; for each of the 16 rows.
 
@@ -89,7 +85,9 @@ DNC_NewTile
         DEC columnSrcBase
         JMP DNC_TileLoop
 
-AnimateMineChars 
+        ; Charset animation to flash the mines. Called from the main loop.
+
+AnimateMineChars
         LDA stage
         ASL
         TAY
@@ -187,6 +185,10 @@ charData2
 
 charData3 
         .BYTE $77,$00,$FF,$AA,$40,$40,$30,$30,$55,$55,$55,$55,$55,$55,$55,$55
+
+        ; Mine collision handling. When a player-thrown grenade tries to destroy a partially visible mine, the game
+        ; would lock up. Partial mines cannot be destroyed, because the rightmost char is yet to scroll onto the screen,
+        ; and it would cause a visible error. See defines.asm for the define that enables the fix.
 
 CheckDestroyMines LDX #$02
 CDM_Loop
@@ -307,9 +309,11 @@ CDM_Done
         PLP
         RTS
 
-CheckPlayerHitMine 
+        ; Check if player stepped into a mine. Called from the main loop.
+
+CheckPlayerHitMine
         LDA stage
-        ASL 
+        ASL
         TAY
         LDA charAtPlayer
         CMP mineLeftCharTbl,Y
@@ -348,6 +352,8 @@ mineLeftCharTbl
 mineRightCharTbl
         .BYTE $53,$3E,$3F,$52,$53,$A0,$A1
 
+        ; Reset game charsets, called during game start and stage restart.
+        
 ResetGameChars PHP
         LDY #$0F
         SEI
