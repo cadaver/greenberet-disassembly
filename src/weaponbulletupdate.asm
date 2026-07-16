@@ -51,7 +51,7 @@ UpdateBullets
         STA activeExtraWeapon
 UB_ShotsNotExhausted
         JSR FormatWeaponShots
-UB_NoFireExtraWeapon 
+UB_NoFireExtraWeapon
         JSR ScrollBullets
         LDX #$05
 UB_XMoveLoop 
@@ -222,7 +222,8 @@ CBHE_NoParachuteHit
 CBHE_Done
         JMP CBHE_NextEnemy
 
-        ; Check for firing the player's extra weapon.
+        ; Check for firing the player's extra weapon (spacebar just pressed.) 
+        ; Return Z=0 if should be fired.
 
 CheckFireExtraWeapon
         LDA collectedExtraWeapon
@@ -246,7 +247,7 @@ CFEW_IsClimbing
         RTS
 
         ; Update player's bullet behavior based on the currently active extra weapon.
-        
+
 UpdateExtraWeapon
         LDY collectedExtraWeapon
         BEQ UEW_NoWeapon
@@ -271,6 +272,8 @@ UEW_NoWeapon
 
 UpdateUnusedWeapon
         RTS
+
+        ; Update player grenades, arcing flight and explode on ground contact.
 
 UpdateGrenade
         LDX #$02
@@ -302,27 +305,27 @@ UG_YMove
         INY
         CPY #$13
         BCC UG_StoreNewSpeed
-UG_YMoveAtBottom 
+UG_YMoveAtBottom
         LDA #$00
         STA bulletYDir,X
         DEX
         BPL UG_Loop
-        RTS 
+        RTS
 
-UG_YMoveDecSpeed 
+UG_YMoveDecSpeed
         DEY
         BPL UG_StoreNewSpeed
         LDA #$80
         STA bulletYDir,X
         INY
-UG_StoreNewSpeed 
+UG_StoreNewSpeed
         TYA
         STA bulletJumpArcIndex,X
         DEX
         BPL UG_Loop
         RTS
 
-UG_CheckLanding 
+UG_CheckLanding
         JSR CheckCharAtBullet
         LDA bulletLastChar,X
         CMP #$C8
@@ -333,7 +336,7 @@ UG_CheckLanding
         LDA charTypeTbl,Y
         AND #$0C
         BEQ UG_NoCharLanding
-UG_Explode 
+UG_Explode
         JSR ExplodeGrenade
         JSR CheckBulletExploded
         RTS
@@ -347,7 +350,7 @@ UG_NoCharLanding
         STA spriteY+SPR_BULLET,X
         RTS
 
-CheckCharAtBullet 
+CheckCharAtBullet
         LDA spriteY+SPR_BULLET,X
         SEC
         SBC #$26
@@ -355,9 +358,9 @@ CheckCharAtBullet
         STY screenPtrHi
         AND #$F8
         STA tempStore
-        ASL 
+        ASL
         ROL screenPtrHi
-        ASL 
+        ASL
         ROL screenPtrHi
         CLC
         ADC tempStore
@@ -366,9 +369,9 @@ CheckCharAtBullet
         ADC #$40
         STA screenPtrHi
         LDA bulletCoarseX,X
-        SEC 
+        SEC
         SBC #$08
-        LSR 
+        LSR
         LSR
         CLC
         ADC #$28
@@ -377,12 +380,14 @@ CheckCharAtBullet
         STA bulletLastChar,X
         RTS
 
-ExplodeGrenade 
+        ; Common bullet explosion subroutines.
+
+ExplodeGrenade
         LDA bulletExploded,X
         BEQ EG_NotExplodedYet
         RTS
 
-EG_NotExplodedYet 
+EG_NotExplodedYet
         LDA #$00
         STA bulletXSpeed,X
         LDA #$01
@@ -398,7 +403,7 @@ EG_NotExplodedYet
         CPX #$03
         BCS EG_IsEnemyGrenade
         JSR CheckGrenadeAreaKill
-EG_IsEnemyGrenade 
+EG_IsEnemyGrenade
         RTS
 
 CheckBulletExploded
@@ -418,15 +423,19 @@ UpdateExplosion
 UE_NoNewFrame
         RTS
 
-UE_Remove 
+UE_Remove
         LDA #$00
         STA bulletActive,X
         STA spriteY+SPR_BULLET,X
         STA bulletExploded,X
-UpdateBazooka 
+
+        ; Bazooka update is just a no-op, the bullets fly straight and collide with enemies / mines.
+UpdateBazooka
         RTS
 
-CheckGrenadeAreaKill 
+        ; Check player grenade killing enemies some distance away with a large hitbox.
+
+CheckGrenadeAreaKill
         LDY #$05
 CGAK_Loop 
         LDA enemyActive,Y
@@ -450,9 +459,9 @@ CGAK_Next
         BPL CGAK_Loop
         RTS
 
-CGAK_EnemyBoundCheck 
+CGAK_EnemyBoundCheck
         LDA enemyCoarseX,Y
-        CLC 
+        CLC
         ADC #$28
         CMP bulletCoarseX,X
         BCC CGAK_BoundsFail
@@ -481,6 +490,8 @@ CGAK_NoYOverFlow
 CGAK_BoundsFail 
         CLC
         RTS
+
+        ; Update player's flamethrower.
 
 UpdateFlameThrower
         LDA flameDetachedTimer
@@ -538,6 +549,8 @@ UFT_FlameWasDetached
         STA flameDetachedTimer
         RTS
 
+        ; Check for removal of bullets (both player and enemy) that are about to exit the screen horizontally.
+
 CheckRemoveBullets
         LDX #$05
 CRB_Loop LDA bulletActive,X
@@ -570,6 +583,9 @@ CRB_RemoveFlame
         STA bulletXSpeed
         JMP CRB_Next
 
+        ; Find free player bullet. 
+        ; Return index in X and C=0 if found.
+
 FindFreeBullet
         LDX #$02
 FFB_Loop
@@ -583,6 +599,8 @@ FFB_Loop
 FFB_Found
         CLC
         RTS
+
+        ; Actually fire the player's extra weapon.
 
 FireExtraWeapon
         LDY collectedExtraWeapon

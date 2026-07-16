@@ -25,27 +25,30 @@ SETS_Loop
         STA spawnEnemyFlag,X
         RTS
 
-SETS_Next 
+SETS_Next
         DEX
         BPL SETS_Loop
-        RTS 
+        RTS
+
+        ; Find next spawn slot to use for spawning.
+        ; Return index in X and C=1 if found.
 
 FindNextSpawnType
         LDX #$05
-FNST_Loop 
+FNST_Loop
         LDA spawnEnemyFlag,X
         BEQ FNST_NoSpawn
         STX nextSpawnTblIndex
-        SEC 
+        SEC
         RTS
 
-FNST_NoSpawn 
+FNST_NoSpawn
         DEX
         BPL FNST_Loop
         CLC
         RTS
 
-spawnEnemyTimerTbl 
+spawnEnemyTimerTbl
         .BYTE $C8,$E6,$B4,$BE,$FA,$AA,$A0,$B4,$A0,$96,$A0,$8C,$A0,$A0,$A0,$AA
         .BYTE $8C,$96,$91,$87
 
@@ -53,7 +56,7 @@ enemySpawnTypeTbl
         .BYTE $00,$00,$03,$02,$03,$03,$00,$05,$02,$03,$05,$03,$02,$03,$05,$02
         .BYTE $08,$02,$08,$03
 
-enemySpawnDirTbl 
+enemySpawnDirTbl
         .BYTE $04,$04,$08,$04,$04,$04,$08,$04,$04,$08,$04,$04,$08,$08,$04,$08
         .BYTE $04,$08,$04,$08
 
@@ -68,7 +71,7 @@ TrySpawnStaticEnemy
         BEQ TSSE_Fail
         JSR FindFreeEnemySlot
         JSR TSSE_CheckCounts
-TSSE_Fail 
+TSSE_Fail
         RTS
 
         .BYTE $02
@@ -463,6 +466,9 @@ CheckTooManyEnemies
         LDA numEnemies
         CMP #$05
         RTS
+
+        ; Find free enemy sprite slot based on the Y-coordinate check (0 = inactive)
+        ; Return index in X and C=0 if found.
 
 FindFreeEnemySlot
         LDX #$05

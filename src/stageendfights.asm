@@ -951,12 +951,12 @@ SG_InitLoop
         INC stageEndReached
 SG_InitDone
         LDA numAliveGyros
-        BEQ SG_FindFreeEnemy
+        BEQ SG_FindFreeEnemySlot
         CMP #$02
         BEQ SG_Wait
         DEC gyroSpawnTimer
         BNE SG_Wait
-SG_FindFreeEnemy
+SG_FindFreeEnemySlot
         LDX #$00
 SG_FindFreeLoop
         LDA enemyActive,X
