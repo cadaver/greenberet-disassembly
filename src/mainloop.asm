@@ -76,7 +76,8 @@ Main_NoParachuteKill
         ; This routine is called from the screen bottom raster interrupt handler instead of the main program, and
         ; it reads the joystick and moves the player, and also advances the playroutine's sound effects part. It also
         ; does a knife collision check for a few frames after a fire press, while the player character is still in the
-        ; knife strike pose.
+        ; knife strike pose. Note also the jump to the code in stack copied in entrypoint.asm, which is apparently a
+        ; freezer protection (jam the processor if timer not expired.)
 
 IrqUpdatePlayer
         JSR ReadControls
