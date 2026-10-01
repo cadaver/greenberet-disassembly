@@ -1,6 +1,7 @@
         ; Check for scrolling the screen. Called from the main loop. If player is running right while at the right edge
-        ; motion limit, the screen needs to scroll. routine. Reaching the stage end and activating the warning siren is 
-        ; also checked here.
+        ; motion limit, the screen needs to scroll, which is done separately in the ScrollScreen routine below. Reaching
+        ; the stage end and activating the warning siren, as well as decrementing the idle timer for the fighter jet 
+        ; appearance are also checked here.
 
 CheckScroll
         LDY stage
@@ -29,17 +30,17 @@ CS_ScrollOnePixel
 CS_NoIdleUnderflow
         INC screenShiftFlag
         LDY #$07
-CS_NoScrollWrap 
+CS_NoScrollWrap
         STY scrollX
         RTS
 
-stageEndLSBTbl 
+stageEndLSBTbl
         .BYTE $9F,$A8,$60,$18
 
 stageEndMSBTbl
         .BYTE $01,$03,$06,$09
 
-stageNumEndEnemyTbl 
+stageNumEndEnemyTbl
         .BYTE $11,$11,$03,$11
 
 CS_AtStageEnd LDA stageEndFightActive
@@ -78,7 +79,7 @@ ScrollScreen
 
 SS_DoScroll
         LDY #$00
-SS_UpperLoop 
+SS_UpperLoop
         LDA screen+$141,Y
         STA screen+$140,Y
         LDA screen+$169,Y
