@@ -1,12 +1,12 @@
-        ; Graphics block swapping routine and displaying the extra weapon shots remaining.
+        ; Graphics block swapping routine. For swaps under I/O area, the memory config is changed and IRQ's disabled.
 
 SwapGraphicsData
         TAY
         LDA graphicsSwapFlags,Y
         EOR #$01
         STA graphicsSwapFlags,Y
-        LDA $FF95,Y
-        STA sgdBankConfig
+        LDA swapMemoryConfigTbl,Y
+        STA sgdMemoryConfig
         CMP #$35
         BEQ SGD_NoIrqDisable
         SEI
@@ -24,8 +24,8 @@ SGD_NoIrqDisable TYA
         LDA swapLengthTblLo,X
         STA swapEndCmp
         LDA swapLengthTblHi,X
-        TAX 
-sgdBankConfig   =*+$01
+        TAX
+sgdMemoryConfig   =*+$01
         LDA #$35
         STA $01
         LDY #$00
@@ -35,9 +35,9 @@ SGD_FullPageLoop LDA (srcPtrLo),Y
         STA (srcPtrLo),Y
         LDA columnSrcBase
         STA (screenPtrLo),Y
-        INY 
+        INY
         BNE SGD_FullPageLoop
-        DEX 
+        DEX
         BEQ SGD_FullPagesDone
         INC screenPtrHi
         INC srcPtrHi
@@ -52,31 +52,35 @@ bFF48   LDA (srcPtrLo),Y
         STA (srcPtrLo),Y
         LDA columnSrcBase
         STA (screenPtrLo),Y
-        INY 
+        INY
 swapEndCmp   =*+$01
         CPY #$00
         BNE bFF48
-SGD_Done LDA #$35      
+SGD_Done LDA #$35
         STA $01
-        CLI 
-        RTS 
+        CLI
+        RTS
 
 swapSrcTblHi   =*+$01
-swapSrcTblLo 
+swapSrcTblLo
         .WORD $D000,$8000,$9000,$D800,$D440,$8DC0,$9DC0,$C580
         .WORD $C800
 
 swapDestTblHi   =*+$01
-swapDestTblLo 
+swapDestTblLo
         .WORD $7A00,$A000,$B000,$7800,$7B00,$A200,$B200,$71C0
         .WORD $7800
 
 swapLengthTblHi   =*+$01
-swapLengthTblLo 
+swapLengthTblLo
         .WORD $0440,$0DC0,$0DC0,$0800,$02D0,$0240,$0240,$0280
         .WORD $0687
 
+swapMemoryConfigTbl
         .BYTE $30,$35,$35,$30,$30,$35,$35,$35,$35
+
+        ; Update the amount of extra weapon shots on the top of the screen status display. Called when the extra weapon
+        ; is collected or fired.
 
 FormatWeaponShots LDA collectedExtraWeapon
         BNE FWS_HasWeapon
