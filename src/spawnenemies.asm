@@ -129,7 +129,7 @@ SpawnStaticEnemy
         CLC
         ADC staticLowerXOffset
         STA spriteX+SPR_ENEMYLOWER,X
-        LDA staticInitFlags
+        LDA staticRunSpeed
         STA enemyRunSpeed,X
         LDA staticEnemyType
         STA enemyType,X
@@ -195,8 +195,8 @@ FNSE_Loop
         STA staticUpperXOffset
         LDA staticPerTypeLowerOffsetX,Y
         STA staticLowerXOffset
-        LDA perTypeInitFlags,Y
-        STA staticInitFlags
+        LDA perTypeRunSpeed,Y
+        STA staticRunSpeed
         RTS
 
 FNSE_Next
@@ -212,7 +212,7 @@ staticEnemyPosLSBTbl
         .BYTE $CE,$E0,$EA,$0F,$2A,$8C,$A0,$D7,$E2,$EA,$F8,$92,$A0,$AA,$AB,$DA
         .BYTE $EA,$F2,$22,$32,$3C,$3D,$49,$51,$93,$AA,$CC,$F2
 
-staticEnemyPosMSBTbl 
+staticEnemyPosMSBTbl
         .BYTE $00,$00,$00,$01,$01,$01,$01,$02,$02,$02,$02,$02,$02,$02,$02,$02
         .BYTE $02,$03,$03,$03,$03,$03,$03,$04,$04,$04,$04,$04,$04,$04,$04,$04
         .BYTE $04,$04,$04,$05,$05,$05,$05,$05,$05,$05,$05,$06,$06,$06,$06,$06
@@ -266,7 +266,7 @@ staticEnemyTimer
         .BYTE $00
 staticEnemyPlatform
         .BYTE $00
-staticInitFlags
+staticRunSpeed
         .BYTE $00
 staticUpperYOffset
         .BYTE $00
@@ -365,7 +365,7 @@ CSNE_NoSpawnXAdjust
         STA spriteColor+SPR_ENEMYUPPER,X
         LDA perTypeLowerColor,Y
         STA spriteColor+SPR_ENEMYLOWER,X
-        LDA perTypeInitFlags,Y
+        LDA perTypeRunSpeed,Y
         STA enemyRunSpeed,X
         LDA #$01
         STA enemyActive,X
@@ -450,7 +450,7 @@ perTypeUpperColor
 perTypeLowerColor
         .BYTE $09,$01,$06,$06,$0D,$0D,$09,$09,$06,$0D
 
-perTypeInitFlags
+perTypeRunSpeed
         .BYTE $80,$00,$80,$A0,$00,$C0,$00,$00,$40,$C0
 
 perTypeTimerInit

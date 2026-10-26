@@ -1302,7 +1302,7 @@ UE_FallingMotion
         LDA #$00
         STA enemyFalling,X
         LDY enemyType,X
-        LDA perTypeInitFlags,Y
+        LDA perTypeRunSpeed,Y
         STA enemyRunSpeed,X
         JMP UE_Next
 

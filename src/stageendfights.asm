@@ -231,7 +231,7 @@ CKD_Next
         BPL CKD_Loop
         RTS
 
-RemoveDeadDog 
+RemoveDeadDog
         DEC enemyAuxTimer,X
         BNE RDD_HasDelay
         LDA #$00
@@ -368,7 +368,7 @@ SpawnNewDog
         LDA dogSpawnDirTbl,Y
         STA staticEnemyType
         LDA dogSpawnColorTbl,Y
-        STA staticInitFlags
+        STA staticRunSpeed
         LDX #$02
 SND_FindFreeLoop
         LDA dogActive,X
@@ -384,7 +384,7 @@ SND_FoundFree
         STA dogSpawnTimer
         LDA staticEnemyType
         STA dogDir,X
-        LDA staticInitFlags
+        LDA staticRunSpeed
         STA spriteColor+SPR_ENEMYDOG,X
         LDA #$E2
         STA spriteY+SPR_ENEMYDOG,X
